@@ -19,6 +19,9 @@
   ],
   "dependencies": {
     "@atomist/automation-client": "^0.17.3",
+    "@atomist/sdm": "0.3.2-rename-listener.20180713021926",
+    "@atomist/sdm-core": "0.3.2-20180713022755",
+    "@atomist/sdm-pack-spring": "0.1.4",
     "app-root-path": "^2.0.1"
   },
   "devDependencies": {
