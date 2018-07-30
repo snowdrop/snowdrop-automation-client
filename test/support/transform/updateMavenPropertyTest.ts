@@ -18,7 +18,7 @@ describe("setMavenProperty", () => {
 });
 
 function tempProject(content: string): AbstractProject {
-  return InMemoryProject.of({path: "pom.xml", content: content});
+  return InMemoryProject.of({path: "pom.xml", content});
 }
 
 /* tslint:disable */
