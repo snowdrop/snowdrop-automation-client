@@ -5,7 +5,7 @@ import {updateMavenPropertyEditor} from "../../../src/support/transform/updateMa
 
 describe("setMavenProperty", () => {
 
-  it("update existing property", done => {
+  it("updates existing property", done => {
     const p = tempProject(PomWithProperties);
     updateMavenPropertyEditor("spring-boot.version", "1.5.14.RELEASE")(p)
     .then(r => {
@@ -18,7 +18,7 @@ describe("setMavenProperty", () => {
 });
 
 function tempProject(content: string): AbstractProject {
-  return InMemoryProject.of({path: "pom.xml", content: PomWithProperties});
+  return InMemoryProject.of({path: "pom.xml", content: content});
 }
 
 /* tslint:disable */
