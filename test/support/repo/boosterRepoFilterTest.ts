@@ -25,7 +25,8 @@ import * as assert from "power-assert";
 import {SNOWDROP_ORG} from "../../../src/constants";
 import {BoosterRepos} from "../../../src/support/repo/boosterRepoFilter";
 
-describe("boosterRepoFilterTest", () => {
+describe("boosterRepoFilterTest", function() {
+  this.timeout(15000);
 
   it("filter should only include boosters with the necessary topic", done => {
     const firstBoosterRepo = new InMemoryProject(new GitHubRepoRef(SNOWDROP_ORG, "spring-boot-cache-booster"));

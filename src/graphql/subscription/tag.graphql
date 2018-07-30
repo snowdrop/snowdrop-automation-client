@@ -1,0 +1,13 @@
+subscription TagToPush {
+  Tag {
+    _id
+    name
+    commit {
+      pushes {
+        ...PushFields
+      }
+      timestamp
+    }
+    timestamp
+  }
+}

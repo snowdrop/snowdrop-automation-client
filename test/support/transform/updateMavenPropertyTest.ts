@@ -5,13 +5,28 @@ import {updateMavenPropertyEditor} from "../../../src/support/transform/updateMa
 
 describe("setMavenProperty", () => {
 
-  it("updates existing property", done => {
+  it("updates single property", done => {
     const p = tempProject(PomWithProperties);
-    updateMavenPropertyEditor("spring-boot.version", "1.5.14.RELEASE")(p)
+    updateMavenPropertyEditor({name: "spring-boot.version", value: "1.5.14.RELEASE"})(p)
     .then(r => {
       const pomContent = p.findFileSync("pom.xml").getContentSync();
       assert(pomContent.includes("1.5.14.RELEASE"));
       assert(!pomContent.includes("1.5.13.RELEASE"));
+    }).then(done, done);
+  });
+
+  it("updates multiple properties including a non-existent one", done => {
+    const p = tempProject(PomWithProperties);
+    updateMavenPropertyEditor(
+        {name: "spring-boot.version", value: "1.5.14.RELEASE"},
+        {name: "spring-boot-bom.version", value: "1.5.14.Final"},
+        {name: "spring.version", value: "5.0.5.RELEASE"},
+    )(p)
+    .then(r => {
+      const pomContent = p.findFileSync("pom.xml").getContentSync();
+      assert(pomContent.includes("1.5.14.RELEASE"));
+      assert(pomContent.includes("1.5.14.Final"));
+      assert(pomContent.includes("3.2.1"));
     }).then(done, done);
   });
 
@@ -32,5 +47,7 @@ const PomWithProperties = `<project>
   
   <properties>
     <spring-boot.version>1.5.13.RELEASE</spring-boot.version>
+    <spring-boot-bom.version>1.5.13.Final</spring-boot-bom.version>
+    <dummy.version>3.2.1</dummy.version>
   </properties>
 </project>`;

@@ -58,7 +58,7 @@ export class UpdateMavenProperty implements HandleCommand {
 
     return editOne(context,
         {token: this.githubToken}, // GitHub credentials
-        updateMavenPropertyEditor(params.name, params.value), // a function to change the project
+        updateMavenPropertyEditor({name: params.name, value: params.value}), // a function to change the project
         pullRequest, // how to save the edit
         gitHubRepo) // where to find the project
     .then(success, failure);
