@@ -6,6 +6,8 @@ import {BOOSTER_GITHUB_TOPIC} from "../../constants";
 
 const github = new GitHubApi();
 
+// TODO introduce the github token to the request in order to avoid getting rate-limited
+
 /**
  * Booster repos are repos that contain the "booster" Github topic
  */
