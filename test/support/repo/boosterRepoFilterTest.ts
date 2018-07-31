@@ -23,10 +23,10 @@ import {InMemoryProject} from "@atomist/automation-client/project/mem/InMemoryPr
 import {Project} from "@atomist/automation-client/project/Project";
 import * as assert from "power-assert";
 import {SNOWDROP_ORG} from "../../../src/constants";
-import {BoosterRepos} from "../../../src/support/repo/boosterRepoFilter";
+import {boosterRepos} from "../../../src/support/repo/boosterRepoFilter";
+import {githubToken} from "../../github";
 
-describe("boosterRepoFilterTest", function() {
-  this.timeout(15000);
+describe("boosterRepoFilterTest", () => {
 
   it("filter should only include boosters with the necessary topic", done => {
     const firstBoosterRepo = new InMemoryProject(new GitHubRepoRef(SNOWDROP_ORG, "spring-boot-cache-booster"));
@@ -51,11 +51,11 @@ describe("boosterRepoFilterTest", function() {
               || p.id.repo === secondBoosterRepo.id.repo);
           return Promise.resolve(p);
         }, null,
-        allRepos, BoosterRepos, noOpLoader)
+        allRepos, boosterRepos(githubToken()), noOpLoader)
     .then(results => {
       assert(results.length === 2, `Got ${results.length} results`);
       done();
     }).catch(done);
-  });
+  }).timeout(15000);
 
 });

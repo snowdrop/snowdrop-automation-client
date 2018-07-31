@@ -32,11 +32,11 @@ import {
 
 import {editAll} from "@atomist/automation-client/operations/edit/editAll";
 import {PullRequest} from "@atomist/automation-client/operations/edit/editModes";
-import {allReposInTeam} from "../operations/common/allReposInTeamRepoFinder";
+import {allReposInTeam} from "../support/repo/allReposInTeamRepoFinder";
 
 import * as _ from "lodash";
 import {BOM_REPO, BOOSTER_BOM_PROPERTY_NAME, BOOSTER_SB_PROPERTY_NAME} from "../constants";
-import {BoosterRepos} from "../support/repo/boosterRepoFilter";
+import {boosterRepos} from "../support/repo/boosterRepoFilter";
 import {updateMavenPropertyEditor} from "../support/transform/updateMavenProperty";
 import * as graphql from "../typings/types";
 
@@ -79,7 +79,7 @@ export class UpdateBoostersOnBOMRelease implements HandleEvent<graphql.TagToPush
         pullRequest,
         undefined,
         allReposInTeam(),
-        BoosterRepos,
+        boosterRepos(this.githubToken),
 
     )
     .then(success, failure);

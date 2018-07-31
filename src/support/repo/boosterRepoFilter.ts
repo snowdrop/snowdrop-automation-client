@@ -11,13 +11,22 @@ const github = new GitHubApi();
 /**
  * Booster repos are repos that contain the "booster" Github topic
  */
-export const BoosterRepos: RepoFilter = (r: RepoId) => {
-  const params: GitHubApi.ReposGetTopicsParams = {
+export function boosterRepos(token?: string): RepoFilter {
+  return (r: RepoId) => {
+    const params: GitHubApi.ReposGetTopicsParams = {
       owner: r.owner,
       repo: r.repo,
-  };
+    };
 
-  return github.repos.getTopics(params).then(res => {
-    return _.includes(res.data.names, BOOSTER_GITHUB_TOPIC);
-  });
-};
+    if (token) {
+      github.authenticate({
+        type: "token",
+        token,
+      });
+    }
+
+    return github.repos.getTopics(params).then(res => {
+      return _.includes(res.data.names, BOOSTER_GITHUB_TOPIC);
+    });
+  };
+}
