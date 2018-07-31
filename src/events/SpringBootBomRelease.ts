@@ -30,9 +30,9 @@ import {
   Tags,
 } from "@atomist/automation-client";
 
-import {allReposInTeam} from "../operations/common/allReposInTeamRepoFinder";
 import {editAll} from "@atomist/automation-client/operations/edit/editAll";
 import {PullRequest} from "@atomist/automation-client/operations/edit/editModes";
+import {allReposInTeam} from "../operations/common/allReposInTeamRepoFinder";
 
 import * as _ from "lodash";
 import {BOM_REPO, BOOSTER_BOM_PROPERTY_NAME, BOOSTER_SB_PROPERTY_NAME} from "../constants";

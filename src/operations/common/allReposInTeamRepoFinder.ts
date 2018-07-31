@@ -1,12 +1,12 @@
-import * as _ from "lodash";
 import { HandlerContext } from "@atomist/automation-client/HandlerContext";
+import { GitHubRepoRef } from "@atomist/automation-client/operations/common/GitHubRepoRef";
+import { RepoFinder } from "@atomist/automation-client/operations/common/repoFinder";
+import { RepoRef } from "@atomist/automation-client/operations/common/RepoId";
 import {
     ReposQuery,
     ReposQueryVariables,
 } from "@atomist/automation-client/schema/schema";
-import { GitHubRepoRef } from "@atomist/automation-client/operations/common/GitHubRepoRef";
-import { RepoFinder } from "@atomist/automation-client/operations/common/repoFinder";
-import { RepoRef } from "@atomist/automation-client/operations/common/RepoId";
+import * as _ from "lodash";
 
 // Hard-coded limit in GraphQL queries. Not sure why we can't pass this
 const PageSize = 100;
