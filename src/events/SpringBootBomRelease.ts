@@ -31,7 +31,7 @@ import {
 } from "@atomist/automation-client";
 
 import {editAll} from "@atomist/automation-client/operations/edit/editAll";
-import {PullRequest} from "@atomist/automation-client/operations/edit/editModes";
+import {commitToMaster} from "@atomist/automation-client/operations/edit/editModes";
 import {allReposInTeam} from "../support/repo/allReposInTeamRepoFinder";
 
 import * as _ from "lodash";
@@ -66,7 +66,7 @@ export class UpdateBoostersOnBOMRelease implements HandleEvent<graphql.TagToPush
 
     logger.debug(`Attempting to update boosters to new BOM version ${releasedBOMVersion}`);
 
-    const pullRequest = new PullRequest(`update-${releasedBOMVersion}`, `Update BOM to ${releasedBOMVersion}`);
+    const commit = commitToMaster(`[booster-release] Update BOM to ${releasedBOMVersion}`);
 
     const numberOnlyVersion = releasedBOMVersion.match(this.BOM_VERSION_REGEX)[1];
 
@@ -76,7 +76,7 @@ export class UpdateBoostersOnBOMRelease implements HandleEvent<graphql.TagToPush
             {name: BOOSTER_BOM_PROPERTY_NAME, value: releasedBOMVersion},
             {name: BOOSTER_SB_PROPERTY_NAME, value: `${numberOnlyVersion}.RELEASE`},
             ),
-        pullRequest,
+        commit,
         undefined,
         allReposInTeam(),
         boosterRepos(this.githubToken),
