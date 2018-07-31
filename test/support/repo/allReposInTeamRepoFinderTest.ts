@@ -15,9 +15,13 @@ describe("allReposInOrgRepoFinder", () => {
     it("finds over 10 repos in org", done => {
         allReposInTeam()({ graphClient, teamId: SlackTeamId } as any)
             .then(repos => {
-                assert(repos.length > 10);
+                assert(repos.length > 10, "Expected to find at least 10 repos");
+
+                const names = repos.map(r => r.repo);
+                assert(names.length === _.uniq(names).length, "Expected function to return unique repos");
+
                 const orgs = _.uniq(repos.map(r => r.owner));
-                assert.deepEqual(orgs, [SNOWDROP_ORG]);
+                assert.deepEqual(orgs, [SNOWDROP_ORG], "Expected to see only snowdrop repos");
             }).then(() => done(), done);
     }).timeout(10000);
 
