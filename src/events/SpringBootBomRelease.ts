@@ -32,12 +32,11 @@ import {
 
 import {editAll} from "@atomist/automation-client/operations/edit/editAll";
 import {commitToMaster} from "@atomist/automation-client/operations/edit/editModes";
-import {allReposInTeam} from "../support/repo/allReposInTeamRepoFinder";
-
 import * as _ from "lodash";
-import {BOM_REPO, BOOSTER_BOM_PROPERTY_NAME, BOOSTER_SB_PROPERTY_NAME} from "../constants";
+import {BOM_REPO} from "../constants";
+import {allReposInTeam} from "../support/repo/allReposInTeamRepoFinder";
 import {boosterRepos} from "../support/repo/boosterRepoFilter";
-import {updateMavenPropertyEditor} from "../support/transform/updateMavenProperty";
+import {updateBoosterForBomVersion} from "../support/transform/updateBoosterForBomVersion";
 import * as graphql from "../typings/types";
 
 @EventHandler("create a PR for each booster upon a new BOM release", GraphQL.subscription("tag"))
@@ -68,14 +67,9 @@ export class UpdateBoostersOnBOMRelease implements HandleEvent<graphql.TagToPush
 
     const commit = commitToMaster(`[booster-release] Update BOM to ${releasedBOMVersion}`);
 
-    const numberOnlyVersion = releasedBOMVersion.match(this.BOM_VERSION_REGEX)[1];
-
     return editAll(ctx,
         {token: this.githubToken},
-        updateMavenPropertyEditor(
-            {name: BOOSTER_BOM_PROPERTY_NAME, value: releasedBOMVersion},
-            {name: BOOSTER_SB_PROPERTY_NAME, value: `${numberOnlyVersion}.RELEASE`},
-            ),
+        updateBoosterForBomVersion(releasedBOMVersion),
         commit,
         undefined,
         allReposInTeam(),
