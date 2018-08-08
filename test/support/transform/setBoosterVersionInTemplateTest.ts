@@ -1,8 +1,8 @@
 import {InMemoryProject} from "@atomist/automation-client/project/mem/InMemoryProject";
-import * as assert from "power-assert";
-import * as yaml from "js-yaml";
-import {setBoosterVersionWithoutSnapshotInTemplate} from "../../../src/support/transform/setBoosterVersionInTemplate";
 import {Project} from "@atomist/automation-client/project/Project";
+import * as yaml from "js-yaml";
+import * as assert from "power-assert";
+import {setBoosterVersionWithoutSnapshotInTemplate} from "../../../src/support/transform/setBoosterVersionInTemplate";
 
 describe("setBoosterVersionInTemplate", () => {
 
@@ -13,9 +13,9 @@ describe("setBoosterVersionInTemplate", () => {
       assertTemplate(r, "child1");
       assertTemplate(r, "child2");
 
-      //ensure that non openshift templates files are not changed
+      // ensure that non openshift templates files are not changed
       assert(p.findFileSync("child1/src/main/resources/application.yml")
-        .getContentSync().includes("BOOSTER_VERSION"))
+        .getContentSync().includes("BOOSTER_VERSION"));
     }).then(done, done);
   });
 
@@ -29,7 +29,7 @@ function createProject() {
       {path: "child1/src/main/resources/application.yml", content: "name: BOOSTER_VERSION"},
       {path: "child1/.openshiftio/application.yml", content: openshiftTemplate("child1")},
       {path: "child2/pom.xml", content: pomOfSubModule("child2")},
-      {path: "child2/.openshiftio/application.yaml", content: openshiftTemplate("child2")}
+      {path: "child2/.openshiftio/application.yaml", content: openshiftTemplate("child2")},
   );
 }
 
@@ -41,10 +41,10 @@ function assertTemplate(p: Project, name: string) {
 }
 
 function getContent(p: Project, name: string) {
-  const extensions = ['yml', 'yaml'];
+  const extensions = ["yml", "yaml"];
   return extensions
           .map(e => p.findFileSync(`${name}/.openshiftio/application.${e}`))
-          .find(f => f != undefined)
+          .find(f => f !== undefined)
           .getContentSync();
 }
 

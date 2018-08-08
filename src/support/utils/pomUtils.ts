@@ -9,6 +9,6 @@ export function getPomAsJson(p: Project): Promise<any> {
   });
 }
 
-export function getCurrentVersion(p: Project): Promise<String> {
+export function getCurrentVersion(p: Project): Promise<string> {
   return getPomAsJson(p).then(pomAJsonObj =>  pomAJsonObj.project.version as string);
 }

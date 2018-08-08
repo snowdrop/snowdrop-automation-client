@@ -1,6 +1,6 @@
 import {SimpleProjectEditor} from "@atomist/automation-client/operations/edit/projectEditor";
-import {getCurrentVersion} from "../utils/pomUtils";
 import {doWithFiles} from "@atomist/automation-client/project/util/projectUtils";
+import {getCurrentVersion} from "../utils/pomUtils";
 
 /**
  * Set the current booster version in the Openshift template files
@@ -13,7 +13,7 @@ export function setBoosterVersionWithoutSnapshotInTemplate(): SimpleProjectEdito
         async m => {
           const initialTemplateContent = await m.getContent();
           await m.setContent(initialTemplateContent.replace(
-              "BOOSTER_VERSION", version.replace("-SNAPSHOT", ""))
+              "BOOSTER_VERSION", version.replace("-SNAPSHOT", "")),
           );
         });
   };

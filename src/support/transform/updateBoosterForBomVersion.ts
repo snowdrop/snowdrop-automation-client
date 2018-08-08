@@ -18,9 +18,9 @@ import {logger} from "@atomist/automation-client/internal/util/logger";
 import {SimpleProjectEditor} from "@atomist/automation-client/operations/edit/projectEditor";
 import {Project} from "@atomist/automation-client/project/Project";
 import {BOOSTER_BOM_PROPERTY_NAME, BOOSTER_SB_PROPERTY_NAME} from "../../constants";
+import {getCurrentVersion} from "../utils/pomUtils";
 import {updateMavenProjectVersionEditor} from "./updateMavenProjectVersion";
 import {updateMavenPropertyEditor} from "./updateMavenProperty";
-import {getCurrentVersion} from "../utils/pomUtils";
 
 const BOM_VERSION_REGEX = /^(\d+.\d+.\d+).(\w+)$/;
 const BOOSTER_VERSION_REGEX = /^(\d+.\d+.\d+)-(\d+)(?:-\w+)?$/;
