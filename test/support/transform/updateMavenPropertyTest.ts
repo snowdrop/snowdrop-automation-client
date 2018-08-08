@@ -1,13 +1,13 @@
 import {InMemoryProject} from "@atomist/automation-client/project/mem/InMemoryProject";
 import {AbstractProject} from "@atomist/automation-client/project/support/AbstractProject";
 import * as assert from "power-assert";
-import {updateMavenPropertyEditor} from "../../../src/support/transform/updateMavenProperty";
+import {updateMavenProperty} from "../../../src/support/transform/updateMavenProperty";
 
 describe("setMavenProperty", () => {
 
   it("updates single property", done => {
     const p = tempProject(PomWithProperties);
-    updateMavenPropertyEditor({name: "spring-boot.version", value: "1.5.14.RELEASE"})(p)
+    updateMavenProperty({name: "spring-boot.version", value: "1.5.14.RELEASE"})(p)
     .then(r => {
       const pomContent = p.findFileSync("pom.xml").getContentSync();
       assert(pomContent.includes("1.5.14.RELEASE"));
@@ -17,7 +17,7 @@ describe("setMavenProperty", () => {
 
   it("updates multiple properties including a non-existent one", done => {
     const p = tempProject(PomWithProperties);
-    updateMavenPropertyEditor(
+    updateMavenProperty(
         {name: "spring-boot.version", value: "1.5.14.RELEASE"},
         {name: "spring-boot-bom.version", value: "1.5.14.Final"},
         {name: "spring.version", value: "5.0.5.RELEASE"},

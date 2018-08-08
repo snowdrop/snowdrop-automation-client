@@ -17,13 +17,12 @@
 import {logger} from "@atomist/automation-client/internal/util/logger";
 import {SimpleProjectEditor} from "@atomist/automation-client/operations/edit/projectEditor";
 import {Project} from "@atomist/automation-client/project/Project";
-import {BOOSTER_BOM_PROPERTY_NAME, BOOSTER_SB_PROPERTY_NAME} from "../../constants";
+import {BOOSTER_BOM_PROPERTY_NAME, BOOSTER_SB_PROPERTY_NAME, BOOSTER_VERSION_REGEX} from "../../constants";
 import {getCurrentVersion} from "../utils/pomUtils";
-import {updateMavenProjectVersionEditor} from "./updateMavenProjectVersion";
-import {updateMavenPropertyEditor} from "./updateMavenProperty";
+import {updateMavenProjectVersion} from "./updateMavenProjectVersion";
+import {updateMavenProperty} from "./updateMavenProperty";
 
 const BOM_VERSION_REGEX = /^(\d+.\d+.\d+).(\w+)$/;
-const BOOSTER_VERSION_REGEX = /^(\d+.\d+.\d+)-(\d+)(?:-\w+)?$/;
 
 /**
  * Performs the necessary updates to a boosters POM(s) for a specific version of the
@@ -50,9 +49,9 @@ export function updateBoosterForBomVersion(releasedBOMVersion: string): SimplePr
     const newBoosterVersion =
         getNewBoosterVersion(numberOnlyOfBOMVersion, currentBoosterVersionRegexMatches);
 
-    return updateMavenProjectVersionEditor(newBoosterVersion)(p)
+    return updateMavenProjectVersion(newBoosterVersion)(p)
             .then(p2 => {
-              return updateMavenPropertyEditor(
+              return updateMavenProperty(
                   {name: BOOSTER_BOM_PROPERTY_NAME, value: releasedBOMVersion},
                   {name: BOOSTER_SB_PROPERTY_NAME, value: `${numberOnlyOfBOMVersion}.RELEASE`},
               )(p2);

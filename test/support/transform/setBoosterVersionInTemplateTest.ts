@@ -2,13 +2,13 @@ import {InMemoryProject} from "@atomist/automation-client/project/mem/InMemoryPr
 import {Project} from "@atomist/automation-client/project/Project";
 import * as yaml from "js-yaml";
 import * as assert from "power-assert";
-import {setBoosterVersionWithoutSnapshotInTemplate} from "../../../src/support/transform/setBoosterVersionInTemplate";
+import {setBoosterVersionInTemplate} from "../../../src/support/transform/setBoosterVersionInTemplate";
 
 describe("setBoosterVersionInTemplate", () => {
 
   it("updates yaml openshift template files only", done => {
     const p = createProject();
-    setBoosterVersionWithoutSnapshotInTemplate()(p)
+    setBoosterVersionInTemplate()(p)
     .then( r => {
       assertTemplate(r, "child1");
       assertTemplate(r, "child2");
@@ -54,7 +54,7 @@ const PomWithParent = `<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.mycompany.app</groupId>
   <artifactId>my-app</artifactId>
-  <version>1.5.14-2-SNAPSHOT</version>
+  <version>1.5.14-2</version>
   <name>parent</name>
   <packaging>pom</packaging>
   
@@ -85,7 +85,7 @@ function pomOfSubModule(name: string): string {
 	<parent>
 		<groupId>com.mycompany.app</groupId>
 		<artifactId>my-app</artifactId>
-		<version>1.5.14-2-SNAPSHOT</version>
+		<version>1.5.14-2</version>
 	</parent>
 	
 	<dependencies>

@@ -8,7 +8,7 @@ import {SimpleProjectEditor} from "@atomist/automation-client/operations/edit/pr
  * the property exists in the root properties section
  * Hopefully we will be able to fix this in the future. See https://github.com/atomist/sdm-pack-spring/issues/15
  */
-export function updateMavenPropertyEditor(...nameValuePairs: NameValuePair[]): SimpleProjectEditor {
+export function updateMavenProperty(...nameValuePairs: NameValuePair[]): SimpleProjectEditor {
   return async project => {
     const pom = await project.getFile("pom.xml");
     if (pom) {

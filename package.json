@@ -23,8 +23,9 @@
     "@atomist/sdm-core": "0.3.2-20180713022755",
     "@atomist/sdm-pack-spring": "0.1.4",
     "@types/xml2json": "^0.10.0",
-    "xml2json": "^0.11.2",
-    "app-root-path": "^2.0.1"
+    "app-root-path": "^2.0.1",
+    "moment": "^2.22.2",
+    "xml2json": "^0.11.2"
   },
   "devDependencies": {
     "@types/app-root-path": "^1.2.4",

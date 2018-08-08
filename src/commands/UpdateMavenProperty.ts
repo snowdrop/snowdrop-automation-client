@@ -14,7 +14,7 @@ import {
 import {GitHubRepoRef} from "@atomist/automation-client/operations/common/GitHubRepoRef";
 import {editOne} from "@atomist/automation-client/operations/edit/editAll";
 import {PullRequest} from "@atomist/automation-client/operations/edit/editModes";
-import {updateMavenPropertyEditor} from "../support/transform/updateMavenProperty";
+import {updateMavenProperty} from "../support/transform/updateMavenProperty";
 
 @CommandHandler("Update a Maven property on a single repository", "update maven-property")
 export class UpdateMavenProperty implements HandleCommand {
@@ -58,7 +58,7 @@ export class UpdateMavenProperty implements HandleCommand {
 
     return editOne(context,
         {token: this.githubToken}, // GitHub credentials
-        updateMavenPropertyEditor({name: params.name, value: params.value}), // a function to change the project
+        updateMavenProperty({name: params.name, value: params.value}), // a function to change the project
         pullRequest, // how to save the edit
         gitHubRepo) // where to find the project
     .then(success, failure);

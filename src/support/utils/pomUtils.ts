@@ -12,3 +12,7 @@ export function getPomAsJson(p: Project): Promise<any> {
 export function getCurrentVersion(p: Project): Promise<string> {
   return getPomAsJson(p).then(pomAJsonObj =>  pomAJsonObj.project.version as string);
 }
+
+export function getCurrentVersionWithoutSnapshot(p: Project): Promise<string> {
+  return getCurrentVersion(p).then(v => v.replace("-SNAPSHOT", ""));
+}

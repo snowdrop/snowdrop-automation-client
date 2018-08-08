@@ -5,7 +5,7 @@ import {getCurrentVersion} from "../utils/pomUtils";
 /**
  * Set the current booster version in the Openshift template files
  */
-export function setBoosterVersionWithoutSnapshotInTemplate(): SimpleProjectEditor {
+export function setBoosterVersionInTemplate(): SimpleProjectEditor {
   return async project => {
     const version = await getCurrentVersion(project);
 
@@ -13,7 +13,7 @@ export function setBoosterVersionWithoutSnapshotInTemplate(): SimpleProjectEdito
         async m => {
           const initialTemplateContent = await m.getContent();
           await m.setContent(initialTemplateContent.replace(
-              "BOOSTER_VERSION", version.replace("-SNAPSHOT", "")),
+              "BOOSTER_VERSION", version),
           );
         });
   };

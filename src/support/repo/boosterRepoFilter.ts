@@ -3,11 +3,12 @@ import {RepoId} from "@atomist/automation-client/operations/common/RepoId";
 import * as GitHubApi from "@octokit/rest";
 import * as _ from "lodash";
 import {BOOSTER_GITHUB_TOPIC} from "../../constants";
-
-const github = new GitHubApi();
+import {githubApi} from "../github/githubApi";
 
 /**
  * Booster repos are repos that contain the "booster" Github topic
+ *
+ * TODO introduce some sort of caching
  */
 export function boosterRepos(token?: string): RepoFilter {
   return (r: RepoId) => {
@@ -16,14 +17,7 @@ export function boosterRepos(token?: string): RepoFilter {
       repo: r.repo,
     };
 
-    if (token) {
-      github.authenticate({
-        type: "token",
-        token,
-      });
-    }
-
-    return github.repos.getTopics(params).then(res => {
+    return githubApi(token).repos.getTopics(params).then(res => {
       return _.includes(res.data.names, BOOSTER_GITHUB_TOPIC);
     });
   };
