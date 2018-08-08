@@ -61,7 +61,8 @@ describe("updateBoosterForBomVersion", () => {
 });
 
 function createProject() {
-  return InMemoryProject.of(
+  return InMemoryProject.from(
+      {repo: "test-project", owner: "test"},
       {path: "pom.xml", content: PomWithParent},
       {path: "child/pom.xml", content: PomOfSubModule},
   );
@@ -74,6 +75,7 @@ const PomWithParent = `<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:
   <groupId>com.mycompany.app</groupId>
   <artifactId>my-app</artifactId>
   <version>1.5.14-2-SNAPSHOT</version>
+  <name>parent</name>
   <packaging>pom</packaging>
   
 	<parent>
@@ -129,6 +131,7 @@ const PomOfSubModule = `<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.mycompany.app</groupId>
   <artifactId>child</artifactId>
+  <name>child</name>
   
 	<parent>
 		<groupId>com.mycompany.app</groupId>

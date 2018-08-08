@@ -17,10 +17,10 @@
 import {logger} from "@atomist/automation-client/internal/util/logger";
 import {SimpleProjectEditor} from "@atomist/automation-client/operations/edit/projectEditor";
 import {Project} from "@atomist/automation-client/project/Project";
-import * as parser from "xml2json";
 import {BOOSTER_BOM_PROPERTY_NAME, BOOSTER_SB_PROPERTY_NAME} from "../../constants";
 import {updateMavenProjectVersionEditor} from "./updateMavenProjectVersion";
 import {updateMavenPropertyEditor} from "./updateMavenProperty";
+import {getCurrentVersion} from "../utils/pomUtils";
 
 const BOM_VERSION_REGEX = /^(\d+.\d+.\d+).(\w+)$/;
 const BOOSTER_VERSION_REGEX = /^(\d+.\d+.\d+)-(\d+)(?:-\w+)?$/;
@@ -42,10 +42,7 @@ export function updateBoosterForBomVersion(releasedBOMVersion: string): SimplePr
   const numberOnlyOfBOMVersion = bomVersionRegexMatches[1];
 
   return async (p: Project) => {
-    const pomFile = await p.getFile("pom.xml");
-    const pomContent = await pomFile.getContent();
-    const pomAJsonObj = parser.toJson(pomContent, {object: true}) as any;
-    const currentBoosterVersion = pomAJsonObj.project.version as string;
+    const currentBoosterVersion = await getCurrentVersion(p);
 
     logger.info(`Current booster version of '${p.name}' is: ${currentBoosterVersion}`);
 
