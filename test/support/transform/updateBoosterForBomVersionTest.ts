@@ -42,19 +42,19 @@ describe("updateBoosterForBomVersion", () => {
 
   it("updates booster to a revision of the Spring Boot BOM", done => {
     const newBOMVersion = "1.5.14.SR1";
-    const expectedNewBoosterVersion = "1.5.14-3-SNAPSHOT";
+    const expectedBoosterVersion = "1.5.14-2-SNAPSHOT";
     const p = createProject();
     updateBoosterForBomVersion(newBOMVersion)(p)
     .then(r => {
       const parentPomSync = p.findFileSync("pom.xml").getContentSync();
       const parentPomJson = parser.toJson(parentPomSync, {object: true}) as any;
-      assert(parentPomJson.project.version === expectedNewBoosterVersion);
+      assert(parentPomJson.project.version === expectedBoosterVersion);
       assert(parentPomJson.project.properties["spring-boot-bom.version"] === newBOMVersion);
       assert(parentPomJson.project.properties["spring-boot.version"] === "1.5.14.RELEASE");
 
       const childPomSync = p.findFileSync("child/pom.xml").getContentSync();
       const childPomJson = parser.toJson(childPomSync, {object: true}) as any;
-      assert(childPomJson.project.parent.version === expectedNewBoosterVersion);
+      assert(childPomJson.project.parent.version === expectedBoosterVersion);
     }).then(done, done);
   });
 

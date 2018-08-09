@@ -17,7 +17,11 @@
 import {logger} from "@atomist/automation-client/internal/util/logger";
 import {SimpleProjectEditor} from "@atomist/automation-client/operations/edit/projectEditor";
 import {Project} from "@atomist/automation-client/project/Project";
-import {BOOSTER_BOM_PROPERTY_NAME, BOOSTER_SB_PROPERTY_NAME, BOOSTER_VERSION_REGEX} from "../../constants";
+import {
+  BOOSTER_BOM_PROPERTY_NAME,
+  BOOSTER_SB_PROPERTY_NAME,
+  BOOSTER_VERSION_REGEX,
+} from "../../constants";
 import {getCurrentVersion} from "../utils/pomUtils";
 import {updateMavenProjectVersion} from "./updateMavenProjectVersion";
 import {updateMavenProperty} from "./updateMavenProperty";
@@ -45,9 +49,8 @@ export function updateBoosterForBomVersion(releasedBOMVersion: string): SimplePr
 
     logger.info(`Current booster version of '${p.name}' is: ${currentBoosterVersion}`);
 
-    const currentBoosterVersionRegexMatches = currentBoosterVersion.match(BOOSTER_VERSION_REGEX);
     const newBoosterVersion =
-        getNewBoosterVersion(numberOnlyOfBOMVersion, currentBoosterVersionRegexMatches);
+        getNewBoosterVersion(numberOnlyOfBOMVersion, currentBoosterVersion);
 
     return updateMavenProjectVersion(newBoosterVersion)(p)
             .then(p2 => {
@@ -60,7 +63,9 @@ export function updateBoosterForBomVersion(releasedBOMVersion: string): SimplePr
 }
 
 function getNewBoosterVersion(numberOnlyOfBOMVersion: string,
-                              boosterVersionRegexMatched: RegExpMatchArray): string {
+                              currentBoosterVersion: string): string {
+
+  const boosterVersionRegexMatched = currentBoosterVersion.match(BOOSTER_VERSION_REGEX);
 
   const defaultNewBoosterVersion = `${numberOnlyOfBOMVersion}-1-SNAPSHOT`;
   if (!boosterVersionRegexMatched) {
@@ -74,8 +79,6 @@ function getNewBoosterVersion(numberOnlyOfBOMVersion: string,
     return defaultNewBoosterVersion;
   }
 
-  const revisionOnlyOfBoosterVersion = boosterVersionRegexMatched[2];
-  logger.info("Will increment revision of booster");
-  const newRevision = Number(revisionOnlyOfBoosterVersion) + 1;
-  return `${numberOnlyOfBOMVersion}-${newRevision}-SNAPSHOT`;
+  logger.info("Booster version matches BOM version so it won't be changed");
+  return currentBoosterVersion;
 }
