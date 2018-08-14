@@ -15,9 +15,9 @@
  */
 
 import * as assert from "power-assert";
+import {SNOWDROP_ORG} from "../../../src/constants";
 import {getShaOfLatestCommit, syncWithUpstream} from "../../../src/support/github/refUtils";
 import {githubToken} from "../../github";
-import {SNOWDROP_ORG} from "../../../src/constants";
 
 describe("syncWithUpstream", () => {
 
@@ -33,7 +33,7 @@ describe("syncWithUpstream", () => {
     const shaAfterCall =
         await getShaOfLatestCommit(repo, "master", githubToken(), SNOWDROP_ORG);
 
-    assert(originalSha === shaAfterCall, "No update should have been performed!")
+    assert(originalSha === shaAfterCall, "No update should have been performed!");
   }).timeout(10000);
 
   /**
@@ -54,7 +54,7 @@ describe("syncWithUpstream", () => {
         await getShaOfLatestCommit(repo, "master", githubToken(), "fabric8-launcher");
 
     assert(shaOfMasterOfFork === shaOfMasterOfUpstream,
-        "The latest commit of the fork should have been the same as that of upstream")
+        "The latest commit of the fork should have been the same as that of upstream");
   }).timeout(10000);
 
 });

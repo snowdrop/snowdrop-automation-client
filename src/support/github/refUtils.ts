@@ -8,7 +8,7 @@ import {githubApi} from "./githubApi";
  * @return the sha of the latest commit if everything goes well, if something went wrong
  */
 export async function getShaOfLatestCommit(repo: string, branch: string,
-                                     token?: string, owner = SNOWDROP_ORG): Promise<string> {
+                                           token?: string, owner = SNOWDROP_ORG): Promise<string> {
   const params = {
     owner,
     ref: `heads/${branch}`,
@@ -30,7 +30,7 @@ export async function getShaOfLatestCommit(repo: string, branch: string,
  * @return true if everything goes well, false otherwise
  */
 export async function tagBranch(repo: string, branch: string, name: string, token?: string,
-                          owner = SNOWDROP_ORG): Promise<boolean> {
+                                owner = SNOWDROP_ORG): Promise<boolean> {
 
   const sha = await getShaOfLatestCommit(repo, branch, token, owner);
   if (!sha) {
@@ -67,7 +67,7 @@ export async function tagBranch(repo: string, branch: string, name: string, toke
  * @return true if everything goes well, false otherwise
  */
 export async function deleteBranch(repo: string, branch: string, token?: string,
-                             owner = SNOWDROP_ORG): Promise<boolean> {
+                                   owner = SNOWDROP_ORG): Promise<boolean> {
 
   const params = {
     owner,
@@ -96,7 +96,7 @@ export async function syncWithUpstream(repo: string, token?: string,
 
   const repoParams = {
     owner,
-    repo
+    repo,
   };
 
   try {
@@ -115,15 +115,17 @@ export async function syncWithUpstream(repo: string, token?: string,
       repo,
       ref: "heads/master",
       sha: latestShaOfUpstream,
-      force: true
+      force: true,
     };
 
     await githubApi(token).gitdata.updateReference(updateParams);
+    /* tslint:disable */
     logger.info(`Successfully synced repo '${owner}/${repo}' to upstream '${upstreamData.owner.login}/${upstreamData.name}'`);
+    /* tslint:enable */
     return true;
   } catch (e) {
     logger.error(`Unable to sync repo: '${repo}'`);
     logger.error(`Error is:\n ${e}`);
     return false;
   }
-} 
+}
