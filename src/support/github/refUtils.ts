@@ -7,7 +7,7 @@ import {githubApi} from "./githubApi";
  *
  * @return the sha of the latest commit if everything goes well, if something went wrong
  */
-export function getShaOfLatestCommit(repo: string, branch: string,
+export async function getShaOfLatestCommit(repo: string, branch: string,
                                      token?: string, owner = SNOWDROP_ORG): Promise<string> {
   const params = {
     owner,
@@ -15,11 +15,13 @@ export function getShaOfLatestCommit(repo: string, branch: string,
     repo,
   };
 
-  return githubApi(token).gitdata.getReference(params)
-          .then(r => r.data.object.sha).catch(() => {
-            logger.info(`Branch '${branch}' does not exists`);
-            return undefined;
-          });
+  try {
+    const response = await githubApi(token).gitdata.getReference(params);
+    return response.data.object.sha;
+  } catch (e) {
+    logger.info(`Branch '${branch}' does not exists`);
+    return undefined;
+  }
 }
 
 /**
@@ -27,35 +29,36 @@ export function getShaOfLatestCommit(repo: string, branch: string,
  *
  * @return true if everything goes well, false otherwise
  */
-export function tagBranch(repo: string, branch: string, name: string, token?: string,
+export async function tagBranch(repo: string, branch: string, name: string, token?: string,
                           owner = SNOWDROP_ORG): Promise<boolean> {
 
-  return getShaOfLatestCommit(repo, branch, token, owner)
-    .then(sha => {
-       if (!sha) {
-         return undefined;
-       }
+  const sha = await getShaOfLatestCommit(repo, branch, token, owner);
+  if (!sha) {
+    return false;
+  }
 
-       return githubApi(token).gitdata.createReference({
-        owner,
-        repo,
-        ref: `refs/tags/${name}`,
-        sha,
-      }).then(res => {
-         if (!res.data.ref) {
-           logger.error(`Got unknown response from GitHub when trying to create tag '${name}' for '${repo}'`);
-           logger.error(`Response data is:\n ${res.data}`);
-           return false;
-         }
+  const params = {
+    owner,
+    repo,
+    ref: `refs/tags/${name}`,
+    sha,
+  };
 
-         logger.info(`Successfully created tag '${name}' for booster '${repo}'`);
-         return true;
-      }).catch(e => {
-        logger.error(`Unable to create tag '${name}' for branch '${branch}' of booster '${repo}'`);
-        logger.error(`Error is:\n ${e}`);
-        return false;
-      });
-    });
+  try {
+    const response = await githubApi(token).gitdata.createReference(params);
+    if (!response.data.ref) {
+      logger.error(`Got unknown response from GitHub when trying to create tag '${name}' for '${repo}'`);
+      logger.error(`Response data is:\n ${response.data}`);
+      return false;
+    }
+
+    logger.info(`Successfully created tag '${name}' for booster '${repo}'`);
+    return true;
+  } catch (e) {
+    logger.error(`Unable to create tag '${name}' for branch '${branch}' of booster '${repo}'`);
+    logger.error(`Error is:\n ${e}`);
+    return false;
+  }
 }
 
 /**
@@ -63,21 +66,22 @@ export function tagBranch(repo: string, branch: string, name: string, token?: st
  *
  * @return true if everything goes well, false otherwise
  */
-export function deleteBranch(repo: string, branch: string, token?: string,
+export async function deleteBranch(repo: string, branch: string, token?: string,
                              owner = SNOWDROP_ORG): Promise<boolean> {
 
-  return githubApi(token).gitdata.deleteReference({
+  const params = {
     owner,
     repo,
     ref: `heads/${branch}`,
-  })
-  .then(() => {
+  };
+
+  try {
+    await githubApi(token).gitdata.deleteReference(params);
     logger.info(`Successfully deleted branch '${branch}' of booster '${repo}'`);
     return true;
-  })
-  .catch(e => {
+  } catch (e) {
     logger.error(`Unable to delete branch '${branch}' of booster '${repo}'`);
     logger.error(`Error is:\n ${e}`);
     return false;
-  });
+  }
 }
