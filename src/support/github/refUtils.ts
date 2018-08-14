@@ -93,22 +93,14 @@ export async function deleteBranch(repo: string, branch: string, token?: string,
  */
 export async function syncWithUpstream(repo: string, token?: string,
                                        owner = SNOWDROP_ORG): Promise<boolean> {
-
-  const repoParams = {
-    owner,
-    repo,
-  };
-
   try {
-    const response = await githubApi(token).repos.get(repoParams);
-    if (!response.data.fork) {
-      logger.info(`Repo '${owner}/${repo}' is not a fork`);
+    const upstreamInfo = await getUpstreamInfo(owner, repo, token);
+    if (!upstreamInfo) {
       return false;
     }
 
-    const upstreamData = response.data.parent as any;
     const latestShaOfUpstream =
-        await getShaOfLatestCommit(upstreamData.name, "master", token, upstreamData.owner.login);
+        await getShaOfLatestCommit(upstreamInfo.name, "master", token, upstreamInfo.owner);
 
     const updateParams = {
       owner,
@@ -120,11 +112,74 @@ export async function syncWithUpstream(repo: string, token?: string,
 
     await githubApi(token).gitdata.updateReference(updateParams);
     /* tslint:disable */
-    logger.info(`Successfully synced repo '${owner}/${repo}' to upstream '${upstreamData.owner.login}/${upstreamData.name}'`);
+    logger.info(`Successfully synced repo '${owner}/${repo}' to upstream '${upstreamInfo.owner}/${upstreamInfo.name}'`);
     /* tslint:enable */
     return true;
   } catch (e) {
     logger.error(`Unable to sync repo: '${repo}'`);
+    logger.error(`Error is:\n ${e}`);
+    return false;
+  }
+}
+
+interface UpstreamInfo {
+  owner: string;
+  name: string;
+}
+
+/**
+ * Get's the upstream info of a project
+ *
+ * @return object containing repo and name of upstream or null
+ * if the repo is not a fork or if something goes wrong
+ */
+async function getUpstreamInfo(owner: string, repo: string, token?: string): Promise<UpstreamInfo> {
+
+  try {
+    const response = await githubApi(token).repos.get({owner, repo});
+    if (!response.data.fork) {
+      logger.info(`Repo '${owner}/${repo}' is not a fork`);
+      return null;
+    }
+
+    const upstreamData = response.data.parent as any;
+    return {owner: upstreamData.owner.login, name: upstreamData.name};
+  } catch (e) {
+    logger.error(`Unable to get upstream info of repo: '${repo}'`);
+    logger.error(`Error is:\n ${e}`);
+    return null;
+  }
+}
+
+/**
+ * Sync project with it's upstream
+ *
+ * @return true if everything goes well, false otherwise
+ */
+export async function raisePullRequestToUpstream(
+                          repo: string, sourceBranch: string, targetBranch: string,
+                          title: string, token?: string, owner = SNOWDROP_ORG): Promise<boolean> {
+  try {
+    const upstreamInfo = await getUpstreamInfo(owner, repo, token);
+    if (!upstreamInfo) {
+      return false;
+    }
+
+    const createParams = {
+      owner: upstreamInfo.owner,
+      repo: upstreamInfo.name,
+      head: `${owner}:${sourceBranch}`,
+      base: targetBranch,
+      title,
+    };
+
+    await githubApi(token).pullRequests.create(createParams);
+    /* tslint:disable */
+    logger.info(`Successfully created pull request to '${upstreamInfo.owner}/${upstreamInfo.name}:${targetBranch}' from '${owner}/${repo}:${sourceBranch}'`);
+    /* tslint:enable */
+    return true;
+  } catch (e) {
+    logger.error(`Unable to raise pull request to upstream for repo: '${owner}/${repo}:${sourceBranch}'`);
     logger.error(`Error is:\n ${e}`);
     return false;
   }

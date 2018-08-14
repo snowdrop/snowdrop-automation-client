@@ -5,8 +5,8 @@ import {doWithFiles} from "@atomist/automation-client/project/util/projectUtils"
 
 import {Project} from "@atomist/automation-client/project/Project";
 import * as parser from "xml2json";
-import {BOOSTER_VERSION_REGEX} from "../../constants";
-import {getCurrentVersion, getCurrentVersionWithoutSnapshot} from "../utils/pomUtils";
+import {BOOSTER_VERSION_REGEX} from "../../../constants";
+import {getCurrentVersion, getCurrentVersionWithoutSnapshot} from "../../utils/pomUtils";
 
 /**
  * Update the version of a Maven project to the version specified

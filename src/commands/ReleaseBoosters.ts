@@ -22,14 +22,14 @@ import {Project} from "@atomist/automation-client/project/Project";
 import {BOOSTER_BOM_PROPERTY_NAME, REDHAT_QUALIFIER} from "../constants";
 import {deleteBranch, tagBranch} from "../support/github/refUtils";
 import {allReposInTeam} from "../support/repo/allReposInTeamRepoFinder";
-import {boosterRepos} from "../support/repo/boosterRepoFilter";
-import {setBoosterVersionInTemplate} from "../support/transform/setBoosterVersionInTemplate";
+import {boosterRepos} from "../support/repo/boosterRepo";
+import {setBoosterVersionInTemplate} from "../support/transform/booster/setBoosterVersionInTemplate";
 import {
   bumpMavenProjectRevisionVersion,
   removeSnapshotFromMavenProjectVersion,
   replaceSnapshotFromMavenProjectVersionWithQualifier,
-} from "../support/transform/updateMavenProjectVersion";
-import {updateMavenProperty} from "../support/transform/updateMavenProperty";
+} from "../support/transform/booster/updateMavenProjectVersion";
+import {updateMavenProperty} from "../support/transform/booster/updateMavenProperty";
 import {getCurrentVersion} from "../support/utils/pomUtils";
 
 @CommandHandler("Release (tag) boosters", "release boosters")

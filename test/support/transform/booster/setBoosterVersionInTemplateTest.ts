@@ -2,7 +2,7 @@ import {InMemoryProject} from "@atomist/automation-client/project/mem/InMemoryPr
 import {Project} from "@atomist/automation-client/project/Project";
 import * as yaml from "js-yaml";
 import * as assert from "power-assert";
-import {setBoosterVersionInTemplate} from "../../../src/support/transform/setBoosterVersionInTemplate";
+import {setBoosterVersionInTemplate} from "../../../../src/support/transform/booster/setBoosterVersionInTemplate";
 
 describe("setBoosterVersionInTemplate", () => {
 

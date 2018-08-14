@@ -16,7 +16,7 @@ import {GitHubRepoRef} from "@atomist/automation-client/operations/common/GitHub
 import {editOne} from "@atomist/automation-client/operations/edit/editAll";
 import {BranchCommit} from "@atomist/automation-client/operations/edit/editModes";
 import {BOM_REPO, UPSTREAM_RELEASE_VERSION_REGEX} from "../constants";
-import {updateBomFromUpstream} from "../support/transform/updateBomFromUpstream";
+import {updateBomFromUpstream} from "../support/transform/booster/updateBomFromUpstream";
 
 @CommandHandler("Update BOM properties from Upstream", "update bom properties")
 export class UpdateBomFromUpstream implements HandleCommand {

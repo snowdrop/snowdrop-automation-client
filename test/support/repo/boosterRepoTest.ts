@@ -23,7 +23,7 @@ import {InMemoryProject} from "@atomist/automation-client/project/mem/InMemoryPr
 import {Project} from "@atomist/automation-client/project/Project";
 import * as assert from "power-assert";
 import {SNOWDROP_ORG} from "../../../src/constants";
-import {boosterRepos} from "../../../src/support/repo/boosterRepoFilter";
+import {boosterRepos, boosterSimpleName} from "../../../src/support/repo/boosterRepo";
 import {githubToken} from "../../github";
 
 describe("boosterRepoFilterTest", () => {
@@ -57,5 +57,16 @@ describe("boosterRepoFilterTest", () => {
       done();
     }).catch(done);
   }).timeout(15000);
+});
 
+describe("boosterSimpleName", () => {
+
+  it("should return the simple name for correctly formatted booster names", () => {
+    assert(boosterSimpleName("spring-boot-cache-booster") === "cache");
+    assert(boosterSimpleName("spring-boot-istio-distributed-tracing-booster") === "istio-distributed-tracing");
+  });
+
+  it("should return the full name for incorrectly formatted booster names", () => {
+    assert(boosterSimpleName("jaeger-opentracing") === "jaeger-opentracing");
+  });
 });

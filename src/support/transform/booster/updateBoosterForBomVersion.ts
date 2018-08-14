@@ -21,8 +21,8 @@ import {
   BOOSTER_BOM_PROPERTY_NAME,
   BOOSTER_SB_PROPERTY_NAME,
   BOOSTER_VERSION_REGEX,
-} from "../../constants";
-import {getCurrentVersion} from "../utils/pomUtils";
+} from "../../../constants";
+import {getCurrentVersion} from "../../utils/pomUtils";
 import {updateMavenProjectVersion} from "./updateMavenProjectVersion";
 import {updateMavenProperty} from "./updateMavenProperty";
 

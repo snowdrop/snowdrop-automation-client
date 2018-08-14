@@ -15,7 +15,7 @@
  */
 
 import * as assert from "power-assert";
-import {SNOWDROP_ORG} from "../../../src/constants";
+import {BOOSTER_CATALOG_REPO, SNOWDROP_ORG} from "../../../src/constants";
 import {getShaOfLatestCommit, syncWithUpstream} from "../../../src/support/github/refUtils";
 import {githubToken} from "../../github";
 
@@ -42,16 +42,14 @@ describe("syncWithUpstream", () => {
    */
 
   it("sync should be performed for actual fork", async () => {
-    const repo = "launcher-booster-catalog";
-
-    const result = await syncWithUpstream(repo, githubToken(), SNOWDROP_ORG);
+    const result = await syncWithUpstream(BOOSTER_CATALOG_REPO, githubToken(), SNOWDROP_ORG);
     assert(result, "Repo should have been synced with upstream");
 
     const shaOfMasterOfFork =
-        await getShaOfLatestCommit(repo, "master", githubToken(), SNOWDROP_ORG);
+        await getShaOfLatestCommit(BOOSTER_CATALOG_REPO, "master", githubToken(), SNOWDROP_ORG);
 
     const shaOfMasterOfUpstream =
-        await getShaOfLatestCommit(repo, "master", githubToken(), "fabric8-launcher");
+        await getShaOfLatestCommit(BOOSTER_CATALOG_REPO, "master", githubToken(), "fabric8-launcher");
 
     assert(shaOfMasterOfFork === shaOfMasterOfUpstream,
         "The latest commit of the fork should have been the same as that of upstream");

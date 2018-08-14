@@ -35,8 +35,8 @@ import {commitToMaster} from "@atomist/automation-client/operations/edit/editMod
 import * as _ from "lodash";
 import {BOM_REPO} from "../constants";
 import {allReposInTeam} from "../support/repo/allReposInTeamRepoFinder";
-import {boosterRepos} from "../support/repo/boosterRepoFilter";
-import {updateBoosterForBomVersion} from "../support/transform/updateBoosterForBomVersion";
+import {boosterRepos} from "../support/repo/boosterRepo";
+import {updateBoosterForBomVersion} from "../support/transform/booster/updateBoosterForBomVersion";
 import * as graphql from "../typings/types";
 
 @EventHandler("create a PR for each booster upon a new BOM release", GraphQL.subscription("tag"))
