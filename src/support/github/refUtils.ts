@@ -85,3 +85,45 @@ export async function deleteBranch(repo: string, branch: string, token?: string,
     return false;
   }
 }
+
+/**
+ * Sync project with it's upstream
+ *
+ * @return true if everything goes well, false otherwise
+ */
+export async function syncWithUpstream(repo: string, token?: string,
+                                       owner = SNOWDROP_ORG): Promise<boolean> {
+
+  const repoParams = {
+    owner,
+    repo
+  };
+
+  try {
+    const response = await githubApi(token).repos.get(repoParams);
+    if (!response.data.fork) {
+      logger.info(`Repo '${owner}/${repo}' is not a fork`);
+      return false;
+    }
+
+    const upstreamData = response.data.parent as any;
+    const latestShaOfUpstream =
+        await getShaOfLatestCommit(upstreamData.name, "master", token, upstreamData.owner.login);
+
+    const updateParams = {
+      owner,
+      repo,
+      ref: "heads/master",
+      sha: latestShaOfUpstream,
+      force: true
+    };
+
+    await githubApi(token).gitdata.updateReference(updateParams);
+    logger.info(`Successfully synced repo '${owner}/${repo}' to upstream '${upstreamData.owner.login}/${upstreamData.name}'`);
+    return true;
+  } catch (e) {
+    logger.error(`Unable to sync repo: '${repo}'`);
+    logger.error(`Error is:\n ${e}`);
+    return false;
+  }
+} 
