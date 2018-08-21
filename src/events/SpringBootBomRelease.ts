@@ -39,7 +39,7 @@ import {boosterRepos} from "../support/repo/boosterRepo";
 import {updateBoosterForBomVersion} from "../support/transform/booster/updateBoosterForBomVersion";
 import * as graphql from "../typings/types";
 
-@EventHandler("create a PR for each booster upon a new BOM release", GraphQL.subscription("tag"))
+@EventHandler("update master branch of each booster upon a new BOM release", GraphQL.subscription("tag"))
 @Tags("bom", "release", "boosters")
 export class UpdateBoostersOnBOMRelease implements HandleEvent<graphql.TagToPush.Subscription> {
 
