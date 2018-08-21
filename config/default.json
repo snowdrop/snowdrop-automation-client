@@ -1,0 +1,10 @@
+{
+  "email": {
+    "test": {
+      "release": {
+        "email": "lfuka@redhat.com",
+        "name": "Libor"
+      }
+    }
+  }
+}

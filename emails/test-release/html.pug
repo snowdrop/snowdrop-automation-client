@@ -1,0 +1,17 @@
+p Hello #{name},
+
+p
+  | We just completed the <em>#{release}</em> prod release.
+  | As usual you can find it in at the following link:
+
+#release
+if release.includes('ER')
+   <a href=http://rcm-guest.app.eng.bos.redhat.com/rcm-guest/staging/rhoar/spring-boot/spring-boot-#{release}/>Staging</a>
+else
+   <a href=http://download-node-02.eng.bos.redhat.com/devel/candidates/rhoar/spring-boot/spring-boot-#{release}/>Candidates</a>
+
+p
+  | Could you please start the testing process? <br/>
+  | Thank you very much!
+
+p Kind Regards

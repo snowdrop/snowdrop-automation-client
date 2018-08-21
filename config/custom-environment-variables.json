@@ -1,0 +1,11 @@
+{
+  "email": {
+    "sendgridkey": "SENDGRIDKEY",
+    "test": {
+      "release": {
+        "email": "TEST_RELEASE_EMAIL",
+        "name": "TEST_RELEASE_NAME"
+      }
+    }
+  }
+}
