@@ -6,6 +6,7 @@ import {BOOSTER_SB_PROPERTY_NAME, UPSTREAM_RELEASE_VERSION_REGEX} from "../../..
 import {calculateNewPropertyVersions} from "../../utils/bomUtils";
 import {updateMavenProjectVersion} from "../booster/updateMavenProjectVersion";
 import {NameValuePair, updateMavenProperty} from "../booster/updateMavenProperty";
+import LineByLineReader = require("line-by-line");
 
 // these are properties that for policy reasons we don't expect to follow the upstream
 // values
@@ -58,10 +59,44 @@ export function updateBomFromUpstream(upstreamVersion: string): SimpleProjectEdi
 
       const p2 = await updateMavenProperty(...nameValuePairs)(project);
 
+      // update README
+      const existingReadme = await project.getFile("README.adoc");
+      const newReadmeContent = updateReadmeFromUpstream(existingReadme.path, propertiesUpdates);
+      await existingReadme.setContent(newReadmeContent);
+
       return await updateMavenProjectVersion(`${upstreamVersionMatches[1]}-SNAPSHOT`)(p2);
     } catch (e) {
-      logger.error("Update to update BOM");
+      logger.error("Failed to update BOM");
       return Promise.reject(e);
     }
   };
+}
+
+export function updateReadmeFromUpstream(path: string, propertiesUpdates: ReadonlyMap<string, string>): string {
+    const lr = new LineByLineReader(path);
+    var newReadmeContent: string = '';
+    var targetProperty: string = undefined;
+    lr.on('line', line => {
+        var lineAsString = line as string;
+        if (lineAsString.startsWith("//")) {
+            // if line is a comment, record the name of the property to use
+            targetProperty = lineAsString.slice(2).trim();
+            newReadmeContent += lineAsString;
+        } else if (targetProperty) {
+            // if we have previously set property (i.e. the previous line was a comment)
+            // check if it matches a property that was updated in the BOM
+            let version = propertiesUpdates.get(targetProperty + '.version');
+            if (version) {
+                // if it is an updated property, replace the end of the line after the last ':' with the new version
+                let lastColumn = lineAsString.lastIndexOf(":");
+                newReadmeContent += lineAsString.slice(0, lastColumn) + version + '\n';
+            }
+            // reset the property state
+            targetProperty = undefined;
+        } else {
+            newReadmeContent += lineAsString;
+        }
+    });
+
+    return newReadmeContent;
 }
