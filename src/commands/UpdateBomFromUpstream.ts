@@ -15,7 +15,7 @@ import {
 import {GitHubRepoRef} from "@atomist/automation-client/operations/common/GitHubRepoRef";
 import {editOne} from "@atomist/automation-client/operations/edit/editAll";
 import {BranchCommit} from "@atomist/automation-client/operations/edit/editModes";
-import {BOM_REPO, UPSTREAM_RELEASE_VERSION_REGEX} from "../constants";
+import {BOM_BRANCH, BOM_REPO, UPSTREAM_RELEASE_VERSION_REGEX} from "../constants";
 import {updateBomFromUpstream} from "../support/transform/bom/updateBomFromUpstream";
 
 @CommandHandler("Update BOM properties from Upstream", "update bom properties")
@@ -41,16 +41,15 @@ export class UpdateBomFromUpstream implements HandleCommand {
   public handle(context: HandlerContext, params: this): Promise<HandlerResult> {
     logger.debug(`Attempting to update BOM for upstream version: '${params.upstreamVersion}'`);
 
-    const branch = "sb-1.5.x"; // TODO this will change when we support 2.x or both at the same time
     return editOne(
         context,
         {token: params.githubToken},
         updateBomFromUpstream(params.upstreamVersion),
         {
-          branch,
+          branch: BOM_BRANCH,
           message: `Update BOM for upstream ${params.upstreamVersion}`,
         } as BranchCommit,
-        new GitHubRepoRef(params.owner, BOM_REPO, branch),
+        new GitHubRepoRef(params.owner, BOM_REPO, BOM_BRANCH),
         undefined,
     ).then(success, failure);
   }
