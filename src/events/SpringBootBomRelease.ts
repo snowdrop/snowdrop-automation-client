@@ -16,13 +16,12 @@
 
 import {
   EventFired,
-  EventHandler,
-  failure,
+  EventHandler, failure,
   GraphQL,
   HandleEvent,
   HandlerContext,
   HandlerResult,
-  logger,
+  logger, MappedParameter, MappedParameters,
   Secret,
   Secrets,
   success,
@@ -30,12 +29,14 @@ import {
   Tags,
 } from "@atomist/automation-client";
 
-import {editAll} from "@atomist/automation-client/operations/edit/editAll";
-import {commitToMaster} from "@atomist/automation-client/operations/edit/editModes";
+import {GitHubRepoRef} from "@atomist/automation-client/operations/common/GitHubRepoRef";
+import {editAll, editOne} from "@atomist/automation-client/operations/edit/editAll";
+import {BranchCommit, commitToMaster} from "@atomist/automation-client/operations/edit/editModes";
 import * as _ from "lodash";
-import {BOM_REPO} from "../constants";
+import {BOM_BRANCH, BOM_REPO, BOM_VERSION_REGEX} from "../constants";
 import {allReposInTeam} from "../support/repo/allReposInTeamRepoFinder";
 import {boosterRepos} from "../support/repo/boosterRepo";
+import {updateBomVersionForRelease} from "../support/transform/bom/updateBomVersionForRelease";
 import {updateBoosterForBomVersion} from "../support/transform/booster/updateBoosterForBomVersion";
 import * as graphql from "../typings/types";
 
@@ -43,10 +44,11 @@ import * as graphql from "../typings/types";
 @Tags("bom", "release", "boosters")
 export class UpdateBoostersOnBOMRelease implements HandleEvent<graphql.TagToPush.Subscription> {
 
+  @MappedParameter(MappedParameters.GitHubOwner)
+  public owner: string;
+
   @Secret(Secrets.OrgToken)
   public githubToken: string;
-
-  private BOM_VERSION_REGEX = /^(\d+.\d+.\d+).(\w+)$/;
 
   public handle(e: EventFired<graphql.TagToPush.Subscription>, ctx: HandlerContext): Promise<HandlerResult> {
     logger.debug(`Received release event ${JSON.stringify(e.data)}`);
@@ -58,7 +60,7 @@ export class UpdateBoostersOnBOMRelease implements HandleEvent<graphql.TagToPush
     }
 
     const releasedBOMVersion = e.data.Tag[0].name;
-    if (!this.isVersionValid(releasedBOMVersion)) {
+    if (!this.isReleasedVersionValid(releasedBOMVersion)) {
       logger.info(`Ignoring release because the version '${releasedBOMVersion}' is invalid`);
       return Promise.resolve(Success);
     }
@@ -74,9 +76,20 @@ export class UpdateBoostersOnBOMRelease implements HandleEvent<graphql.TagToPush
         undefined,
         allReposInTeam(),
         boosterRepos(this.githubToken),
-
     )
-    .then(success, failure);
+    .then(() => {
+      return editOne(
+          ctx,
+          {token: this.githubToken},
+          updateBomVersionForRelease(releasedBOMVersion),
+          {
+            branch: BOM_BRANCH,
+            message: `Bump BOM version`,
+          } as BranchCommit,
+          new GitHubRepoRef(this.owner, BOM_REPO, BOM_BRANCH),
+          undefined,
+      );
+    }).then(success, failure);
 
   }
 
@@ -84,7 +97,7 @@ export class UpdateBoostersOnBOMRelease implements HandleEvent<graphql.TagToPush
     return _.get(e, "data.Tag[0].commit.pushes[0].repo.name");
   }
 
-  private isVersionValid(releasedBOMVersion: string): boolean {
-    return this.BOM_VERSION_REGEX.test(releasedBOMVersion);
+  private isReleasedVersionValid(releasedBOMVersion: string): boolean {
+    return BOM_VERSION_REGEX.test(releasedBOMVersion);
   }
 }
