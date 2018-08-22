@@ -32,3 +32,9 @@ Before launching the application the following environment variables need to be 
 Launch application by issuing:
 
 `npm run clean && npm run compile && npm start`
+
+## Miscellaneous
+
+Run tests: `npm run test`
+
+Lint code (and fix issues automatically): `npm run lint:fix`
