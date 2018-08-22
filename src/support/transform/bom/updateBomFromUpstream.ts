@@ -1,11 +1,11 @@
 import {logger} from "@atomist/automation-client/internal/util/logger";
 import {SimpleProjectEditor} from "@atomist/automation-client/operations/edit/projectEditor";
+import {Project} from "@atomist/automation-client/project/Project";
 import axios from "axios";
-import {Project} from "../../../../node_modules/@atomist/automation-client/project/Project";
 import {BOOSTER_SB_PROPERTY_NAME, UPSTREAM_RELEASE_VERSION_REGEX} from "../../../constants";
 import {calculateNewPropertyVersions} from "../../utils/bomUtils";
-import {updateMavenProjectVersion} from "./updateMavenProjectVersion";
-import {NameValuePair, updateMavenProperty} from "./updateMavenProperty";
+import {updateMavenProjectVersion} from "../booster/updateMavenProjectVersion";
+import {NameValuePair, updateMavenProperty} from "../booster/updateMavenProperty";
 
 // these are properties that for policy reasons we don't expect to follow the upstream
 // values
