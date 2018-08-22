@@ -17,7 +17,7 @@
 import {logger} from "@atomist/automation-client/internal/util/logger";
 import {SimpleProjectEditor} from "@atomist/automation-client/operations/edit/projectEditor";
 import {doWithMatches} from "@atomist/automation-client/project/util/parseUtils";
-import {ParentStanzaGrammar} from "@atomist/sdm-pack-spring/dist/support/maven/parse/grammar/mavenGrammars";
+import {ParentStanzaGrammar} from "@atomist/sdm-pack-spring/lib/maven/parse/grammar/mavenGrammars";
 
 /**
  * Set the Parent POM version to

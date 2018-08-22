@@ -3,8 +3,8 @@ import "mocha";
 import * as assert from "power-assert";
 
 import {ApolloGraphClient} from "@atomist/automation-client/graph/ApolloGraphClient";
-import {SNOWDROP_ORG} from "../../../src/constants";
-import {allReposInTeam} from "../../../src/support/repo/allReposInTeamRepoFinder";
+import {SNOWDROP_ORG} from "../../../lib/constants";
+import {allReposInTeam} from "../../../lib/support/repo/allReposInTeamRepoFinder";
 import {githubToken, SlackTeamId} from "../../github";
 
 describe("allReposInOrgRepoFinder", () => {

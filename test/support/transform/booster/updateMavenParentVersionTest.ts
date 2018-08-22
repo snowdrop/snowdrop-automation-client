@@ -16,7 +16,7 @@
 
 import {InMemoryProject} from "@atomist/automation-client/project/mem/InMemoryProject";
 import * as assert from "power-assert";
-import {updateMavenParentVersion} from "../../../../src/support/transform/booster/updateMavenParentVersion";
+import {updateMavenParentVersion} from "../../../../lib/support/transform/booster/updateMavenParentVersion";
 
 describe("updateMavenParentVersion", () => {
 

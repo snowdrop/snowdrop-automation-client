@@ -1,5 +1,5 @@
 import * as assert from "power-assert";
-import {calculateNewPropertyVersions} from "../../../src/support/utils/bomUtils";
+import {calculateNewPropertyVersions} from "../../../lib/support/utils/bomUtils";
 
 describe("calculateNewPropertyVersions", () => {
 

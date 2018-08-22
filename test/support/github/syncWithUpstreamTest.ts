@@ -15,8 +15,8 @@
  */
 
 import * as assert from "power-assert";
-import {BOOSTER_CATALOG_REPO, SNOWDROP_ORG} from "../../../src/constants";
-import {getShaOfLatestCommit, syncWithUpstream} from "../../../src/support/github/refUtils";
+import {BOOSTER_CATALOG_REPO, SNOWDROP_ORG} from "../../../lib/constants";
+import {getShaOfLatestCommit, syncWithUpstream} from "../../../lib/support/github/refUtils";
 import {githubToken} from "../../github";
 
 describe("syncWithUpstream", () => {

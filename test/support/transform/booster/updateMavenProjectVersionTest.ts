@@ -5,7 +5,7 @@ import {
   removeSnapshotFromMavenProjectVersion,
   replaceSnapshotFromMavenProjectVersionWithQualifier,
   updateMavenProjectVersion,
-} from "../../../../src/support/transform/booster/updateMavenProjectVersion";
+} from "../../../../lib/support/transform/booster/updateMavenProjectVersion";
 
 import * as parser from "xml2json";
 

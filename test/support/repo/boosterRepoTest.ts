@@ -22,8 +22,8 @@ import {doWithAllRepos} from "@atomist/automation-client/operations/common/repoU
 import {InMemoryProject} from "@atomist/automation-client/project/mem/InMemoryProject";
 import {Project} from "@atomist/automation-client/project/Project";
 import * as assert from "power-assert";
-import {SNOWDROP_ORG} from "../../../src/constants";
-import {boosterRepos, boosterSimpleName} from "../../../src/support/repo/boosterRepo";
+import {SNOWDROP_ORG} from "../../../lib/constants";
+import {boosterRepos, boosterSimpleName} from "../../../lib/support/repo/boosterRepo";
 import {githubToken} from "../../github";
 
 describe("boosterRepoFilterTest", () => {

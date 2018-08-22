@@ -1,6 +1,6 @@
 import {InMemoryProject} from "@atomist/automation-client/project/mem/InMemoryProject";
 import * as assert from "power-assert";
-import {updateBoosterForBomVersion} from "../../../../src/support/transform/booster/updateBoosterForBomVersion";
+import {updateBoosterForBomVersion} from "../../../../lib/support/transform/booster/updateBoosterForBomVersion";
 
 import * as parser from "xml2json";
 

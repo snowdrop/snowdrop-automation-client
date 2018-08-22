@@ -18,7 +18,7 @@ import {InMemoryProject} from "@atomist/automation-client/project/mem/InMemoryPr
 import * as assert from "power-assert";
 
 import * as parser from "xml2json";
-import {updateBomVersionForRelease} from "../../../../src/support/transform/bom/updateBomVersionForRelease";
+import {updateBomVersionForRelease} from "../../../../lib/support/transform/bom/updateBomVersionForRelease";
 
 describe("updateBomVersionForRelease", () => {
 

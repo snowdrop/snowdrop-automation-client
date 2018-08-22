@@ -1,8 +1,8 @@
 import * as assert from "power-assert";
+import {BoosterTagTuple, LatestTagRetriever} from "../../../../lib/support/github/boosterUtils";
+import {updateLauncherCatalog} from "../../../../lib/support/transform/catalog/updateLauncherCatalog";
 import {ApolloGraphClient} from "../../../../node_modules/@atomist/automation-client/graph/ApolloGraphClient";
 import {InMemoryProject} from "../../../../node_modules/@atomist/automation-client/project/mem/InMemoryProject";
-import {BoosterTagTuple, LatestTagRetriever} from "../../../../src/support/github/boosterUtils";
-import {updateLauncherCatalog} from "../../../../src/support/transform/catalog/updateLauncherCatalog";
 import {githubToken, SlackTeamId} from "../../../github";
 
 const sbVersionOfLatestTags = "1.5.25";

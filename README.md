@@ -26,8 +26,27 @@ Before launching the application the following environment variables need to be 
 
 | Name        | Purpose           | Mandatory? |
 | ------------- |:-------------:| -----: |
-| GITHUB_TOKEN      | Github api key needed by Atomist | Yes |
+| ATOMIST_CONFIG    | See [this](https://docs.atomist.com/developer/prerequisites/#environment-variable) | Yes | 
 | SENDGRIDKEY      | Sendgrid api key needed for sending email | No |
+
+And example of `ATOMIST_CONFIG` would be:
+
+export ATOMIST_CONFIG='{"token":"xxxxxx","workspaceIds":["xxxx"]}'
+
+The token is the Github token of the user
+
+Also note that the above configuration can be put in a file at `~/.atomist/client.config.json`
+which would look like:
+
+```
+{
+  "workspaceIds": [
+    "xxxx"
+  ],
+  "token": "xxxxxx"
+}
+~ 
+```
 
 Launch application by issuing:
 
@@ -35,6 +54,6 @@ Launch application by issuing:
 
 ## Miscellaneous
 
-Run tests: `npm run test`
+Run tests: `npm run test` (will need an env var named GITHUB_TOKEN to be present and contain the user's Github token)
 
 Lint code (and fix issues automatically): `npm run lint:fix`

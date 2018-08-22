@@ -15,7 +15,7 @@
  */
 
 import * as assert from "power-assert";
-import {DefaultLatestTagRetriever} from "../../../src/support/github/boosterUtils";
+import {DefaultLatestTagRetriever} from "../../../lib/support/github/boosterUtils";
 import {githubToken} from "../../github";
 
 describe("getLatestTags", () => {
