@@ -107,7 +107,7 @@ export async function syncWithUpstream(repo: string, token?: string,
       repo,
       ref: "heads/master",
       sha: latestShaOfUpstream,
-      force: true,
+      force: false,
     };
 
     await githubApi(token).gitdata.updateReference(updateParams);

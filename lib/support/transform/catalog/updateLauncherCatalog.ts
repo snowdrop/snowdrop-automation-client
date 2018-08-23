@@ -1,7 +1,9 @@
 import {HandlerContext, logger} from "@atomist/automation-client";
 import {relevantRepos} from "@atomist/automation-client/operations/common/repoUtils";
 import {SimpleProjectEditor} from "@atomist/automation-client/operations/edit/projectEditor";
+import {Project} from "@atomist/automation-client/project/Project";
 import {updateYamlKey} from "@atomist/yaml-updater/Yaml";
+import * as yaml from "js-yaml";
 import {REDHAT_QUALIFIER} from "../../../constants";
 import {LatestTagRetriever} from "../../github/boosterUtils";
 import {allReposInTeam} from "../../repo/allReposInTeamRepoFinder";
@@ -51,16 +53,18 @@ export function updateLauncherCatalog(context: HandlerContext,
           break;
         }
 
-        const value = {
+        const newSourceValue = {
           git: {
             ref: latestTag,
           },
         };
         logger.info(`Updating booster ${boosterNameInCatalog} in path ${path} with tag ${latestTag}`);
-        const newContent = updateYamlKey("source", value, matchingConfigFileContent);
+        const newContent = updateYamlKey("source", newSourceValue, matchingConfigFileContent);
         await matchingConfigFile.setContent(newContent);
       }
     }
+
+    await updateMetadataFile(project, sbVersion);
 
     return project;
   };
@@ -75,4 +79,32 @@ function getBoosterNameInCatalog(boosterFullName: string) {
     return `rest-${simpleName}`;
   }
   return simpleName;
+}
+
+async function updateMetadataFile(project: Project, sbVersion: string) {
+  const file = await project.getFile("metadata.yaml");
+  if (!file) {
+    return;
+  }
+
+  const contentStr = await file.getContent();
+  const content = yaml.load(contentStr);
+  const runtimes = content.runtimes as any[];
+  runtimes.forEach(rt => {
+    if (rt.id !== "spring-boot") {
+      return;
+    }
+
+    const sbVersions = rt.versions as any[];
+    sbVersions.forEach(v => {
+      if (v.id === "current-community") {
+        v.name = `${sbVersion}.RELEASE (Community)`;
+      } else if (v.id === "current-redhat") {
+        v.name = `${sbVersion}.RELEASE (RHOAR)`;
+      }
+    });
+  });
+
+  const newContent = updateYamlKey("runtimes", runtimes, contentStr, {keepArrayIndent: true, updateAll: false});
+  await file.setContent(newContent);
 }

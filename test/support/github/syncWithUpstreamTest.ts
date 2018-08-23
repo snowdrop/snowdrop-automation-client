@@ -41,7 +41,7 @@ describe("syncWithUpstream", () => {
    * for the test
    */
 
-  it("sync should be performed for actual fork", async () => {
+  it.skip("sync should be performed for actual fork", async () => {
     const result = await syncWithUpstream(BOOSTER_CATALOG_REPO, githubToken(), SNOWDROP_ORG);
     assert(result, "Repo should have been synced with upstream");
 
@@ -53,6 +53,6 @@ describe("syncWithUpstream", () => {
 
     assert(shaOfMasterOfFork === shaOfMasterOfUpstream,
         "The latest commit of the fork should have been the same as that of upstream");
-  }).timeout(10000);
+  });
 
 });
