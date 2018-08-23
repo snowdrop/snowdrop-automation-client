@@ -1,10 +1,8 @@
 import {Failure, Success} from "@atomist/automation-client";
 import Email = require("email-templates");
-// tslint:disable-next-line:no-var-requires
+// tslint:disable:no-var-requires
 const nodemailer = require("nodemailer");
-// tslint:disable-next-line:no-var-requires
 const nodemailerSendgrid = require("nodemailer-sendgrid");
-// tslint:disable-next-line:no-var-requires
 const config = require("config");
 
 const transport = nodemailer.createTransport(
