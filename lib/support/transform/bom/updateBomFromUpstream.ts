@@ -2,7 +2,6 @@ import {logger} from "@atomist/automation-client/internal/util/logger";
 import {SimpleProjectEditor} from "@atomist/automation-client/operations/edit/projectEditor";
 import {Project} from "@atomist/automation-client/project/Project";
 import axios from "axios";
-import LineByLineReader = require("line-by-line");
 import {BOOSTER_SB_PROPERTY_NAME, UPSTREAM_RELEASE_VERSION_REGEX} from "../../../constants";
 import {calculateNewPropertyVersions} from "../../utils/bomUtils";
 import {updateMavenProjectVersion} from "../booster/updateMavenProjectVersion";
@@ -62,13 +61,7 @@ export function updateBomFromUpstream(upstreamVersion: string): SimpleProjectEdi
       // update README
       const existingReadme = await project.getFile("README.adoc");
       const existingReadmeContent = await existingReadme.getContent();
-      const Readable = require('stream').Readable;
-      const s = new Readable();
-      s._read = () => {};
-      s.push(existingReadmeContent);
-      s.push(null);
-      logger.info(`properties: ${propertiesUpdates}`);
-      const newReadmeContent = updateReadmeFromUpstream(s, propertiesUpdates);
+      const newReadmeContent = updateReadme(existingReadmeContent, propertiesUpdates);
       await existingReadme.setContent(newReadmeContent);
 
       return await updateMavenProjectVersion(`${upstreamVersionMatches[1]}-SNAPSHOT`)(p2);
@@ -79,33 +72,30 @@ export function updateBomFromUpstream(upstreamVersion: string): SimpleProjectEdi
   };
 }
 
-function updateReadmeFromUpstream(stream: string, propertiesUpdates: ReadonlyMap<string, string>): string {
-    const lr = new LineByLineReader(stream);
-    let newReadmeContent: string = "";
+function updateReadme(readme: string, propertiesUpdates: ReadonlyMap<string, string>): string {
+    const strings = readme.split("\n");
+    const result = strings;
     let targetProperty: string;
-    lr.on("line", line => {
-        const lineAsString = line as string;
-        let toAppend = lineAsString;
-        if (lineAsString.startsWith("//")) {
+    strings.forEach((line, index) => {
+        let toAppend = line;
+        if (line.startsWith("//")) {
             // if line is a comment, record the name of the property to use
-            targetProperty = lineAsString.slice(2).trim();
+            targetProperty = line.slice(2).trim();
         } else if (targetProperty) {
             // if we have previously set property (i.e. the previous line was a comment)
             // check if it matches a property that was updated in the BOM
             const version = propertiesUpdates.get(targetProperty + ".version");
             if (version) {
                 // if it is an updated property, replace the end of the line after the last ':' with the new version
-                const lastColumn = lineAsString.lastIndexOf(":");
-                toAppend = lineAsString.slice(0, lastColumn) + `: ${version}\n`;
+                const lastColumn = line.lastIndexOf(":");
+                toAppend = line.slice(0, lastColumn) + `: ${version}`;
             }
             // reset the property state
             targetProperty = undefined;
         }
 
-        logger.info(`ori line: ${lineAsString}`);
-        logger.info(`new line: ${toAppend}`);
-        newReadmeContent += toAppend;
+        result[index] = toAppend;
     });
     
-    return newReadmeContent;
+    return result.join("\n");
 }

@@ -41,6 +41,7 @@ describe("updateBomFromUpstreamTest", () => {
     assert(pomProperties["spring-boot.version"] === "1.5.15.RELEASE");
     assert(pomProperties["httpcore.version"] === "4.4.10");
     assert(pomProperties["hibernate-validator.version"] === "5.3.5.Final");
+    assert(pomProperties["tomcat.version"] === "8.5.32");
 
     const updatedReadme = await p.findFile("README.adoc");
     const updatedReadmeContent = await updatedReadme.getContent();
@@ -75,6 +76,8 @@ const Bom = `<?xml version="1.0" encoding="UTF-8"?>
     <!-- Spring Boot defined -->
     <antlr2.version>2.7.7</antlr2.version> <!-- For Hibernate core -->
     <httpcore.version>4.4.9</httpcore.version>
+    
+    <tomcat.version>8.5.29</tomcat.version>
   </properties>
 
   <dependencyManagement>
@@ -103,6 +106,11 @@ const Bom = `<?xml version="1.0" encoding="UTF-8"?>
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-validator</artifactId>
         <version>\${hibernate-validator.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.tomcat.embed</groupId>
+        <artifactId>tomcat-embed-core</artifactId>
+        <version>\${tomcat.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -153,7 +161,7 @@ automated release process. This is not mandatory and can be changed in the plugi
 `;
 
 const UpdatedReadme = `// spring-boot
-:spring-boot.version:   1.5.15.RELEASE
+:spring-boot.version: 1.5.15.RELEASE
 
 = Spring Boot BOM - 1.5.x
 
