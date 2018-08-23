@@ -42,7 +42,7 @@ describe("updateBomFromUpstreamTest", () => {
     assert(pomProperties["httpcore.version"] === "4.4.10");
     assert(pomProperties["hibernate-validator.version"] === "5.3.5.Final");
 
-    const updatedReadme = await p.getFile("README.adoc");
+    const updatedReadme = await p.findFile("README.adoc");
     const updatedReadmeContent = await updatedReadme.getContent();
     assert(updatedReadmeContent === UpdatedReadme);
   }).timeout(10000);
@@ -159,7 +159,7 @@ const UpdatedReadme = `// spring-boot
 
 This Bill Of Materials for Spring Boot 1.5 contains starters which are currently used by the 
 https://github.com/snowdrop?utf8=✓&q=topic%3Abooster[Spring Boot Mission Boosters].
-This document is updated on a "best effort" basis, based on the information contained in the \\\`pom.xml\\\` file. In case of inconsistency between this document and the POM file, the POM information prevails.
+This document is updated on a "best effort" basis, based on the information contained in the \`pom.xml\` file. In case of inconsistency between this document and the POM file, the POM information prevails.
 
 This BOM is aligned to: 
 
@@ -193,5 +193,4 @@ This BOM is using the following versioning scheme:
 
 Note that the Sonatype release plugin is configured to auto-release the artifacts from staging, resulting in a faster, more 
 automated release process. This is not mandatory and can be changed in the plugin configuration.
-\`
 `;

@@ -61,7 +61,14 @@ export function updateBomFromUpstream(upstreamVersion: string): SimpleProjectEdi
 
       // update README
       const existingReadme = await project.getFile("README.adoc");
-      const newReadmeContent = updateReadmeFromUpstream(existingReadme.path, propertiesUpdates);
+      const existingReadmeContent = await existingReadme.getContent();
+      const Readable = require('stream').Readable;
+      const s = new Readable();
+      s._read = () => {};
+      s.push(existingReadmeContent);
+      s.push(null);
+      logger.info(`properties: ${propertiesUpdates}`);
+      const newReadmeContent = updateReadmeFromUpstream(s, propertiesUpdates);
       await existingReadme.setContent(newReadmeContent);
 
       return await updateMavenProjectVersion(`${upstreamVersionMatches[1]}-SNAPSHOT`)(p2);
@@ -72,16 +79,16 @@ export function updateBomFromUpstream(upstreamVersion: string): SimpleProjectEdi
   };
 }
 
-function updateReadmeFromUpstream(path: string, propertiesUpdates: ReadonlyMap<string, string>): string {
-    const lr = new LineByLineReader(path);
+function updateReadmeFromUpstream(stream: string, propertiesUpdates: ReadonlyMap<string, string>): string {
+    const lr = new LineByLineReader(stream);
     let newReadmeContent: string = "";
     let targetProperty: string;
     lr.on("line", line => {
         const lineAsString = line as string;
+        let toAppend = lineAsString;
         if (lineAsString.startsWith("//")) {
             // if line is a comment, record the name of the property to use
             targetProperty = lineAsString.slice(2).trim();
-            newReadmeContent += lineAsString;
         } else if (targetProperty) {
             // if we have previously set property (i.e. the previous line was a comment)
             // check if it matches a property that was updated in the BOM
@@ -89,14 +96,16 @@ function updateReadmeFromUpstream(path: string, propertiesUpdates: ReadonlyMap<s
             if (version) {
                 // if it is an updated property, replace the end of the line after the last ':' with the new version
                 const lastColumn = lineAsString.lastIndexOf(":");
-                newReadmeContent += lineAsString.slice(0, lastColumn) + version + "\n";
+                toAppend = lineAsString.slice(0, lastColumn) + `: ${version}\n`;
             }
             // reset the property state
             targetProperty = undefined;
-        } else {
-            newReadmeContent += lineAsString;
         }
-    });
 
+        logger.info(`ori line: ${lineAsString}`);
+        logger.info(`new line: ${toAppend}`);
+        newReadmeContent += toAppend;
+    });
+    
     return newReadmeContent;
 }
