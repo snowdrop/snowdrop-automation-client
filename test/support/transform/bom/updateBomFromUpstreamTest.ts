@@ -44,7 +44,7 @@ describe("updateBomFromUpstreamTest", () => {
 
     const updatedReadme = await p.getFile("README.adoc");
     const updatedReadmeContent = await updatedReadme.getContent();
-    assert(updatedReadmeContent == UpdatedReadme);
+    assert(updatedReadmeContent === UpdatedReadme);
   }).timeout(10000);
 
 });
