@@ -96,6 +96,6 @@ function updateReadme(readme: string, propertiesUpdates: ReadonlyMap<string, str
 
         result[index] = toAppend;
     });
-    
+
     return result.join("\n");
 }
