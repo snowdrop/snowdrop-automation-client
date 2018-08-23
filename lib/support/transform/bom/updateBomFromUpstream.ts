@@ -41,16 +41,20 @@ export function updateBomFromUpstream(upstreamVersion: string): SimpleProjectEdi
         return Promise.reject(`Non-existent upstream version: '${upstreamVersion}'`);
       }
 
-      const propertiesUpdates = calculateNewPropertyVersions(axiosResponse.data, existingBomContent);
+      const propertiesUpdates =
+          new Map(
+              calculateNewPropertyVersions(
+                axiosResponse.data, existingBomContent, PROPERTIES_THAT_SHOULD_NOT_BE_AUTO_UPDATED),
+          );
+      propertiesUpdates.set(BOOSTER_SB_PROPERTY_NAME, upstreamVersion);
+
       logger.info(`Will update the following properties based on upstream BOM ${upstreamVersion}`);
       logger.info(JSON.stringify([...propertiesUpdates]));
 
       const nameValuePairs: NameValuePair[] =
           Array
             .from(propertiesUpdates)
-            .map(t => ({name: t[0], value: t[1]}))
-            .filter(p => !PROPERTIES_THAT_SHOULD_NOT_BE_AUTO_UPDATED.some(v => v === p.name));
-      nameValuePairs.push({name: BOOSTER_SB_PROPERTY_NAME, value: upstreamVersion});
+            .map(t => ({name: t[0], value: t[1]}));
 
       const p2 = await updateMavenProperty(...nameValuePairs)(project);
 

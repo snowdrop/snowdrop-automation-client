@@ -3,13 +3,20 @@ import {calculateNewPropertyVersions} from "../../../lib/support/utils/bomUtils"
 
 describe("calculateNewPropertyVersions", () => {
 
-  it("should return expected artifacts", () => {
+  it("should return all artifacts when no ignored properties are specified", () => {
     const results = calculateNewPropertyVersions(ReferenceBom, ExistingBom);
     assert(results.size === 4, `Got ${results.size} results`);
     assert(results.get("httpclient.version") === "4.5.6");
     assert(results.get("httpcore.version") === "4.4.10");
     assert(results.get("spring-amqp.version") === "1.7.9.RELEASE");
     assert(results.get("tomcat.version") === "8.5.32");
+  });
+
+  it("should return all artifacts when ignored properties are specified", () => {
+    const results = calculateNewPropertyVersions(ReferenceBom, ExistingBom, ["httpclient.version", "tomcat.version"]);
+    assert(results.size === 2, `Got ${results.size} results`);
+    assert(results.get("httpcore.version") === "4.4.10");
+    assert(results.get("spring-amqp.version") === "1.7.9.RELEASE");
   });
 
 });

@@ -2,7 +2,8 @@ import * as _ from "lodash";
 import * as parser from "xml2json";
 
 export function calculateNewPropertyVersions(
-    referenceBomContent: string, existingBomContent: string): ReadonlyMap<string, string> {
+    referenceBomContent: string, existingBomContent: string,
+    ignoredProperties: string[] = []): ReadonlyMap<string, string> {
 
   const referenceBomDependencies = bomArtifacts(referenceBomContent);
   const referenceBomGaToDependencyMap = gaToDependencyWithPropertyNameMap(referenceBomDependencies);
@@ -20,6 +21,8 @@ export function calculateNewPropertyVersions(
             // the reference BOM did not have the dependency
             return false;
           })
+          // remove artifacts that shouldn't be excluded
+          .filter(existingDependency => !ignoredProperties.includes(existingDependency.propertyName))
           // create tuple of existing and matching dependencies
           .map(existingDependency => {
             const matchingReferenceDependency = referenceBomGaToDependencyMap.get(ga(existingDependency));
