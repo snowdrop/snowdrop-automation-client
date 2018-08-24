@@ -58,10 +58,44 @@ export function updateBomFromUpstream(upstreamVersion: string): SimpleProjectEdi
 
       const p2 = await updateMavenProperty(...nameValuePairs)(project);
 
+      // update README
+      const existingReadme = await project.getFile("README.adoc");
+      const existingReadmeContent = await existingReadme.getContent();
+      const newReadmeContent = updateReadme(existingReadmeContent, propertiesUpdates);
+      await existingReadme.setContent(newReadmeContent);
+
       return await updateMavenProjectVersion(`${upstreamVersionMatches[1]}-SNAPSHOT`)(p2);
     } catch (e) {
-      logger.error("Update to update BOM");
+      logger.error("Failed to update BOM");
       return Promise.reject(e);
     }
   };
+}
+
+function updateReadme(readme: string, propertiesUpdates: ReadonlyMap<string, string>): string {
+    const strings = readme.split("\n");
+    const result = strings;
+    let targetProperty: string;
+    strings.forEach((line, index) => {
+        let toAppend = line;
+        if (line.startsWith("//")) {
+            // if line is a comment, record the name of the property to use
+            targetProperty = line.slice(2).trim();
+        } else if (targetProperty) {
+            // if we have previously set property (i.e. the previous line was a comment)
+            // check if it matches a property that was updated in the BOM
+            const version = propertiesUpdates.get(targetProperty + ".version");
+            if (version) {
+                // if it is an updated property, replace the end of the line after the last ':' with the new version
+                const lastColumn = line.lastIndexOf(":");
+                toAppend = line.slice(0, lastColumn) + `: ${version}`;
+            }
+            // reset the property state
+            targetProperty = undefined;
+        }
+
+        result[index] = toAppend;
+    });
+
+    return result.join("\n");
 }

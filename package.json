@@ -37,12 +37,14 @@
   },
   "devDependencies": {
     "@types/app-root-path": "^1.2.4",
+    "@types/js-yaml": "^3.11.2",
     "@types/mocha": "^2.2.48",
     "@types/node": "^9.4.1",
     "@types/power-assert": "^1.4.29",
     "copyfiles": "^1.2.0",
     "espower-typescript": "^8.1.3",
     "graphql-code-generator": "^0.8.14",
+    "js-yaml": "^3.10.0",
     "mocha": "^5.0.0",
     "nodemon": "^1.14.12",
     "npm-run-all": "^4.1.2",
@@ -53,9 +55,7 @@
     "tslint": "^5.9.1",
     "typedoc": "^0.11.1",
     "typescript": "^2.8.3",
-    "typescript-formatter": "^7.2.0",
-    "js-yaml": "^3.10.0",
-    "@types/js-yaml": "^3.11.2"
+    "typescript-formatter": "^7.2.0"
   },
   "directories": {
     "test": "test"

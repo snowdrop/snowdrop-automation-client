@@ -25,6 +25,7 @@ describe("updateBomFromUpstreamTest", () => {
   it("all expected properties were updated", async () => {
     const p = InMemoryProject.of(
         {path: "pom.xml", content: Bom},
+        {path: "README.adoc", content: InitialReadme},
     );
 
     await updateBomFromUpstream("1.5.15.RELEASE")(p);
@@ -40,6 +41,11 @@ describe("updateBomFromUpstreamTest", () => {
     assert(pomProperties["spring-boot.version"] === "1.5.15.RELEASE");
     assert(pomProperties["httpcore.version"] === "4.4.10");
     assert(pomProperties["hibernate-validator.version"] === "5.3.5.Final");
+    assert(pomProperties["tomcat.version"] === "8.5.32");
+
+    const updatedReadme = await p.findFile("README.adoc");
+    const updatedReadmeContent = await updatedReadme.getContent();
+    assert(updatedReadmeContent === UpdatedReadme);
   }).timeout(10000);
 
 });
@@ -70,6 +76,8 @@ const Bom = `<?xml version="1.0" encoding="UTF-8"?>
     <!-- Spring Boot defined -->
     <antlr2.version>2.7.7</antlr2.version> <!-- For Hibernate core -->
     <httpcore.version>4.4.9</httpcore.version>
+    
+    <tomcat.version>8.5.29</tomcat.version>
   </properties>
 
   <dependencyManagement>
@@ -99,7 +107,98 @@ const Bom = `<?xml version="1.0" encoding="UTF-8"?>
         <artifactId>hibernate-validator</artifactId>
         <version>\${hibernate-validator.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.apache.tomcat.embed</groupId>
+        <artifactId>tomcat-embed-core</artifactId>
+        <version>\${tomcat.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 </project>
+`;
+
+const InitialReadme = `// spring-boot
+:spring-boot.version:   1.5.14.RELEASE
+
+= Spring Boot BOM - 1.5.x
+
+This Bill Of Materials for Spring Boot 1.5 contains starters which are currently used by the 
+https://github.com/snowdrop?utf8=✓&q=topic%3Abooster[Spring Boot Mission Boosters].
+This document is updated on a "best effort" basis, based on the information contained in the \`pom.xml\` file. In case of inconsistency between this document and the POM file, the POM information prevails.
+
+This BOM is aligned to: 
+
+.Spring
+// spring-boot
+- Spring Boot: 1.5.14.RELEASE
+
+.Spring Cloud
+- https://github.com/spring-projects/spring-cloud/wiki/Spring-Cloud-Edgware-Release-Notes#edgwaresr3[Edgware.SR3].
+- Spring Cloud Starters have been renamed: https://github.com/spring-projects/spring-cloud/wiki/Spring-Cloud-Edgware-Release-Notes#renamed-starters
+// spring-cloud-kubernetes
+- https://github.com/spring-cloud/spring-cloud-kubernetes[Spring Cloud Kubernetes]: 0.2.0.RELEASE
+
+.Integration
+// cxf-spring-boot-starter-jaxrs
+- http://cxf.apache.org/docs/springboot.html[Apache CXF Spring Boot Starter]: 3.1.12
+// keycloak
+- Keycloak: 3.4.3.Final
+// tomcat
+- Tomcat: 8.5.29
+
+.ORM
+// hibernate
+- Hibernate: 5.1.10.Final
+// hibernate-validator
+- Hibernate Validator: 5.3.5.Final
+
+== Versioning scheme
+
+This BOM is using the following versioning scheme:
+
+Note that the Sonatype release plugin is configured to auto-release the artifacts from staging, resulting in a faster, more 
+automated release process. This is not mandatory and can be changed in the plugin configuration.
+`;
+
+const UpdatedReadme = `// spring-boot
+:spring-boot.version: 1.5.15.RELEASE
+
+= Spring Boot BOM - 1.5.x
+
+This Bill Of Materials for Spring Boot 1.5 contains starters which are currently used by the 
+https://github.com/snowdrop?utf8=✓&q=topic%3Abooster[Spring Boot Mission Boosters].
+This document is updated on a "best effort" basis, based on the information contained in the \`pom.xml\` file. In case of inconsistency between this document and the POM file, the POM information prevails.
+
+This BOM is aligned to: 
+
+.Spring
+// spring-boot
+- Spring Boot: 1.5.15.RELEASE
+
+.Spring Cloud
+- https://github.com/spring-projects/spring-cloud/wiki/Spring-Cloud-Edgware-Release-Notes#edgwaresr3[Edgware.SR3].
+- Spring Cloud Starters have been renamed: https://github.com/spring-projects/spring-cloud/wiki/Spring-Cloud-Edgware-Release-Notes#renamed-starters
+// spring-cloud-kubernetes
+- https://github.com/spring-cloud/spring-cloud-kubernetes[Spring Cloud Kubernetes]: 0.2.0.RELEASE
+
+.Integration
+// cxf-spring-boot-starter-jaxrs
+- http://cxf.apache.org/docs/springboot.html[Apache CXF Spring Boot Starter]: 3.1.12
+// keycloak
+- Keycloak: 3.4.3.Final
+// tomcat
+- Tomcat: 8.5.32
+
+.ORM
+// hibernate
+- Hibernate: 5.1.10.Final
+// hibernate-validator
+- Hibernate Validator: 5.3.5.Final
+
+== Versioning scheme
+
+This BOM is using the following versioning scheme:
+
+Note that the Sonatype release plugin is configured to auto-release the artifacts from staging, resulting in a faster, more 
+automated release process. This is not mandatory and can be changed in the plugin configuration.
 `;
