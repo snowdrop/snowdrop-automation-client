@@ -13,7 +13,7 @@ export function setBoosterVersionInTemplate(): SimpleProjectEditor {
         async m => {
           const initialTemplateContent = await m.getContent();
           await m.setContent(initialTemplateContent.replace(
-              "BOOSTER_VERSION", version),
+              new RegExp("BOOSTER_VERSION", "g"), version),
           );
         });
   };

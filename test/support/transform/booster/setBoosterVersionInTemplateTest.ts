@@ -118,6 +118,40 @@ objects:
     output:
       to:
         kind: ImageStreamTag
-        name: ${name}:BOOSTER_VERSION     
+        name: ${name}:BOOSTER_VERSION   
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app: spring-boot-rest-http
+      provider: snowdrop
+      version: "BOOSTER_VERSION"
+      group: io.openshift.booster
+    name: ${name}
+  spec:
+    ports:
+    - name: http
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+    selector:
+      app: booster
+      provider: snowdrop
+      group: io.openshift.booster    
+- apiVersion: v1
+  kind: Route
+  metadata:
+    labels:
+      app: spring-boot-rest-http
+      provider: snowdrop
+      version: "BOOSTER_VERSION"
+      group: io.openshift.booster
+    name: spring-boot-rest-http
+  spec:
+    port:
+      targetPort: 8080
+    to:
+      kind: Service
+      name: ${name}            
   `;
 }
