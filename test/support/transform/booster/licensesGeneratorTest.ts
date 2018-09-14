@@ -7,17 +7,6 @@ import { resolve } from "path";
 import licensesGenerator from "../../../../lib/support/transform/booster/licensesGenerator";
 import { LICENSES_GENERATOR_PATH } from "../../../../lib/constants";
 
-const licensesGeneratorPath = resolve(LICENSES_GENERATOR_PATH);
-const licensesXmlPath = "src/licenses/licenses.xml";
-const pomContent = `
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>test</groupId>
-    <artifactId>test</artifactId>
-    <version>1</version>
-</project>
-`;
-
 describe("licensesGenerator", () => {
     it("genereate licenses", () => {
         const inMemoryProject = createInMemoryProject();
@@ -49,3 +38,14 @@ const createInMemoryProject = (): Project => {
         { path: "pom.xml", content: pomContent }
     );
 };
+
+const licensesGeneratorPath = resolve(LICENSES_GENERATOR_PATH);
+const licensesXmlPath = "src/licenses/licenses.xml";
+const pomContent = `
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>test</groupId>
+    <artifactId>test</artifactId>
+    <version>1</version>
+</project>
+`;
