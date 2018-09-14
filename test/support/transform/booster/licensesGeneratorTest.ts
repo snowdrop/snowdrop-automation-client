@@ -1,11 +1,11 @@
 import { NodeFsLocalProject } from "@atomist/automation-client/project/local/NodeFsLocalProject";
 import { InMemoryProject } from "@atomist/automation-client/project/mem/InMemoryProject";
 import { Project } from "@atomist/automation-client/project/Project";
-import { tempdir } from "shelljs";
 import { expect } from "chai";
 import { resolve } from "path";
-import licensesGenerator from "../../../../lib/support/transform/booster/licensesGenerator";
+import { tempdir } from "shelljs";
 import { LICENSES_GENERATOR_PATH } from "../../../../lib/constants";
+import licensesGenerator from "../../../../lib/support/transform/booster/licensesGenerator";
 
 describe("licensesGenerator", () => {
     it("genereate licenses", () => {
@@ -35,12 +35,13 @@ describe("licensesGenerator", () => {
 const createInMemoryProject = (): Project => {
     return InMemoryProject.from(
         { repo: "test-project", owner: "test" },
-        { path: "pom.xml", content: pomContent }
+        { path: "pom.xml", content: pomContent },
     );
 };
 
 const licensesGeneratorPath = resolve(LICENSES_GENERATOR_PATH);
 const licensesXmlPath = "src/licenses/licenses.xml";
+/* tslint:disable */
 const pomContent = `
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
