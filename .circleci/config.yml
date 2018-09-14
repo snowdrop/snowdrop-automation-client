@@ -19,5 +19,13 @@ jobs:
         paths:
         - ./node_modules
     - run:
+        name: install java
+        command: |
+          curl -s "https://get.sdkman.io" | bash
+          source "$HOME/.sdkman/bin/sdkman-init.sh"
+          sdk install java
+    - run:
         name: build
-        command: npm run build
+        command: |
+          source "$HOME/.sdkman/bin/sdkman-init.sh"
+          npm run build
