@@ -6,11 +6,10 @@ import {
   updateMavenProjectVersion,
 } from "../../../../lib/support/transform/booster/updateMavenProjectVersion";
 
-import * as parser from "xml2json";
 import {File, InMemoryProject, Project} from "@atomist/automation-client";
+import * as parser from "xml2json";
 
 const newVersion = "1.2.4";
-
 
 describe("updateMavenProjectVersion", () => {
 
@@ -47,6 +46,7 @@ describe("removeSnapshotFromMavenProjectVersion", () => {
 
 describe("replaceSnapshotFromMavenProjectVersionWithQualifier", () => {
 
+  // tslint:disable-next-line:max-line-length
   it("correctly remove snapshot from version and add qualifier to it for both parent module and child module", async () => {
     const p = await replaceSnapshotFromMavenProjectVersionWithQualifier("redhat")(createProject());
     const parentPomJson = await extractParentPomAsJson(p);

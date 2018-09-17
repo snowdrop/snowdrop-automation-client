@@ -2,11 +2,11 @@ import * as _ from "lodash";
 import "mocha";
 import * as assert from "power-assert";
 
-import {SNOWDROP_ORG} from "../../../lib/constants";
-import {githubToken, SlackTeamId} from "../../github";
 import {ApolloGraphClient, RepoRef} from "@atomist/automation-client";
 import {allReposInTeam} from "@atomist/sdm";
 import {DefaultRepoRefResolver} from "@atomist/sdm-core";
+import {SNOWDROP_ORG} from "../../../lib/constants";
+import {githubToken, SlackTeamId} from "../../github";
 
 describe("allReposInOrgRepoFinder", () => {
 

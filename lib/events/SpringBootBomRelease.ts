@@ -31,16 +31,16 @@ import {
   Tags,
 } from "@atomist/automation-client";
 
+import {editOne} from "@atomist/automation-client/lib/operations/edit/editAll";
+import {commitToMaster} from "@atomist/automation-client/lib/operations/edit/editModes";
+import {allReposInTeam} from "@atomist/sdm";
+import {DefaultRepoRefResolver} from "@atomist/sdm-core";
 import * as _ from "lodash";
 import {BOM_BRANCH, BOM_REPO, BOM_VERSION_REGEX} from "../constants";
 import {boosterRepos} from "../support/repo/boosterRepo";
 import {updateBomVersionForRelease} from "../support/transform/bom/updateBomVersionForRelease";
 import {updateBoosterForBomVersion} from "../support/transform/booster/updateBoosterForBomVersion";
 import * as graphql from "../typings/types";
-import {commitToMaster} from "@atomist/automation-client/lib/operations/edit/editModes";
-import {editOne} from "@atomist/automation-client/lib/operations/edit/editAll";
-import {allReposInTeam} from "@atomist/sdm";
-import {DefaultRepoRefResolver} from "@atomist/sdm-core";
 
 @EventHandler("update master branch of each booster upon a new BOM release", GraphQL.subscription("tag"))
 @Tags("bom", "release", "boosters")

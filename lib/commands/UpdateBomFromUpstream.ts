@@ -13,9 +13,9 @@ import {
   Secrets,
   success,
 } from "@atomist/automation-client";
+import {editOne} from "@atomist/automation-client/lib/operations/edit/editAll";
 import {BOM_BRANCH, BOM_REPO, UPSTREAM_RELEASE_VERSION_REGEX} from "../constants";
 import {updateBomFromUpstream} from "../support/transform/bom/updateBomFromUpstream";
-import {editOne} from "@atomist/automation-client/lib/operations/edit/editAll";
 
 @CommandHandler("Update BOM properties from Upstream", "update bom properties")
 export class UpdateBomFromUpstream implements HandleCommand {

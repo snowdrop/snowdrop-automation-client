@@ -14,7 +14,7 @@ import {XmldocFileParser} from "@atomist/sdm-pack-spring/lib/xml/XmldocFileParse
 export function updateMavenProperty(...nameValuePairs: NameValuePair[]): SimpleProjectEditor {
 
   return async (p: Project) => {
-    for(const pair of nameValuePairs) {
+    for (const pair of nameValuePairs) {
       await doWithAllMatches(p, new XmldocFileParser(),
           "pom.xml",
           `/project/properties/${pair.name}`,

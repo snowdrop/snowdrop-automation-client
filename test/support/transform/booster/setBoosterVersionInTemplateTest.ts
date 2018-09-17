@@ -1,7 +1,7 @@
+import {InMemoryProject, Project, SimpleRepoId} from "@atomist/automation-client";
 import * as yaml from "js-yaml";
 import * as assert from "power-assert";
 import {setBoosterVersionInTemplate} from "../../../../lib/support/transform/booster/setBoosterVersionInTemplate";
-import {InMemoryProject, Project, SimpleRepoId} from "@atomist/automation-client";
 
 describe("setBoosterVersionInTemplate", () => {
 

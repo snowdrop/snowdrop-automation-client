@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-
-import * as assert from "power-assert";
-import {SNOWDROP_ORG} from "../../../lib/constants";
-import {boosterRepos, boosterSimpleName} from "../../../lib/support/repo/boosterRepo";
-import {githubToken} from "../../github";
 import {
   doWithAllRepos,
   GitHubRepoRef,
   InMemoryProject,
   Project,
   RepoLoader,
-  RepoRef
+  RepoRef,
 } from "@atomist/automation-client";
 import {fromListRepoFinder} from "@atomist/automation-client/lib/operations/common/fromProjectList";
+import * as assert from "power-assert";
+import {SNOWDROP_ORG} from "../../../lib/constants";
+import {boosterRepos, boosterSimpleName} from "../../../lib/support/repo/boosterRepo";
+import {githubToken} from "../../github";
 
 describe("boosterRepoFilterTest", () => {
 

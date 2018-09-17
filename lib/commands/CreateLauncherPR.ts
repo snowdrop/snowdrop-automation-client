@@ -13,11 +13,11 @@ import {
   Secrets,
   success,
 } from "@atomist/automation-client";
+import {editOne} from "@atomist/automation-client/lib/operations/edit/editAll";
 import {BOOSTER_CATALOG_REPO, SNOWDROP_ORG} from "../constants";
 import {DefaultLatestTagRetriever} from "../support/github/boosterUtils";
 import {raisePullRequestToUpstream, syncWithUpstream} from "../support/github/refUtils";
 import {updateLauncherCatalog} from "../support/transform/catalog/updateLauncherCatalog";
-import {editOne} from "@atomist/automation-client/lib/operations/edit/editAll";
 
 const latestTagRetriever = new DefaultLatestTagRetriever();
 

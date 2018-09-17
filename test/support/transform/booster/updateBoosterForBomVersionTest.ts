@@ -1,8 +1,8 @@
 import * as assert from "power-assert";
 import {updateBoosterForBomVersion} from "../../../../lib/support/transform/booster/updateBoosterForBomVersion";
 
-import * as parser from "xml2json";
 import {File, InMemoryProject, Project} from "@atomist/automation-client";
+import * as parser from "xml2json";
 
 describe("updateBoosterForBomVersion", () => {
 

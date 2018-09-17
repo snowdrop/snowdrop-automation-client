@@ -14,6 +14,8 @@ import {
   Secrets,
   success,
 } from "@atomist/automation-client";
+import {editOne} from "@atomist/automation-client/lib/operations/edit/editAll";
+import {commitToMaster} from "@atomist/automation-client/lib/operations/edit/editModes";
 import {BOOSTER_BOM_PROPERTY_NAME, REDHAT_QUALIFIER} from "../constants";
 import {deleteBranch, tagBranch} from "../support/github/refUtils";
 import {setBoosterVersionInTemplate} from "../support/transform/booster/setBoosterVersionInTemplate";
@@ -24,8 +26,6 @@ import {
 } from "../support/transform/booster/updateMavenProjectVersion";
 import {updateMavenProperty} from "../support/transform/booster/updateMavenProperty";
 import {getCurrentVersion} from "../support/utils/pomUtils";
-import {editOne} from "@atomist/automation-client/lib/operations/edit/editAll";
-import {commitToMaster} from "@atomist/automation-client/lib/operations/edit/editModes";
 
 // TODO refactor to replace duplicate code between this class and ReleaseBoosters
 

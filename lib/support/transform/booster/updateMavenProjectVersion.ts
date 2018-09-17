@@ -1,7 +1,7 @@
-import {BOOSTER_VERSION_REGEX} from "../../../constants";
-import {getCurrentVersion, getCurrentVersionWithoutSnapshot} from "../../utils/pomUtils";
 import {doWithAllMatches, logger, Project, SimpleProjectEditor} from "@atomist/automation-client";
 import {XmldocFileParser} from "@atomist/sdm-pack-spring/lib/xml/XmldocFileParser";
+import {BOOSTER_VERSION_REGEX} from "../../../constants";
+import {getCurrentVersion, getCurrentVersionWithoutSnapshot} from "../../utils/pomUtils";
 
 /**
  * Update the version of a Maven project to the version specified
@@ -13,14 +13,14 @@ export function updateMavenProjectVersion(newVersion: string): SimpleProjectEdit
         "pom.xml",
         "/project/version",
         n => {
-          n.$value = `<version>${newVersion}</version>`
+          n.$value = `<version>${newVersion}</version>`;
         }).then((p2: Project) => {
             return doWithAllMatches(p2, new XmldocFileParser(),
                 "*/pom.xml",
                 "/project/parent/version",
                 n => {
                   n.$value = `<version>${newVersion}</version>`;
-            })
+            });
     });
   };
 }

@@ -1,14 +1,14 @@
-import * as assert from "power-assert";
-import {updateMavenProperty} from "../../../../lib/support/transform/booster/updateMavenProperty";
 import {AbstractProject, InMemoryProject, Project} from "@atomist/automation-client";
+import * as assert from "power-assert";
 import * as parser from "xml2json";
+import {updateMavenProperty} from "../../../../lib/support/transform/booster/updateMavenProperty";
 
 describe("setMavenProperty", () => {
 
   it("updates single property", async () => {
     const p =
         await updateMavenProperty(
-        {name: "spring-boot.version", value: "1.5.14.RELEASE"}
+        {name: "spring-boot.version", value: "1.5.14.RELEASE"},
         )(tempProject(PomWithProperties));
 
     const pomContent = await extractPomAsJson(p);
@@ -27,7 +27,7 @@ describe("setMavenProperty", () => {
     const pomContent = await extractPomAsJson(p);
     assert(pomContent.project.properties["spring-boot.version"] === "1.5.14.RELEASE");
     assert(pomContent.project.properties["spring-boot-bom.version"] === "1.5.14.Final");
-    assert(pomContent.project.properties["dummy.version"] === "3.2.1")
+    assert(pomContent.project.properties["dummy.version"] === "3.2.1");
   });
 
 });

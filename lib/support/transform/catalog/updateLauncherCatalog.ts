@@ -1,12 +1,12 @@
 import {HandlerContext, logger, Project, SimpleProjectEditor} from "@atomist/automation-client";
+import {relevantRepos} from "@atomist/automation-client/lib/operations/common/repoUtils";
+import {allReposInTeam} from "@atomist/sdm";
+import {DefaultRepoRefResolver} from "@atomist/sdm-core";
 import {updateYamlKey} from "@atomist/yaml-updater/Yaml";
 import * as yaml from "js-yaml";
 import {REDHAT_QUALIFIER} from "../../../constants";
 import {LatestTagRetriever} from "../../github/boosterUtils";
 import {boosterRepos, boosterSimpleName} from "../../repo/boosterRepo";
-import {relevantRepos} from "@atomist/automation-client/lib/operations/common/repoUtils";
-import {allReposInTeam} from "@atomist/sdm";
-import {DefaultRepoRefResolver} from "@atomist/sdm-core";
 
 const projectPath = "spring-boot";
 const communityCatalogPath = `${projectPath}/current-community`;
@@ -24,7 +24,8 @@ export function updateLauncherCatalog(context: HandlerContext,
                                       sbVersion: string,
                                       token?: string): SimpleProjectEditor {
   return async project => {
-    const boosterRepoRefs = await relevantRepos(context, allReposInTeam(new DefaultRepoRefResolver()), boosterRepos(token));
+    const boosterRepoRefs =
+        await relevantRepos(context, allReposInTeam(new DefaultRepoRefResolver()), boosterRepos(token));
 
     for (const boosterRepoRef of boosterRepoRefs) {
       const boosterFullName = boosterRepoRef.repo;

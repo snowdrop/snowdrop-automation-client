@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-
+import {SimpleProjectEditor} from "@atomist/automation-client/lib/operations/edit/projectEditor";
+import {Project} from "@atomist/automation-client/lib/project/Project";
+import {logger} from "@atomist/automation-client/lib/util/logger";
 import {
   BOOSTER_BOM_PROPERTY_NAME,
   BOOSTER_SB_PROPERTY_NAME,
@@ -23,9 +25,6 @@ import {
 import {getCurrentVersion} from "../../utils/pomUtils";
 import {updateMavenProjectVersion} from "./updateMavenProjectVersion";
 import {updateMavenProperty} from "./updateMavenProperty";
-import {SimpleProjectEditor} from "@atomist/automation-client/lib/operations/edit/projectEditor";
-import {logger} from "@atomist/automation-client/lib/util/logger";
-import {Project} from "@atomist/automation-client/lib/project/Project";
 
 const BOM_VERSION_REGEX = /^(\d+.\d+.\d+).(\w+)$/;
 
