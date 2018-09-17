@@ -20,8 +20,10 @@ import {
   EditResult,
 } from "@atomist/automation-client/operations/edit/projectEditor";
 import {Project} from "@atomist/automation-client/project/Project";
-import {BOOSTER_BOM_PROPERTY_NAME, REDHAT_QUALIFIER} from "../constants";
+import {resolve} from "path";
+import {BOOSTER_BOM_PROPERTY_NAME, LICENSES_GENERATOR_PATH, REDHAT_QUALIFIER} from "../constants";
 import {deleteBranch, tagBranch} from "../support/github/refUtils";
+import licensesGenerator from "../support/transform/booster/licensesGenerator";
 import {setBoosterVersionInTemplate} from "../support/transform/booster/setBoosterVersionInTemplate";
 import {
   bumpMavenProjectRevisionVersion,
@@ -32,6 +34,8 @@ import {updateMavenProperty} from "../support/transform/booster/updateMavenPrope
 import {getCurrentVersion} from "../support/utils/pomUtils";
 
 // TODO refactor to replace duplicate code between this class and ReleaseBoosters
+
+const licensesGeneratorPath = resolve(LICENSES_GENERATOR_PATH);
 
 @CommandHandler("Release (tag) single boosters", "release single booster")
 export class ReleaseSingleBooster implements HandleCommand {
@@ -67,6 +71,9 @@ export class ReleaseSingleBooster implements HandleCommand {
       return removeSnapshotFromMavenProjectVersion()(p)
               .then(p2 => {
                 return setBoosterVersionInTemplate()(p2);
+              })
+              .then(p3 => {
+                return licensesGenerator(licensesGeneratorPath)(p3);
               });
     };
 
@@ -80,6 +87,9 @@ export class ReleaseSingleBooster implements HandleCommand {
                   name: BOOSTER_BOM_PROPERTY_NAME,
                   value: this.prodBomVersion,
                 })(p3);
+              })
+              .then(p4 => {
+                return licensesGenerator(licensesGeneratorPath)(p4);
               });
     };
 
