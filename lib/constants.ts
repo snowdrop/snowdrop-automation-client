@@ -15,3 +15,5 @@ export const BOOSTER_VERSION_REGEX = /^(\d+.\d+.\d+)-(\d+)(-\w+)?$/;
 export const BOOSTER_NAME_REGEX = /^spring-boot-(.+)-booster$/;
 
 export const UPSTREAM_RELEASE_VERSION_REGEX = /^(\d+.\d+.\d+).RELEASE$/;
+
+export const LICENSES_GENERATOR_PATH = "etc/licenses-generator-shaded.jar";

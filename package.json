@@ -23,6 +23,7 @@
     "@atomist/sdm-core": "0.4.5",
     "@atomist/sdm-pack-spring": "0.1.9",
     "@atomist/yaml-updater": "0.3.0",
+    "@types/chai": "^4.1.4",
     "@types/email-templates": "^3.5.0",
     "@types/xml2json": "^0.10.0",
     "app-root-path": "^2.0.1",
@@ -41,6 +42,7 @@
     "@types/mocha": "^2.2.48",
     "@types/node": "^9.4.1",
     "@types/power-assert": "^1.4.29",
+    "chai": "^4.1.2",
     "copyfiles": "^1.2.0",
     "espower-typescript": "^8.1.3",
     "graphql-code-generator": "^0.8.14",
@@ -79,8 +81,8 @@
     "lint": "tslint --format verbose --project . --exclude \"{build,node_modules}/**\" --exclude \"**/*.d.ts\" \"**/*.ts\"",
     "lint:fix": "npm run lint -- --fix",
     "start": "atm-start",
-    "test": "mocha --require espower-typescript/guess \"test/**/*Test.ts\"",
-    "test:one": "mocha --require espower-typescript/guess \"test/**/${TEST:-*Test.ts}\"",
+    "test": "mocha --timeout 10000 --require espower-typescript/guess \"test/**/*Test.ts\"",
+    "test:one": "mocha --timeout 10000 --require espower-typescript/guess \"test/**/${TEST:-*Test.ts}\"",
     "typedoc": "npm run doc"
   },
   "engines": {
