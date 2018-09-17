@@ -1,4 +1,3 @@
-import {InMemoryProject} from "@atomist/automation-client/project/mem/InMemoryProject";
 import * as assert from "power-assert";
 import {
   bumpMavenProjectRevisionVersion,
@@ -8,95 +7,75 @@ import {
 } from "../../../../lib/support/transform/booster/updateMavenProjectVersion";
 
 import * as parser from "xml2json";
+import {File, InMemoryProject, Project} from "@atomist/automation-client";
 
 const newVersion = "1.2.4";
 
+
 describe("updateMavenProjectVersion", () => {
 
-  it("correctly updates version in both parent module and child module", done => {
-    const p = createProject();
-    updateMavenProjectVersion(newVersion)(p)
-    .then(r => {
-      const parentPomSync = p.findFileSync("pom.xml").getContentSync();
-      const parentPomJson = parser.toJson(parentPomSync, {object: true}) as any;
-      assert(parentPomJson.project.version === newVersion);
-      assert(parentPomJson.project.parent.version === "23");
-      assert(parentPomJson.project.dependencyManagement.dependencies.dependency.version === "2.0.1.RELEASE");
-      assert(parentPomJson.project.build.pluginManagement.plugins.plugin.version === "3.8.0");
+  it("correctly updates version in both parent module and child module", async () => {
+    const p = await updateMavenProjectVersion(newVersion)(createProject());
 
-      const childPomSync = p.findFileSync("child/pom.xml").getContentSync();
-      const childPomJson = parser.toJson(childPomSync, {object: true}) as any;
-      assert(childPomJson.project.parent.version === newVersion);
-      assert(childPomJson.project.dependencies.dependency.version === "3.11.0");
-    }).then(done, done);
+    const parentPomJson = await extractParentPomAsJson(p);
+    assert(parentPomJson.project.version === newVersion);
+    assert(parentPomJson.project.parent.version === "23");
+    assert(parentPomJson.project.dependencyManagement.dependencies.dependency.version === "2.0.1.RELEASE");
+    assert(parentPomJson.project.build.pluginManagement.plugins.plugin.version === "3.8.0");
+
+    const childPomJson = await extractChildPomAsJson(p);
+    assert(childPomJson.project.parent.version === newVersion);
+    assert(childPomJson.project.dependencies.dependency.version === "3.11.0");
+
   });
 
 });
 
 describe("removeSnapshotFromMavenProjectVersion", () => {
 
-  it("correctly remove snapshot from version in both parent module and child module", done => {
-    const p = createProject();
-    removeSnapshotFromMavenProjectVersion()(p)
-    .then(r => {
-      const parentPomSync = p.findFileSync("pom.xml").getContentSync();
-      const parentPomJson = parser.toJson(parentPomSync, {object: true}) as any;
-      assert(parentPomJson.project.version === "1.2.3");
+  it("correctly remove snapshot from version in both parent module and child module", async () => {
+    const p = await removeSnapshotFromMavenProjectVersion()(createProject());
 
-      const childPomSync = p.findFileSync("child/pom.xml").getContentSync();
-      const childPomJson = parser.toJson(childPomSync, {object: true}) as any;
-      assert(childPomJson.project.parent.version === "1.2.3");
-    }).then(done, done);
+    const parentPomJson = await extractParentPomAsJson(p);
+    assert(parentPomJson.project.version === "1.2.3");
+
+    const childPomJson = await extractChildPomAsJson(p);
+    assert(childPomJson.project.parent.version === "1.2.3");
   });
 
 });
 
 describe("replaceSnapshotFromMavenProjectVersionWithQualifier", () => {
 
-  it("correctly remove snapshot from version and add qualifier to it for both parent module and child module", done => {
-    const p = createProject();
-    replaceSnapshotFromMavenProjectVersionWithQualifier("redhat")(p)
-    .then(r => {
-      const parentPomSync = p.findFileSync("pom.xml").getContentSync();
-      const parentPomJson = parser.toJson(parentPomSync, {object: true}) as any;
-      assert(parentPomJson.project.version === "1.2.3-redhat");
+  it("correctly remove snapshot from version and add qualifier to it for both parent module and child module", async () => {
+    const p = await replaceSnapshotFromMavenProjectVersionWithQualifier("redhat")(createProject());
+    const parentPomJson = await extractParentPomAsJson(p);
+    assert(parentPomJson.project.version === "1.2.3-redhat");
 
-      const childPomSync = p.findFileSync("child/pom.xml").getContentSync();
-      const childPomJson = parser.toJson(childPomSync, {object: true}) as any;
-      assert(childPomJson.project.parent.version === "1.2.3-redhat");
-    }).then(done, done);
+    const childPomJson = await extractChildPomAsJson(p);
+    assert(childPomJson.project.parent.version === "1.2.3-redhat");
   });
 
 });
 
 describe("bumpMavenProjectRevisionVersion", () => {
 
-  it("correctly bump version with qualifier to it for both parent module and child module", done => {
-    const p = createProject("1.5.15-2-SNAPSHOT");
-    bumpMavenProjectRevisionVersion()(p)
-    .then(r => {
-      const parentPomSync = p.findFileSync("pom.xml").getContentSync();
-      const parentPomJson = parser.toJson(parentPomSync, {object: true}) as any;
-      assert(parentPomJson.project.version === "1.5.15-3-SNAPSHOT");
+  it("correctly bump version with qualifier to it for both parent module and child module", async () => {
+    const p = await bumpMavenProjectRevisionVersion()(createProject("1.5.15-2-SNAPSHOT"));
+    const parentPomJson = await extractParentPomAsJson(p);
+    assert(parentPomJson.project.version === "1.5.15-3-SNAPSHOT");
 
-      const childPomSync = p.findFileSync("child/pom.xml").getContentSync();
-      const childPomJson = parser.toJson(childPomSync, {object: true}) as any;
-      assert(childPomJson.project.parent.version === "1.5.15-3-SNAPSHOT");
-    }).then(done, done);
+    const childPomJson = await extractChildPomAsJson(p);
+    assert(childPomJson.project.parent.version === "1.5.15-3-SNAPSHOT");
   });
 
-  it("correctly bump version without qualifier to it for both parent module and child module", done => {
-    const p = createProject("1.5.15-2");
-    bumpMavenProjectRevisionVersion()(p)
-    .then(r => {
-      const parentPomSync = p.findFileSync("pom.xml").getContentSync();
-      const parentPomJson = parser.toJson(parentPomSync, {object: true}) as any;
-      assert(parentPomJson.project.version === "1.5.15-3");
+  it("correctly bump version without qualifier to it for both parent module and child module", async () => {
+    const p = await bumpMavenProjectRevisionVersion()(createProject("1.5.15-2"));
+    const parentPomJson = await extractParentPomAsJson(p);
+    assert(parentPomJson.project.version === "1.5.15-3");
 
-      const childPomSync = p.findFileSync("child/pom.xml").getContentSync();
-      const childPomJson = parser.toJson(childPomSync, {object: true}) as any;
-      assert(childPomJson.project.parent.version === "1.5.15-3");
-    }).then(done, done);
+    const childPomJson = await extractChildPomAsJson(p);
+    assert(childPomJson.project.parent.version === "1.5.15-3");
   });
 
 });
@@ -106,6 +85,21 @@ function createProject(version: string = "1.2.3-SNAPSHOT") {
       {path: "pom.xml", content: pomWithParent(version)},
       {path: "child/pom.xml", content: pomOfSubModule(version)},
   );
+}
+
+async function extractParentPomAsJson(p: Project): Promise<any> {
+  const parentPomFile = await p.findFile("pom.xml");
+  return await extractContentAsJson(parentPomFile);
+}
+
+async function extractChildPomAsJson(p: Project): Promise<any> {
+  const childPomFile = await p.findFile("child/pom.xml");
+  return await extractContentAsJson(childPomFile);
+}
+
+async function extractContentAsJson(file: File): Promise<any> {
+  const pomStr = await file.getContent();
+  return parser.toJson(pomStr, {object: true}) as any;
 }
 
 /* tslint:disable */

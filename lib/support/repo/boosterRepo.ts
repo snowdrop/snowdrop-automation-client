@@ -1,6 +1,4 @@
-import {logger} from "@atomist/automation-client";
-import {RepoFilter} from "@atomist/automation-client/operations/common/repoFilter";
-import {RepoId} from "@atomist/automation-client/operations/common/RepoId";
+import {logger, RepoFilter, RepoId} from "@atomist/automation-client";
 import * as GitHubApi from "@octokit/rest";
 import * as _ from "lodash";
 import {BOOSTER_GITHUB_TOPIC, BOOSTER_NAME_REGEX} from "../../constants";

@@ -1,9 +1,7 @@
-import {logger} from "@atomist/automation-client/internal/util/logger";
-import {SimpleProjectEditor} from "@atomist/automation-client/operations/edit/projectEditor";
-import {Project} from "@atomist/automation-client/project/Project";
 import {BOM_VERSION_REGEX} from "../../../constants";
 import {getCurrentVersionWithoutSnapshot} from "../../utils/pomUtils";
 import {updateMavenProjectVersion} from "../booster/updateMavenProjectVersion";
+import {logger, Project, SimpleProjectEditor} from "@atomist/automation-client";
 
 /**
  * Updates the version of the BOM according to the rules in SB-162
@@ -22,7 +20,7 @@ export function updateBomVersionForRelease(releasedVersion: string): SimpleProje
     return (p: Project) => Promise.resolve(p);
   }
 
-  return async p => {
+  return async (p: Project) => {
     const currentVersion = await getCurrentVersionWithoutSnapshot(p);
 
     return updateMavenProjectVersion(

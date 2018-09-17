@@ -15,8 +15,10 @@
  */
 
 import {
+  BranchCommit,
+  editAll,
   EventFired,
-  EventHandler, failure,
+  EventHandler, failure, GitHubRepoRef,
   GraphQL,
   HandleEvent,
   HandlerContext,
@@ -29,16 +31,16 @@ import {
   Tags,
 } from "@atomist/automation-client";
 
-import {GitHubRepoRef} from "@atomist/automation-client/operations/common/GitHubRepoRef";
-import {editAll, editOne} from "@atomist/automation-client/operations/edit/editAll";
-import {BranchCommit, commitToMaster} from "@atomist/automation-client/operations/edit/editModes";
 import * as _ from "lodash";
 import {BOM_BRANCH, BOM_REPO, BOM_VERSION_REGEX} from "../constants";
-import {allReposInTeam} from "../support/repo/allReposInTeamRepoFinder";
 import {boosterRepos} from "../support/repo/boosterRepo";
 import {updateBomVersionForRelease} from "../support/transform/bom/updateBomVersionForRelease";
 import {updateBoosterForBomVersion} from "../support/transform/booster/updateBoosterForBomVersion";
 import * as graphql from "../typings/types";
+import {commitToMaster} from "@atomist/automation-client/lib/operations/edit/editModes";
+import {editOne} from "@atomist/automation-client/lib/operations/edit/editAll";
+import {allReposInTeam} from "@atomist/sdm";
+import {DefaultRepoRefResolver} from "@atomist/sdm-core";
 
 @EventHandler("update master branch of each booster upon a new BOM release", GraphQL.subscription("tag"))
 @Tags("bom", "release", "boosters")
@@ -74,7 +76,7 @@ export class UpdateBoostersOnBOMRelease implements HandleEvent<graphql.TagToPush
         updateBoosterForBomVersion(releasedBOMVersion),
         commit,
         undefined,
-        allReposInTeam(),
+        allReposInTeam(new DefaultRepoRefResolver()),
         boosterRepos(this.githubToken),
     )
     .then(() => {

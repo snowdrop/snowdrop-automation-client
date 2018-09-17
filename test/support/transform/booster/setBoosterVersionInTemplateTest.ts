@@ -1,8 +1,7 @@
-import {InMemoryProject} from "@atomist/automation-client/project/mem/InMemoryProject";
-import {Project} from "@atomist/automation-client/project/Project";
 import * as yaml from "js-yaml";
 import * as assert from "power-assert";
 import {setBoosterVersionInTemplate} from "../../../../lib/support/transform/booster/setBoosterVersionInTemplate";
+import {InMemoryProject, Project, SimpleRepoId} from "@atomist/automation-client";
 
 describe("setBoosterVersionInTemplate", () => {
 
@@ -23,7 +22,7 @@ describe("setBoosterVersionInTemplate", () => {
 
 function createProject() {
   return InMemoryProject.from(
-      {repo: "test-project", owner: "test"},
+      new SimpleRepoId("test-project", "test"),
       {path: "pom.xml", content: PomWithParent},
       {path: "child1/pom.xml", content: pomOfSubModule("child1")},
       {path: "child1/lib/main/resources/application.yml", content: "name: BOOSTER_VERSION"},

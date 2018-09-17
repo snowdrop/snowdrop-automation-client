@@ -1,4 +1,4 @@
-import {logger} from "@atomist/automation-client/internal/util/logger";
+import {logger} from "@atomist/automation-client";
 
 export const SlackTeamId = "A7BRBZRRH";
 

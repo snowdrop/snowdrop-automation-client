@@ -1,5 +1,6 @@
 import {
-  CommandHandler,
+  AnyProjectEditor, BranchCommit,
+  CommandHandler, editAll, EditResult,
   failure,
   HandleCommand,
   HandlerContext,
@@ -7,21 +8,13 @@ import {
   logger,
   MappedParameter,
   MappedParameters,
-  Parameter,
+  Parameter, Project,
   Secret,
   Secrets,
   success,
 } from "@atomist/automation-client";
-import {editAll} from "@atomist/automation-client/operations/edit/editAll";
-import {BranchCommit, commitToMaster} from "@atomist/automation-client/operations/edit/editModes";
-import {
-  AnyProjectEditor,
-  EditResult,
-} from "@atomist/automation-client/operations/edit/projectEditor";
-import {Project} from "@atomist/automation-client/project/Project";
 import {BOOSTER_BOM_PROPERTY_NAME, REDHAT_QUALIFIER} from "../constants";
 import {deleteBranch, tagBranch} from "../support/github/refUtils";
-import {allReposInTeam} from "../support/repo/allReposInTeamRepoFinder";
 import {boosterRepos} from "../support/repo/boosterRepo";
 import {setBoosterVersionInTemplate} from "../support/transform/booster/setBoosterVersionInTemplate";
 import {
@@ -31,6 +24,9 @@ import {
 } from "../support/transform/booster/updateMavenProjectVersion";
 import {updateMavenProperty} from "../support/transform/booster/updateMavenProperty";
 import {getCurrentVersion} from "../support/utils/pomUtils";
+import {commitToMaster} from "@atomist/automation-client/lib/operations/edit/editModes";
+import {DefaultRepoRefResolver} from "@atomist/sdm-core";
+import {allReposInTeam} from "@atomist/sdm";
 
 @CommandHandler("Release (tag) boosters", "release boosters")
 export class ReleaseBoosters implements HandleCommand {
@@ -61,17 +57,17 @@ export class ReleaseBoosters implements HandleCommand {
 
     const communityEditor = (p: Project) => {
       return removeSnapshotFromMavenProjectVersion()(p)
-              .then(p2 => {
+              .then((p2: Project) => {
                 return setBoosterVersionInTemplate()(p2);
               });
     };
 
     const prodEditor = (p: Project) => {
       return replaceSnapshotFromMavenProjectVersionWithQualifier(REDHAT_QUALIFIER)(p)
-              .then(p2 => {
+              .then((p2: Project) => {
                 return setBoosterVersionInTemplate()(p2);
               })
-              .then(p3 => {
+              .then((p3: Project) => {
                 return updateMavenProperty({
                   name: BOOSTER_BOM_PROPERTY_NAME,
                   value: this.prodBomVersion,
@@ -97,7 +93,7 @@ export class ReleaseBoosters implements HandleCommand {
                   bumpMavenProjectRevisionVersion(),
                   commitToMaster("[booster-release] Bump version"),
                   undefined,
-                  allReposInTeam(),
+                  allReposInTeam(new DefaultRepoRefResolver()),
                   boosterRepos(params.githubToken),
               );
             })
@@ -114,7 +110,7 @@ export class ReleaseBoosters implements HandleCommand {
           message: "[booster-release] Set version and replace templates placeholders",
         } as BranchCommit,
         undefined,
-        allReposInTeam(),
+        allReposInTeam(new DefaultRepoRefResolver()),
         boosterRepos(params.githubToken),
     );
   }

@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import {logger} from "@atomist/automation-client/internal/util/logger";
-import {SimpleProjectEditor} from "@atomist/automation-client/operations/edit/projectEditor";
-import {Project} from "@atomist/automation-client/project/Project";
+
 import {
   BOOSTER_BOM_PROPERTY_NAME,
   BOOSTER_SB_PROPERTY_NAME,
@@ -25,6 +23,9 @@ import {
 import {getCurrentVersion} from "../../utils/pomUtils";
 import {updateMavenProjectVersion} from "./updateMavenProjectVersion";
 import {updateMavenProperty} from "./updateMavenProperty";
+import {SimpleProjectEditor} from "@atomist/automation-client/lib/operations/edit/projectEditor";
+import {logger} from "@atomist/automation-client/lib/util/logger";
+import {Project} from "@atomist/automation-client/lib/project/Project";
 
 const BOM_VERSION_REGEX = /^(\d+.\d+.\d+).(\w+)$/;
 
@@ -53,7 +54,7 @@ export function updateBoosterForBomVersion(releasedBOMVersion: string): SimplePr
         getNewBoosterVersion(numberOnlyOfBOMVersion, currentBoosterVersion);
 
     return updateMavenProjectVersion(newBoosterVersion)(p)
-            .then(p2 => {
+            .then((p2: Project) => {
               return updateMavenProperty(
                   {name: BOOSTER_BOM_PROPERTY_NAME, value: releasedBOMVersion},
                   {name: BOOSTER_SB_PROPERTY_NAME, value: `${numberOnlyOfBOMVersion}.RELEASE`},

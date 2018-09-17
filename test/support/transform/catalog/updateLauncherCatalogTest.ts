@@ -3,9 +3,8 @@ import * as _ from "lodash";
 import * as assert from "power-assert";
 import {BoosterTagTuple, LatestTagRetriever} from "../../../../lib/support/github/boosterUtils";
 import {updateLauncherCatalog} from "../../../../lib/support/transform/catalog/updateLauncherCatalog";
-import {ApolloGraphClient} from "../../../../node_modules/@atomist/automation-client/graph/ApolloGraphClient";
-import {InMemoryProject} from "../../../../node_modules/@atomist/automation-client/project/mem/InMemoryProject";
 import {githubToken, SlackTeamId} from "../../../github";
+import {ApolloGraphClient, InMemoryProject} from "@atomist/automation-client";
 
 const sbVersionOfLatestTags = "1.5.25";
 const qualifierOfLatestCommunityTag = "10";

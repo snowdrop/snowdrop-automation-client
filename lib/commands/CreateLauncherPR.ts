@@ -1,6 +1,7 @@
 import {
+  BranchCommit,
   CommandHandler,
-  failure,
+  failure, GitHubRepoRef,
   HandleCommand,
   HandlerContext,
   HandlerResult,
@@ -12,13 +13,11 @@ import {
   Secrets,
   success,
 } from "@atomist/automation-client";
-import {GitHubRepoRef} from "@atomist/automation-client/operations/common/GitHubRepoRef";
-import {editOne} from "@atomist/automation-client/operations/edit/editAll";
-import {BranchCommit} from "@atomist/automation-client/operations/edit/editModes";
 import {BOOSTER_CATALOG_REPO, SNOWDROP_ORG} from "../constants";
 import {DefaultLatestTagRetriever} from "../support/github/boosterUtils";
 import {raisePullRequestToUpstream, syncWithUpstream} from "../support/github/refUtils";
 import {updateLauncherCatalog} from "../support/transform/catalog/updateLauncherCatalog";
+import {editOne} from "@atomist/automation-client/lib/operations/edit/editAll";
 
 const latestTagRetriever = new DefaultLatestTagRetriever();
 

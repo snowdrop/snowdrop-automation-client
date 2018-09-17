@@ -1,5 +1,6 @@
 import {
-  CommandHandler,
+  AnyProjectEditor, BranchCommit,
+  CommandHandler, EditResult,
   failure,
   GitHubRepoRef,
   HandleCommand,
@@ -8,18 +9,11 @@ import {
   logger,
   MappedParameter,
   MappedParameters,
-  Parameter,
+  Parameter, Project,
   Secret,
   Secrets,
   success,
 } from "@atomist/automation-client";
-import {editOne} from "@atomist/automation-client/operations/edit/editAll";
-import {BranchCommit, commitToMaster} from "@atomist/automation-client/operations/edit/editModes";
-import {
-  AnyProjectEditor,
-  EditResult,
-} from "@atomist/automation-client/operations/edit/projectEditor";
-import {Project} from "@atomist/automation-client/project/Project";
 import {BOOSTER_BOM_PROPERTY_NAME, REDHAT_QUALIFIER} from "../constants";
 import {deleteBranch, tagBranch} from "../support/github/refUtils";
 import {setBoosterVersionInTemplate} from "../support/transform/booster/setBoosterVersionInTemplate";
@@ -30,6 +24,8 @@ import {
 } from "../support/transform/booster/updateMavenProjectVersion";
 import {updateMavenProperty} from "../support/transform/booster/updateMavenProperty";
 import {getCurrentVersion} from "../support/utils/pomUtils";
+import {editOne} from "@atomist/automation-client/lib/operations/edit/editAll";
+import {commitToMaster} from "@atomist/automation-client/lib/operations/edit/editModes";
 
 // TODO refactor to replace duplicate code between this class and ReleaseBoosters
 
@@ -65,17 +61,17 @@ export class ReleaseSingleBooster implements HandleCommand {
 
     const communityEditor = (p: Project) => {
       return removeSnapshotFromMavenProjectVersion()(p)
-              .then(p2 => {
+              .then((p2: Project) => {
                 return setBoosterVersionInTemplate()(p2);
               });
     };
 
     const prodEditor = (p: Project) => {
       return replaceSnapshotFromMavenProjectVersionWithQualifier(REDHAT_QUALIFIER)(p)
-              .then(p2 => {
+              .then((p2: Project) => {
                 return setBoosterVersionInTemplate()(p2);
               })
-              .then(p3 => {
+              .then((p3: Project) => {
                 return updateMavenProperty({
                   name: BOOSTER_BOM_PROPERTY_NAME,
                   value: this.prodBomVersion,

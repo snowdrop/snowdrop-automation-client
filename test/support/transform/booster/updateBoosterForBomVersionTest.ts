@@ -1,71 +1,73 @@
-import {InMemoryProject} from "@atomist/automation-client/project/mem/InMemoryProject";
 import * as assert from "power-assert";
 import {updateBoosterForBomVersion} from "../../../../lib/support/transform/booster/updateBoosterForBomVersion";
 
 import * as parser from "xml2json";
+import {File, InMemoryProject, Project} from "@atomist/automation-client";
 
 describe("updateBoosterForBomVersion", () => {
 
-  it("doesn't do anything when an erroneous Spring Boot BOM version is passed", done => {
-    const p = createProject();
-    updateBoosterForBomVersion("1")(p)
-    .then(r => {
-      const parentPomSync = p.findFileSync("pom.xml").getContentSync();
-      const parentPomJson = parser.toJson(parentPomSync, {object: true}) as any;
-      assert(parentPomJson.project.version === "1.5.14-2-SNAPSHOT");
-      assert(parentPomJson.project.properties["spring-boot-bom.version"] === "1.5.14.Final");
-      assert(parentPomJson.project.properties["spring-boot.version"] === "1.5.14.RELEASE");
+  it("doesn't do anything when an erroneous Spring Boot BOM version is passed", async () => {
+    const p = await updateBoosterForBomVersion("1")(createProject());
 
-      const childPomSync = p.findFileSync("child/pom.xml").getContentSync();
-      const childPomJson = parser.toJson(childPomSync, {object: true}) as any;
-      assert(childPomJson.project.parent.version === "1.5.14-2-SNAPSHOT");
-    }).then(done, done);
+    const parentPomJson = await extractParentPomAsJson(p);
+    assert(parentPomJson.project.version === "1.5.14-2-SNAPSHOT");
+    assert(parentPomJson.project.properties["spring-boot-bom.version"] === "1.5.14.Final");
+    assert(parentPomJson.project.properties["spring-boot.version"] === "1.5.14.RELEASE");
+
+    const childPomJson = await extractChildPomAsJson(p);
+    assert(childPomJson.project.parent.version === "1.5.14-2-SNAPSHOT");
   });
 
-  it("updates booster to a new Spring Boot BOM version", done => {
+  it("updates booster to a new Spring Boot BOM version", async () => {
     const newBOMVersion = "1.5.15.Beta1";
     const expectedNewBoosterVersion = "1.5.15-1-SNAPSHOT";
-    const p = createProject();
-    updateBoosterForBomVersion(newBOMVersion)(p)
-    .then(r => {
-      const parentPomSync = p.findFileSync("pom.xml").getContentSync();
-      const parentPomJson = parser.toJson(parentPomSync, {object: true}) as any;
-      assert(parentPomJson.project.version === expectedNewBoosterVersion);
-      assert(parentPomJson.project.properties["spring-boot-bom.version"] === newBOMVersion);
-      assert(parentPomJson.project.properties["spring-boot.version"] === "1.5.15.RELEASE");
+    const p = await updateBoosterForBomVersion(newBOMVersion)(createProject());
 
-      const childPomSync = p.findFileSync("child/pom.xml").getContentSync();
-      const childPomJson = parser.toJson(childPomSync, {object: true}) as any;
-      assert(childPomJson.project.parent.version === expectedNewBoosterVersion);
-    }).then(done, done);
+    const parentPomJson = await extractParentPomAsJson(p);
+    assert(parentPomJson.project.version === expectedNewBoosterVersion);
+    assert(parentPomJson.project.properties["spring-boot-bom.version"] === newBOMVersion);
+    assert(parentPomJson.project.properties["spring-boot.version"] === "1.5.15.RELEASE");
+
+    const childPomJson = await extractChildPomAsJson(p);
+    assert(childPomJson.project.parent.version === expectedNewBoosterVersion);
   });
 
-  it("updates booster to a revision of the Spring Boot BOM", done => {
+  it("updates booster to a revision of the Spring Boot BOM", async () => {
     const newBOMVersion = "1.5.14.SR1";
     const expectedBoosterVersion = "1.5.14-2-SNAPSHOT";
-    const p = createProject();
-    updateBoosterForBomVersion(newBOMVersion)(p)
-    .then(r => {
-      const parentPomSync = p.findFileSync("pom.xml").getContentSync();
-      const parentPomJson = parser.toJson(parentPomSync, {object: true}) as any;
-      assert(parentPomJson.project.version === expectedBoosterVersion);
-      assert(parentPomJson.project.properties["spring-boot-bom.version"] === newBOMVersion);
-      assert(parentPomJson.project.properties["spring-boot.version"] === "1.5.14.RELEASE");
+    const p = await updateBoosterForBomVersion(newBOMVersion)(createProject());
 
-      const childPomSync = p.findFileSync("child/pom.xml").getContentSync();
-      const childPomJson = parser.toJson(childPomSync, {object: true}) as any;
-      assert(childPomJson.project.parent.version === expectedBoosterVersion);
-    }).then(done, done);
+    const parentPomJson = await extractParentPomAsJson(p);
+    assert(parentPomJson.project.version === expectedBoosterVersion);
+    assert(parentPomJson.project.properties["spring-boot-bom.version"] === newBOMVersion);
+    assert(parentPomJson.project.properties["spring-boot.version"] === "1.5.14.RELEASE");
+
+    const childPomJson = await extractChildPomAsJson(p);
+    assert(childPomJson.project.parent.version === expectedBoosterVersion);
   });
 
 });
 
 function createProject() {
-  return InMemoryProject.from(
-      {repo: "test-project", owner: "test"},
+  return InMemoryProject.of(
       {path: "pom.xml", content: PomWithParent},
       {path: "child/pom.xml", content: PomOfSubModule},
   );
+}
+
+async function extractParentPomAsJson(p: Project): Promise<any> {
+  const parentPomFile = await p.findFile("pom.xml");
+  return await extractContentAsJson(parentPomFile);
+}
+
+async function extractChildPomAsJson(p: Project): Promise<any> {
+  const childPomFile = await p.findFile("child/pom.xml");
+  return await extractContentAsJson(childPomFile);
+}
+
+async function extractContentAsJson(file: File): Promise<any> {
+  const pomStr = await file.getContent();
+  return parser.toJson(pomStr, {object: true}) as any;
 }
 
 /* tslint:disable */

@@ -2,10 +2,11 @@ import * as _ from "lodash";
 import "mocha";
 import * as assert from "power-assert";
 
-import {ApolloGraphClient} from "@atomist/automation-client/graph/ApolloGraphClient";
 import {SNOWDROP_ORG} from "../../../lib/constants";
-import {allReposInTeam} from "../../../lib/support/repo/allReposInTeamRepoFinder";
 import {githubToken, SlackTeamId} from "../../github";
+import {ApolloGraphClient, RepoRef} from "@atomist/automation-client";
+import {allReposInTeam} from "@atomist/sdm";
+import {DefaultRepoRefResolver} from "@atomist/sdm-core";
 
 describe("allReposInOrgRepoFinder", () => {
 
@@ -13,8 +14,8 @@ describe("allReposInOrgRepoFinder", () => {
         { Authorization: `token ${githubToken()}` });
 
     it("finds over 10 repos in org", done => {
-        allReposInTeam()({ graphClient, teamId: SlackTeamId } as any)
-            .then(repos => {
+        allReposInTeam(new DefaultRepoRefResolver())({ graphClient, teamId: SlackTeamId } as any)
+            .then((repos: RepoRef[]) => {
                 assert(repos.length > 10, "Expected to find at least 10 repos");
 
                 const names = repos.map(r => r.repo);
