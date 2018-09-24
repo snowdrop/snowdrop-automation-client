@@ -74,7 +74,7 @@ export function releaseBooster(params: ReleaseParams): Promise<EditResult<Projec
             return editOne(params.context,
                 {token: params.githubToken},
                 bumpMavenProjectRevisionVersion(),
-                commitToMaster("[booster-release] Bump version"),
+                commitToMaster("[booster-release][ci skip] Bump version"),
                 new GitHubRepoRef(params.owner, params.repository),
             );
           });
@@ -86,7 +86,7 @@ function editBoosterInBranch(params: ReleaseParams, branchName: string, editor: 
       editor,
       {
         branch: branchName,
-        message: "[booster-release] Tag booster",
+        message: "[booster-release][ci skip] Tag booster",
       } as BranchCommit,
       new GitHubRepoRef(params.owner, params.repository),
   );
