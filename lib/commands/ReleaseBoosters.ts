@@ -68,7 +68,7 @@ export class ReleaseBoosters implements HandleCommand {
       });
     });
 
-    //make sure we call let Atomist know that everything finished successfully
+    // make sure we call let Atomist know that everything finished successfully
     queue.drain = () => success();
     return await queue.drain();
   }
