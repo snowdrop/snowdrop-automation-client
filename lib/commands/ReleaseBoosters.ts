@@ -39,6 +39,15 @@ export class ReleaseBoosters implements HandleCommand {
 
   public async handle(context: HandlerContext, params: this): Promise<HandlerResult> {
 
+    /**
+     * We need to limit the concurrency of the booster release, because it uses the resource
+     * intensive licensing generation process (which is resource intensive because it launches
+     * a Java application in a separate process)
+     * In order to do that we employ a "queue" from the "async" module
+     * We add all the necessary jobs into that queue but we tie the amount of concurrency
+     * to the number of cpus available to the machine
+     */
+
     const queue =
         async.queue(
             (releaseParams: ReleaseParams, callback) => {
@@ -47,8 +56,9 @@ export class ReleaseBoosters implements HandleCommand {
             // use at least 1 cpu, but when there are multiple cpus, don't use them all
             Math.max(os.cpus().length - 1, 1),
         );
-    const repos = await relevantRepos(context, allReposInTeam(), boosterRepos(params.githubToken));
-    repos.forEach(r => {
+
+    const boosterRepositories = await relevantRepos(context, allReposInTeam(), boosterRepos(params.githubToken));
+    boosterRepositories.forEach(r => {
       queue.push({
         prodBomVersion: params.prodBomVersion,
         owner: r.owner,
@@ -58,8 +68,8 @@ export class ReleaseBoosters implements HandleCommand {
       });
     });
 
+    //make sure we call let Atomist know that everything finished successfully
     queue.drain = () => success();
-
     return await queue.drain();
   }
 }
