@@ -1,10 +1,8 @@
 import {
   CommandHandler,
-  failure,
   HandleCommand,
   HandlerContext,
   HandlerResult,
-  logger,
   MappedParameter,
   MappedParameters,
   Parameter,
@@ -12,30 +10,12 @@ import {
   Secrets,
   success,
 } from "@atomist/automation-client";
-import {editAll} from "@atomist/automation-client/operations/edit/editAll";
-import {BranchCommit, commitToMaster} from "@atomist/automation-client/operations/edit/editModes";
-import {
-  AnyProjectEditor,
-  EditResult,
-} from "@atomist/automation-client/operations/edit/projectEditor";
-import {Project} from "@atomist/automation-client/project/Project";
-import {resolve} from "path";
-import {BOOSTER_BOM_PROPERTY_NAME, REDHAT_QUALIFIER} from "../constants";
-import { LICENSES_GENERATOR_PATH } from "../constants";
-import {deleteBranch, tagBranch} from "../support/github/refUtils";
+import {relevantRepos} from "@atomist/automation-client/operations/common/repoUtils";
+import async = require("async");
+import * as os from "os";
 import {allReposInTeam} from "../support/repo/allReposInTeamRepoFinder";
 import {boosterRepos} from "../support/repo/boosterRepo";
-import licensesGenerator from "../support/transform/booster/licensesGenerator";
-import {setBoosterVersionInTemplate} from "../support/transform/booster/setBoosterVersionInTemplate";
-import {
-  bumpMavenProjectRevisionVersion,
-  removeSnapshotFromMavenProjectVersion,
-  replaceSnapshotFromMavenProjectVersionWithQualifier,
-} from "../support/transform/booster/updateMavenProjectVersion";
-import {updateMavenProperty} from "../support/transform/booster/updateMavenProperty";
-import {getCurrentVersion} from "../support/utils/pomUtils";
-
-const licensesGeneratorPath = resolve(LICENSES_GENERATOR_PATH);
+import {releaseBooster, ReleaseParams} from "./ReleaseBoosterUtil";
 
 @CommandHandler("Release (tag) boosters", "release boosters")
 export class ReleaseBoosters implements HandleCommand {
@@ -57,100 +37,29 @@ export class ReleaseBoosters implements HandleCommand {
   @Secret(Secrets.UserToken)
   public githubToken: string;
 
-  public handle(context: HandlerContext, params: this): Promise<HandlerResult> {
+  public async handle(context: HandlerContext, params: this): Promise<HandlerResult> {
 
-    logger.debug(`Attempting to create community tags for boosters`);
-
-    const communityBranchName = "temp-community";
-    const prodBranchName = "temp-prod";
-
-    const communityEditor = (p: Project) => {
-      return removeSnapshotFromMavenProjectVersion()(p)
-              .then(p2 => {
-                return setBoosterVersionInTemplate()(p2);
-              })
-              .then(p3 => {
-                return licensesGenerator(licensesGeneratorPath)(p3);
-              });
-    };
-
-    const prodEditor = (p: Project) => {
-      return replaceSnapshotFromMavenProjectVersionWithQualifier(REDHAT_QUALIFIER)(p)
-              .then(p2 => {
-                return setBoosterVersionInTemplate()(p2);
-              })
-              .then(p3 => {
-                return updateMavenProperty({
-                  name: BOOSTER_BOM_PROPERTY_NAME,
-                  value: this.prodBomVersion,
-                })(p3);
-              })
-              .then(p4 => {
-                return licensesGenerator(licensesGeneratorPath)(p4);
-              });
-    };
-
-    return this
-            // edit project for community tag
-            .editAllBoostersInBranch(context, params, communityBranchName, communityEditor)
-            // create community release
-            .then(this.releaseBoosters(communityBranchName, params))
-            .then(() => {
-              this
-                // edit project for prod tag
-                .editAllBoostersInBranch(context, params, prodBranchName, prodEditor)
-                // create prod release
-                .then(this.releaseBoosters(prodBranchName, params));
-            })
-            .then(() => { // bump the version of the booster
-              return editAll(context,
-                  {token: params.githubToken},
-                  bumpMavenProjectRevisionVersion(),
-                  commitToMaster("[booster-release] Bump version"),
-                  undefined,
-                  allReposInTeam(),
-                  boosterRepos(params.githubToken),
-              );
-            })
-            .then(success, failure);
-  }
-
-  private editAllBoostersInBranch(context: HandlerContext, params: this,
-                                  branchName: string, editor: AnyProjectEditor<any>) {
-    return editAll(context,
-        {token: params.githubToken},
-        editor,
-        {
-          branch: branchName,
-          message: "[booster-release] Set version and replace templates placeholders",
-        } as BranchCommit,
-        undefined,
-        allReposInTeam(),
-        boosterRepos(params.githubToken),
-    );
-  }
-
-  private releaseBoosters(branchName: string, params: this): (results: EditResult[]) => void {
-    return results => {
-      logger.debug("Finished editing boosters. Will now create tags");
-
-      results.forEach(async r => {
-        const project = r.target;
-        const repo = r.target.name;
-        if (!r.edited) {
-          logger.error(`Booster ${repo} was not updated as part of the release process`);
-          logger.error("This is probably an implementation issue");
-          return;
-        }
-
-        const tagName = await getCurrentVersion(project);
-
-        const tagCreated =
-            await tagBranch(repo, branchName, tagName, params.githubToken, params.owner);
-        if (tagCreated) {
-          await deleteBranch(repo, branchName, params.githubToken, params.owner);
-        }
+    const queue =
+        async.queue(
+            (releaseParams: ReleaseParams, callback) => {
+              releaseBooster(releaseParams).then(callback);
+            },
+            // use at least 1 cpu, but when there are multiple cpus, don't use them all
+            Math.max(os.cpus().length - 1, 1),
+        );
+    const repos = await relevantRepos(context, allReposInTeam(), boosterRepos(params.githubToken));
+    repos.forEach(r => {
+      queue.push({
+        prodBomVersion: params.prodBomVersion,
+        owner: r.owner,
+        repository: r.repo,
+        githubToken: params.githubToken,
+        context,
       });
-    };
+    });
+
+    queue.drain = () => success();
+
+    return await queue.drain();
   }
 }
