@@ -6,7 +6,9 @@ import {
   EditResult,
 } from "@atomist/automation-client/operations/edit/projectEditor";
 import {Project} from "@atomist/automation-client/project/Project";
+import * as dns from "dns";
 import {resolve} from "path";
+import {promisify} from "util";
 import {BOOSTER_BOM_PROPERTY_NAME, LICENSES_GENERATOR_PATH, REDHAT_QUALIFIER} from "../constants";
 import {deleteBranch, tagBranch} from "../support/github/refUtils";
 import licensesGenerator from "../support/transform/booster/licensesGenerator";
@@ -29,6 +31,17 @@ export class ReleaseParams {
   public repository: string;
   public githubToken: string;
   public context: HandlerContext;
+}
+
+export async function ensureVPNAccess(): Promise<Error> {
+  try {
+    await promisify(dns.resolve)("http://indy.cloud.pnc.engineering.redhat.com");
+    return null;
+  } catch (e) {
+    const message = "You must be on the RH VPN to release the boosters";
+    logger.error(message);
+    return new Error(message);
+  }
 }
 
 export function releaseBooster(params: ReleaseParams): Promise<EditResult<Project>> {

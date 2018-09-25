@@ -10,13 +10,17 @@ export default function licensesGenerator(generatorPath: string): SimpleProjectE
             throw new Error("Can only generate licenses for local project");
         }
 
+        const propertiesPath =
+            generatorPath.replace("licenses-generator-shaded.jar", "generator.properties");
+
         return project.findFile("pom.xml")
             .then(pom => {
-                logger.info(`Starting license generation with '${generatorPath}' for '${pom.path}'`);
+                // tslint:disable-next-line: max-line-length
+                logger.info(`Starting license generation with '${generatorPath}' for '${pom.path}' with properties at '${propertiesPath}'`);
                 return spawn(
                     "java",
-                    ["-jar", generatorPath, "-Dpom=" + pom.path, "-Ddestination=src/licenses"],
-                    { cwd: project.baseDir },
+                    ["-jar", generatorPath, `-Dpom=${pom.path}`, "-Ddestination=src/licenses", `-DgeneratorProperties=${propertiesPath}`],
+                    { cwd: project.baseDir, stdio: 'inherit' },
                 );
             })
             .then(process => new Promise<Project>((resolve, reject) => {

@@ -1,5 +1,6 @@
 import {
   CommandHandler,
+  failure,
   HandleCommand,
   HandlerContext,
   HandlerResult,
@@ -15,7 +16,7 @@ import async = require("async");
 import * as os from "os";
 import {allReposInTeam} from "../support/repo/allReposInTeamRepoFinder";
 import {boosterRepos} from "../support/repo/boosterRepo";
-import {releaseBooster, ReleaseParams} from "./ReleaseBoosterUtil";
+import {ensureVPNAccess, releaseBooster, ReleaseParams} from "./ReleaseBoosterUtil";
 
 @CommandHandler("Release (tag) boosters", "release boosters")
 export class ReleaseBoosters implements HandleCommand {
@@ -38,6 +39,11 @@ export class ReleaseBoosters implements HandleCommand {
   public githubToken: string;
 
   public async handle(context: HandlerContext, params: this): Promise<HandlerResult> {
+
+    const error = await ensureVPNAccess();
+    if (error != null) {
+      return failure(error);
+    }
 
     /**
      * We need to limit the concurrency of the booster release, because it uses the resource

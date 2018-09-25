@@ -11,7 +11,7 @@ import {
   Secrets,
   success,
 } from "@atomist/automation-client";
-import {releaseBooster} from "./ReleaseBoosterUtil";
+import {ensureVPNAccess, releaseBooster} from "./ReleaseBoosterUtil";
 
 @CommandHandler("Release (tag) single boosters", "release single booster")
 export class ReleaseSingleBooster implements HandleCommand {
@@ -36,7 +36,12 @@ export class ReleaseSingleBooster implements HandleCommand {
   @Secret(Secrets.UserToken)
   public githubToken: string;
 
-  public handle(context: HandlerContext, params: this): Promise<HandlerResult> {
+  public async handle(context: HandlerContext, params: this): Promise<HandlerResult> {
+
+    const error = await ensureVPNAccess();
+    if (error != null) {
+      return failure(error);
+    }
 
     return releaseBooster(
         {
