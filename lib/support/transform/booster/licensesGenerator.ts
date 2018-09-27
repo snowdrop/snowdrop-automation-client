@@ -19,8 +19,9 @@ export default function licensesGenerator(generatorPath: string): SimpleProjectE
                 logger.info(`Starting license generation with '${generatorPath}' for '${pom.path}' with properties at '${propertiesPath}'`);
                 return spawn(
                     "java",
+                    // tslint:disable-next-line: max-line-length
                     ["-jar", generatorPath, `-Dpom=${pom.path}`, "-Ddestination=src/licenses", `-DgeneratorProperties=${propertiesPath}`],
-                    { cwd: project.baseDir, stdio: 'inherit' },
+                    { cwd: project.baseDir, stdio: "inherit" },
                 );
             })
             .then(process => new Promise<Project>((resolve, reject) => {
