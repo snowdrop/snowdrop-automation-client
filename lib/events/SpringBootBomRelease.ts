@@ -16,33 +16,30 @@
 
 import {
   EventFired,
-  EventHandler, failure,
+  EventHandler,
+  failure,
   GraphQL,
   HandleEvent,
   HandlerContext,
   HandlerResult,
-  logger, MappedParameter, MappedParameters,
+  logger,
+  MappedParameter,
+  MappedParameters,
   Secret,
   Secrets,
   success,
   Success,
   Tags,
 } from "@atomist/automation-client";
-
-import {GitHubRepoRef} from "@atomist/automation-client/operations/common/GitHubRepoRef";
-import {editAll, editOne} from "@atomist/automation-client/operations/edit/editAll";
-import {BranchCommit, commitToMaster} from "@atomist/automation-client/operations/edit/editModes";
 import * as _ from "lodash";
-import {BOM_BRANCH, BOM_REPO, BOM_VERSION_REGEX} from "../constants";
-import {allReposInTeam} from "../support/repo/allReposInTeamRepoFinder";
-import {boosterRepos} from "../support/repo/boosterRepo";
-import {updateBomVersionForRelease} from "../support/transform/bom/updateBomVersionForRelease";
-import {updateBoosterForBomVersion} from "../support/transform/booster/updateBoosterForBomVersion";
+import {BOM_REPO, BOM_VERSION_REGEX} from "../constants";
+import {performUpdatesForBomRelease, UpdateParams} from "../shared/BomReleaseUtil";
 import * as graphql from "../typings/types";
 
+// see also commands/SpringBootBomRelease
 @EventHandler("update master branch of each booster upon a new BOM release", GraphQL.subscription("tag"))
 @Tags("bom", "release", "boosters")
-export class UpdateBoostersOnBOMRelease implements HandleEvent<graphql.TagToPush.Subscription> {
+export class UpdateBoostersAndBOMForBOMRelease implements HandleEvent<graphql.TagToPush.Subscription> {
 
   @MappedParameter(MappedParameters.GitHubOwner)
   public owner: string;
@@ -65,32 +62,14 @@ export class UpdateBoostersOnBOMRelease implements HandleEvent<graphql.TagToPush
       return Promise.resolve(Success);
     }
 
-    logger.debug(`Attempting to update boosters to new BOM version ${releasedBOMVersion}`);
+    logger.debug(`Attempting to automatically update boosters to new BOM version ${releasedBOMVersion}`);
 
-    const commit = commitToMaster(`[booster-release] Update BOM to ${releasedBOMVersion}`);
-
-    return editAll(ctx,
-        {token: this.githubToken},
-        updateBoosterForBomVersion(releasedBOMVersion),
-        commit,
-        undefined,
-        allReposInTeam(),
-        boosterRepos(this.githubToken),
-    )
-    .then(() => {
-      return editOne(
-          ctx,
-          {token: this.githubToken},
-          updateBomVersionForRelease(releasedBOMVersion),
-          {
-            branch: BOM_BRANCH,
-            message: `Bump BOM version`,
-          } as BranchCommit,
-          new GitHubRepoRef(this.owner, BOM_REPO, BOM_BRANCH),
-          undefined,
-      );
-    }).then(success, failure);
-
+    return performUpdatesForBomRelease({
+      bomVersion: releasedBOMVersion,
+      owner: this.owner,
+      githubToken: this.githubToken,
+      context: ctx,
+    } as UpdateParams).then(success, failure);
   }
 
   private extractRepo(e: EventFired<graphql.TagToPush.Subscription>): string {
