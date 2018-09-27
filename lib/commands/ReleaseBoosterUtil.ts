@@ -35,7 +35,7 @@ export class ReleaseParams {
 
 export async function ensureVPNAccess(): Promise<Error> {
   try {
-    await promisify(dns.resolve)("http://indy.cloud.pnc.engineering.redhat.com");
+    await promisify(dns.lookup)("http://indy.cloud.pnc.engineering.redhat.com");
     return null;
   } catch (e) {
     const message = "You must be on the RH VPN to release the boosters";
