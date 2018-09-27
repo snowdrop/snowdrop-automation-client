@@ -4,6 +4,7 @@ import {Project} from "@atomist/automation-client/project/Project";
 import axios from "axios";
 import {BOOSTER_SB_PROPERTY_NAME, UPSTREAM_RELEASE_VERSION_REGEX} from "../../../constants";
 import {calculateNewPropertyVersions} from "../../utils/bomUtils";
+import {getCurrentVersion} from "../../utils/pomUtils";
 import {updateMavenProjectVersion} from "../booster/updateMavenProjectVersion";
 import {NameValuePair, updateMavenProperty} from "../booster/updateMavenProperty";
 
@@ -59,12 +60,21 @@ export function updateBomFromUpstream(upstreamVersion: string): SimpleProjectEdi
       const p2 = await updateMavenProperty(...nameValuePairs)(project);
 
       // update README
-      const existingReadme = await project.getFile("README.adoc");
+      const existingReadme = await p2.getFile("README.adoc");
       const existingReadmeContent = await existingReadme.getContent();
       const newReadmeContent = updateReadme(existingReadmeContent, propertiesUpdates);
       await existingReadme.setContent(newReadmeContent);
 
-      return await updateMavenProjectVersion(`${upstreamVersionMatches[1]}-SNAPSHOT`)(p2);
+      const currentVersion = await getCurrentVersion(p2);
+      const upsteamVersionWithoutQualifier = `${upstreamVersionMatches[1]}`;
+      // make sure we don't "reset" the BOM version if it already "matches" upstream
+      // this is done in order to avoid having the bom version "reset" when re-running
+      // the update from upstream process
+      if (currentVersion.startsWith(upsteamVersionWithoutQualifier)) {
+        return p2;
+      }
+
+      return await updateMavenProjectVersion(`${upsteamVersionWithoutQualifier}-SNAPSHOT`)(p2);
     } catch (e) {
       logger.error("Failed to update BOM");
       return Promise.reject(e);

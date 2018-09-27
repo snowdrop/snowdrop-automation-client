@@ -24,7 +24,7 @@ describe("updateBomFromUpstreamTest", () => {
 
   it("all expected properties were updated", async () => {
     const p = InMemoryProject.of(
-        {path: "pom.xml", content: Bom},
+        {path: "pom.xml", content: Bom("1.5.14-SNAPSHOT")},
         {path: "README.adoc", content: InitialReadme},
     );
 
@@ -48,17 +48,44 @@ describe("updateBomFromUpstreamTest", () => {
     assert(updatedReadmeContent === UpdatedReadme);
   }).timeout(10000);
 
+  it("bom version is not updated since it already uses a version matching upstream", async () => {
+    const p = InMemoryProject.of(
+        {path: "pom.xml", content: Bom("1.5.15-SP1-SNAPSHOT")},
+        {path: "README.adoc", content: InitialReadme},
+    );
+
+    await updateBomFromUpstream("1.5.15.RELEASE")(p);
+
+    const pomFile = await p.findFile("pom.xml");
+    const pomContent = await pomFile.getContent();
+    const pomJson = parser.toJson(pomContent, {object: true}) as any;
+
+    const pomProject = pomJson.project;
+    assert(pomProject.version === "1.5.15-SP1-SNAPSHOT");
+
+    const pomProperties = pomJson.project.properties;
+    assert(pomProperties["spring-boot.version"] === "1.5.15.RELEASE");
+    assert(pomProperties["httpcore.version"] === "4.4.10");
+    assert(pomProperties["hibernate-validator.version"] === "5.3.5.Final");
+    assert(pomProperties["tomcat.version"] === "8.5.32");
+
+    const updatedReadme = await p.findFile("README.adoc");
+    const updatedReadmeContent = await updatedReadme.getContent();
+    assert(updatedReadmeContent === UpdatedReadme);
+  }).timeout(10000);
+
 });
 
 /* tslint:disable */
 
-const Bom = `<?xml version="1.0" encoding="UTF-8"?>
+function Bom(bomVersion: string) {
+  return `<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>me.snowdrop</groupId>
   <artifactId>spring-boot-bom</artifactId>
-  <version>1.5.14-SNAPSHOT</version>
+  <version>${bomVersion}</version>
   <packaging>pom</packaging>
 
   <name>Snowdrop Spring Boot BOM</name>
@@ -116,6 +143,7 @@ const Bom = `<?xml version="1.0" encoding="UTF-8"?>
   </dependencyManagement>
 </project>
 `;
+}
 
 const InitialReadme = `// spring-boot
 :spring-boot.version:   1.5.14.RELEASE
