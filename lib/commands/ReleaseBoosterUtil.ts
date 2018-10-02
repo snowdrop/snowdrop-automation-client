@@ -34,8 +34,7 @@ export class ReleaseParams {
 }
 
 // For some reason, on MacOSX we need to use dns.lookup instead of dns.resolve
-const dnsFunctionToUse = (process.platform === 'darwin' ? dns.lookup : dns.resolve);
-
+const dnsFunctionToUse = (process.platform === "darwin" ? dns.lookup : dns.resolve);
 
 export async function ensureVPNAccess(): Promise<Error> {
   try {
