@@ -33,9 +33,13 @@ export class ReleaseParams {
   public context: HandlerContext;
 }
 
+// For some reason, on MacOSX we need to use dns.lookup instead of dns.resolve
+const dnsFunctionToUse = (process.platform === 'darwin' ? dns.lookup : dns.resolve);
+
+
 export async function ensureVPNAccess(): Promise<Error> {
   try {
-    await promisify(dns.lookup)("http://indy.cloud.pnc.engineering.redhat.com");
+    await promisify(dnsFunctionToUse)("http://indy.cloud.pnc.engineering.redhat.com");
     return null;
   } catch (e) {
     const message = "You must be on the RH VPN to release the boosters";
