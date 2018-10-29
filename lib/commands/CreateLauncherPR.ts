@@ -27,6 +27,7 @@ export class CreateLauncherPR implements HandleCommand {
 
   @Parameter({
     displayName: "spring boot version",
+    // tslint:disable-next-line: max-line-length
     description: "The (simplified) Spring Boot version (no qualifiers needed  - simply something like: 1.5.15)",
     pattern: /^\d+.\d+.\d+$/,
     validInput: "1.5.15",

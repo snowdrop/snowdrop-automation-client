@@ -23,6 +23,7 @@ export class ReleaseBoosters implements HandleCommand {
 
   @Parameter({
     displayName: "prod_bom_version",
+    // tslint:disable-next-line: max-line-length
     description: "The BOM version produced by the prod run (found in extras/repository-artifact-list.txt - something like: 1.5.15.Beta1-redhat-00007)",
     pattern: /^(\d+.\d+.\d+).(\w+)-redhat-\d+$/,
     validInput: "1.5.15.Beta1-redhat-00007",

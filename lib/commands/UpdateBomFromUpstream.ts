@@ -23,6 +23,7 @@ export class UpdateBomFromUpstream implements HandleCommand {
 
   @Parameter({
     displayName: "upstream version",
+    // tslint:disable-next-line: max-line-length
     description: "The Pivotal upstream Spring Boot version for which we want to run the update (something like: 1.5.15.RELEASE)",
     pattern: UPSTREAM_RELEASE_VERSION_REGEX,
     validInput: "1.5.15.RELEASE",
