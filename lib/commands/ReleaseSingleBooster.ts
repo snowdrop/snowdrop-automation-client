@@ -18,7 +18,7 @@ export class ReleaseSingleBooster implements HandleCommand {
 
   @Parameter({
     displayName: "prod_bom_version",
-    description: "The BOM version produced by the prod run",
+    description: "The BOM version produced by the prod run (found in extras/repository-artifact-list.txt - something like: 1.5.15.Final-redhat-00002)",
     pattern: /^(\d+.\d+.\d+).(\w+)-redhat-\d+$/,
     validInput: "1.5.15.Final-redhat-00002",
     minLength: 16,

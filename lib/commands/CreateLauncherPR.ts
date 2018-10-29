@@ -27,7 +27,7 @@ export class CreateLauncherPR implements HandleCommand {
 
   @Parameter({
     displayName: "spring boot version",
-    description: "The Spring Boot version",
+    description: "The (simplified) Spring Boot version (no qualifiers needed  - simply something like: 1.5.15)",
     pattern: /^\d+.\d+.\d+$/,
     validInput: "1.5.15",
     minLength: 5,

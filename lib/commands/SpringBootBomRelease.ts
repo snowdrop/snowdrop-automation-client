@@ -26,7 +26,7 @@ export class SpringBootBomRelease implements HandleCommand {
 
   @Parameter({
     displayName: "bom_version",
-    description: "The BOM version for which the update is going to run",
+    description: "The upstream snowdrop release of the BOM for which the update is going to run (something like: 1.5.15.Final)",
     pattern: BOM_VERSION_REGEX,
     validInput: "1.5.15.Final",
     minLength: 10,

@@ -23,7 +23,7 @@ export class UpdateBomFromUpstream implements HandleCommand {
 
   @Parameter({
     displayName: "upstream version",
-    description: "The upstream Spring Boot version for which we want to run the update",
+    description: "The Pivotal upstream Spring Boot version for which we want to run the update (something like: 1.5.15.RELEASE)",
     pattern: UPSTREAM_RELEASE_VERSION_REGEX,
     validInput: "1.5.15.RELEASE",
     minLength: 10,
