@@ -4,40 +4,41 @@ async function getCreateMeta(host: string, username: string, password: string, p
     const options = {
         auth: {
             user: username,
-            pass: password
+            pass: password,
         },
-        json: true
-    }
+        json: true,
+    };
     return get(`${host}/rest/api/2/issue/createmeta?projectKeys=${projectKey}`, options);
 }
 
-export async function createIssue(host: string, username: string, password: string, projectKey: string, summary: string, assignee: string): Promise<any> {
+export async function createIssue(host: string, username: string, password: string, projectKey: string,
+                                  summary: string, assignee: string): Promise<any> {
     // Project ID is set later once createmeta is received. This could also be done for an issue type id
     const options = {
         auth: {
             user: username,
-            pass: password
+            pass: password,
         },
         body: {
             fields: {
                 project: {
-                    id: ""
+                    id: "",
                 },
-                summary: summary,
+                summary,
                 issuetype: {
-                    id: 3
+                    id: 3,
                 },
                 assignee: {
-                    name: assignee
-                }
-            }
+                    name: assignee,
+                },
+            },
         },
-        json: true
+        json: true,
     };
 
     return getCreateMeta(host, username, password, projectKey)
         .then(meta => {
-            if (meta.projects.length == 1) {
+            if (meta.projects.length === 1) {
                 return meta.projects[0];
             }
             throw new Error(`JIRA project ${projectKey} was not found`);
