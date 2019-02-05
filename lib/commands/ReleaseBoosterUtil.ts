@@ -38,7 +38,7 @@ const dnsFunctionToUse = (process.platform === "darwin" ? dns.lookup : dns.resol
 
 export async function ensureVPNAccess(): Promise<Error> {
   try {
-    await promisify(dnsFunctionToUse)("http://indy.cloud.pnc.engineering.redhat.com");
+    await promisify(dnsFunctionToUse)("http://indy.psi.redhat.com");
     return null;
   } catch (e) {
     const message = "You must be on the RH VPN to release the boosters";
