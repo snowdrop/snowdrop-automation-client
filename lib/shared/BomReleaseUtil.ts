@@ -23,7 +23,7 @@ export function performUpdatesForBomRelease(params: UpdateParams): Promise<EditR
   const boosterBranch = determineBoosterBranchToUpdate(releasedBOMVersion);
   const bomBranch = determineBomBranchToUpdate(releasedBOMVersion);
 
-    logger.debug(`Will attempt to update branch ${bomBranch} of BOM and branch ${boosterBranch} of boosters`);
+  logger.debug(`Will attempt to update branch ${bomBranch} of BOM and branch ${boosterBranch} of boosters`);
 
   return editAll(params.context,
       {token: params.githubToken},
