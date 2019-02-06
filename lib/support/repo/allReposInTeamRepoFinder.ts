@@ -20,9 +20,9 @@ const PageSize = 100;
  * so I copied the implementation here.
  * Also the implementation in @atomist/sdm didn't work for some unknown reason
  */
-export function allReposInTeam(): RepoFinder {
+export function allReposInTeam(branch: string = "master"): RepoFinder {
     return (context: HandlerContext) => {
-        return queryForPage(context, 0);
+        return queryForPage(context, 0, branch);
     };
 }
 
@@ -43,15 +43,16 @@ query Repos($offset: Int!) {
  * Recursively query for repos from the present offset
  * @param {HandlerContext} context
  * @param {number} offset
+ * @param {string} branch for which to create the GitHubRepoRef (master by default)
  * @return {Promise<RepoRef[]>}
  */
-function queryForPage(context: HandlerContext, offset: number): Promise<RepoRef[]> {
+function queryForPage(context: HandlerContext, offset: number, branch: string = "master"): Promise<RepoRef[]> {
     return context.graphClient.executeQuery<ReposQuery, ReposQueryVariables>(
         RepoQuery,
         { teamId: context.teamId, offset })
         .then(result => {
             return _.flatMap(result.ChatTeam[0].orgs, org =>
-                org.repo.map(r => new GitHubRepoRef(r.owner, r.name)));
+                org.repo.map(r => new GitHubRepoRef(r.owner, r.name, branch)));
         })
         .then((repos: RepoRef[]) => {
             return (repos.length < PageSize) ?
