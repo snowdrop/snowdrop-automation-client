@@ -11,6 +11,7 @@ import {
   Secrets,
   success,
 } from "@atomist/automation-client";
+import {determineBoosterBranchToUpdate} from "../shared/BomReleaseUtil";
 import {ensureVPNAccess, releaseBooster} from "./ReleaseBoosterUtil";
 
 @CommandHandler("Release (tag) single boosters", "release single booster")
@@ -44,8 +45,11 @@ export class ReleaseSingleBooster implements HandleCommand {
       return failure(error);
     }
 
+    const boosterBranchToUse = determineBoosterBranchToUpdate(this.prodBomVersion);
+
     return releaseBooster(
         {
+          startingBranch: boosterBranchToUse,
           prodBomVersion: params.prodBomVersion,
           owner: params.owner,
           repository: params.repository,

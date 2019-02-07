@@ -14,6 +14,7 @@ import {
 import {relevantRepos} from "@atomist/automation-client/operations/common/repoUtils";
 import async = require("async");
 import * as os from "os";
+import {determineBoosterBranchToUpdate} from "../shared/BomReleaseUtil";
 import {allReposInTeam} from "../support/repo/allReposInTeamRepoFinder";
 import {boosterRepos} from "../support/repo/boosterRepo";
 import {ensureVPNAccess, releaseBooster, ReleaseParams} from "./ReleaseBoosterUtil";
@@ -46,6 +47,8 @@ export class ReleaseBoosters implements HandleCommand {
       return failure(error);
     }
 
+    const boosterBranchToUse = determineBoosterBranchToUpdate(this.prodBomVersion);
+
     /**
      * We need to limit the concurrency of the booster release, because it uses the resource
      * intensive licensing generation process (which is resource intensive because it launches
@@ -64,9 +67,11 @@ export class ReleaseBoosters implements HandleCommand {
             Math.max(os.cpus().length - 1, 1),
         );
 
-    const boosterRepositories = await relevantRepos(context, allReposInTeam(), boosterRepos(params.githubToken));
+    const boosterRepositories =
+        await relevantRepos(context, allReposInTeam(boosterBranchToUse), boosterRepos(params.githubToken));
     boosterRepositories.forEach(r => {
       queue.push({
+        startingBranch: boosterBranchToUse,
         prodBomVersion: params.prodBomVersion,
         owner: r.owner,
         repository: r.repo,

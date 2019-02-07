@@ -1,10 +1,7 @@
 import {GitHubRepoRef, HandlerContext, logger} from "@atomist/automation-client";
 import {editOne} from "@atomist/automation-client/operations/edit/editAll";
-import {BranchCommit, commitToMaster} from "@atomist/automation-client/operations/edit/editModes";
-import {
-  AnyProjectEditor,
-  EditResult,
-} from "@atomist/automation-client/operations/edit/projectEditor";
+import {BranchCommit} from "@atomist/automation-client/operations/edit/editModes";
+import {AnyProjectEditor, EditResult} from "@atomist/automation-client/operations/edit/projectEditor";
 import {Project} from "@atomist/automation-client/project/Project";
 import * as dns from "dns";
 import {resolve} from "path";
@@ -14,9 +11,9 @@ import {deleteBranch, tagBranch} from "../support/github/refUtils";
 import licensesGenerator from "../support/transform/booster/licensesGenerator";
 import {setBoosterVersionInTemplate} from "../support/transform/booster/setBoosterVersionInTemplate";
 import {
-  bumpMavenProjectRevisionVersion,
-  removeSnapshotFromMavenProjectVersion,
-  replaceSnapshotFromMavenProjectVersionWithQualifier,
+    bumpMavenProjectRevisionVersion,
+    removeSnapshotFromMavenProjectVersion,
+    replaceSnapshotFromMavenProjectVersionWithQualifier,
 } from "../support/transform/booster/updateMavenProjectVersion";
 import {updateMavenProperty} from "../support/transform/booster/updateMavenProperty";
 import {getCurrentVersion} from "../support/utils/pomUtils";
@@ -26,6 +23,7 @@ const communityBranchName = "temp-community";
 const prodBranchName = "temp-prod";
 
 export class ReleaseParams {
+  public startingBranch: string;
   public prodBomVersion: string;
   public owner: string;
   public repository: string;
@@ -90,8 +88,11 @@ export function releaseBooster(params: ReleaseParams): Promise<EditResult<Projec
             return editOne(params.context,
                 {token: params.githubToken},
                 bumpMavenProjectRevisionVersion(),
-                commitToMaster("[booster-release][ci skip] Bump version"),
-                new GitHubRepoRef(params.owner, params.repository),
+                {
+                    branch: params.startingBranch,
+                    message: "[booster-release][ci skip] Bump version",
+                } as BranchCommit,
+                new GitHubRepoRef(params.owner, params.repository, params.startingBranch),
             );
           });
 }
@@ -104,7 +105,7 @@ function editBoosterInBranch(params: ReleaseParams, branchName: string, editor: 
         branch: branchName,
         message: "[booster-release][ci skip] Tag booster",
       } as BranchCommit,
-      new GitHubRepoRef(params.owner, params.repository),
+      new GitHubRepoRef(params.owner, params.repository, params.startingBranch),
   );
 }
 
