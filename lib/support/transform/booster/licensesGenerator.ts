@@ -12,6 +12,10 @@ export default function licensesGenerator(generatorPath: string): SimpleProjectE
 
         const propertiesPath =
             generatorPath.replace("licenses-generator-shaded.jar", "generator.properties");
+        const aliasesPath =
+            generatorPath.replace("licenses-generator-shaded.jar", "rh-license-names.json");
+        const exceptionsPath =
+            generatorPath.replace("licenses-generator-shaded.jar", "rh-license-exceptions.json");
 
         return project.findFile("pom.xml")
             .then(pom => {
@@ -20,7 +24,7 @@ export default function licensesGenerator(generatorPath: string): SimpleProjectE
                 return spawn(
                     "java",
                     // tslint:disable-next-line: max-line-length
-                    ["-jar", generatorPath, `-Dpom=${pom.path}`, "-Ddestination=src/licenses", `-DgeneratorProperties=${propertiesPath}`],
+                    ["-jar", generatorPath, `-Dpom=${pom.path}`, "-Ddestination=src/licenses", `-DgeneratorProperties=${propertiesPath}`, `-DaliasesFile=${aliasesPath}`, `-DexceptionsFile=${exceptionsPath}`],
                     { cwd: project.baseDir, stdio: "inherit" },
                 );
             })
