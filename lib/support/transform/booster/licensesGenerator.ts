@@ -24,14 +24,7 @@ export default function licensesGenerator(generatorPath: string): SimpleProjectE
                 return spawn(
                     "java",
                     // tslint:disable-next-line: max-line-length
-                    [
-                        "-jar", generatorPath,
-                        `-Dpom=${pom.path}`,
-                        "-Ddestination=src/licenses",
-                        `-DgeneratorProperties=${propertiesPath}`,
-                        `-DaliasesFile=${aliasesPath}`,
-                        `-DexceptionsFile=${exceptionsPath}`
-                    ],
+                    ["-jar", generatorPath, `-Dpom=${pom.path}`, "-Ddestination=src/licenses", `-DgeneratorProperties=${propertiesPath}`, `-DaliasesFile=${aliasesPath}`, `-DexceptionsFile=${exceptionsPath}`],
                     { cwd: project.baseDir, stdio: "inherit" },
                 );
             })
