@@ -31,6 +31,6 @@ export function boosterSimpleName(fullName: string) {
   }
 
   logger.info(`Booster ${fullName} does not follow the naming conventions`);
-  logger.info("Using it's full name as the simple name");
+  logger.info("Using its full name as the simple name");
   return fullName;
 }
