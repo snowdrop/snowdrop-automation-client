@@ -50,7 +50,7 @@ export class CreateLauncherPR implements HandleCommand {
   }
 
   private updateCatalogAndCreatePR(context: HandlerContext, params: this, branch: string) {
-    const commitMessage = `Update Spring Boot to ${params.sbVersion}`;
+    const commitMessage = `DO NOT MERGE: Update Spring Boot to ${params.sbVersion}`;
     return syncWithUpstream(BOOSTER_CATALOG_REPO, params.githubToken, SNOWDROP_ORG)
             .then(syncResult => {
 
