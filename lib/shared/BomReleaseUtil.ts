@@ -1,6 +1,6 @@
 import {GitHubRepoRef, HandlerContext, logger} from "@atomist/automation-client";
 import {editAll, editOne} from "@atomist/automation-client/operations/edit/editAll";
-import {BranchCommit, commitToMaster} from "@atomist/automation-client/operations/edit/editModes";
+import {BranchCommit} from "@atomist/automation-client/operations/edit/editModes";
 import {EditResult} from "@atomist/automation-client/operations/edit/projectEditor";
 import {Project} from "@atomist/automation-client/project/Project";
 import {BOM_REPO} from "../constants";
@@ -19,7 +19,6 @@ export class UpdateParams {
 export function performUpdatesForBomRelease(params: UpdateParams): Promise<EditResult<Project>> {
   const releasedBOMVersion = params.bomVersion;
 
-  const commit = commitToMaster(`[booster-release] Update BOM to ${releasedBOMVersion}`);
   const boosterBranch = determineBoosterBranchToUpdate(releasedBOMVersion);
   const bomBranch = determineBomBranchToUpdate(releasedBOMVersion);
 
@@ -28,7 +27,10 @@ export function performUpdatesForBomRelease(params: UpdateParams): Promise<EditR
   return editAll(params.context,
       {token: params.githubToken},
       updateBoosterForBomVersion(params.bomVersion),
-      commit,
+      {
+          branch: boosterBranch,
+          message: `[booster-release] Update BOM to ${releasedBOMVersion}`,
+      } as BranchCommit,
       undefined,
       allReposInTeam(boosterBranch),
       boosterRepos(params.githubToken),

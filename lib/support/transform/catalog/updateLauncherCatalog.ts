@@ -79,7 +79,7 @@ function getBoosterNameInCatalog(boosterFullName: string) {
     return `rest-${simpleName}`;
   }
   if (simpleName.includes("messaging-work-queue")) {
-    return "messaging"
+    return "messaging";
   }
   return simpleName;
 }
