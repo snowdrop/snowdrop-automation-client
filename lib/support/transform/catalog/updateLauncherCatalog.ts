@@ -78,6 +78,9 @@ function getBoosterNameInCatalog(boosterFullName: string) {
   if (["http", "http-secured"].includes(simpleName)) {
     return `rest-${simpleName}`;
   }
+  if (simpleName.includes("messaging-work-queue")) {
+    return "messaging"
+  }
   return simpleName;
 }
 
