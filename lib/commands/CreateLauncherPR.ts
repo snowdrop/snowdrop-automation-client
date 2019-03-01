@@ -49,32 +49,36 @@ export class CreateLauncherPR implements HandleCommand {
     return this.updateCatalogAndCreatePR(context, params, `update-to-spring-boot-${params.sbVersion}`);
   }
 
-  private updateCatalogAndCreatePR(context: HandlerContext, params: this, branch: string) {
+  private async updateCatalogAndCreatePR(context: HandlerContext,
+                                         params: this, branch: string): Promise<HandlerResult> {
     const commitMessage = `DO NOT MERGE: Update Spring Boot to ${params.sbVersion}`;
-    return syncWithUpstream(BOOSTER_CATALOG_REPO, params.githubToken, SNOWDROP_ORG)
-            .then(syncResult => {
 
-              if (!syncResult) {
-                return Promise.reject("Could not sync with upstream launcher catalog");
-              }
+    try {
+      const syncResult = await syncWithUpstream(BOOSTER_CATALOG_REPO, params.githubToken, SNOWDROP_ORG);
 
-              return editOne(
-                  context,
-                  {token: params.githubToken},
-                  updateLauncherCatalog(context, latestTagRetriever, params.sbVersion, params.githubToken),
-                  {
-                    branch,
-                    message: commitMessage,
-                  } as BranchCommit,
-                  new GitHubRepoRef(params.owner, BOOSTER_CATALOG_REPO),
-                  undefined,
-              );
-            })
-            .then(() => {
-              logger.debug("Attempting to create PR to upstream catalog");
-              return raisePullRequestToUpstream(
-                  BOOSTER_CATALOG_REPO, branch, "master", commitMessage, params.githubToken, params.owner);
-            })
-            .then(success, failure);
+      if (!syncResult) {
+        return Promise.reject("Could not sync with upstream launcher catalog");
+      }
+
+      await editOne(
+          context,
+          {token: params.githubToken},
+          updateLauncherCatalog(context, latestTagRetriever, params.sbVersion, params.githubToken),
+          {
+            branch,
+            message: commitMessage,
+          } as BranchCommit,
+          new GitHubRepoRef(params.owner, BOOSTER_CATALOG_REPO),
+          undefined,
+      );
+
+      logger.debug("Attempting to create PR to upstream catalog");
+      await raisePullRequestToUpstream(
+          BOOSTER_CATALOG_REPO, branch, "master", commitMessage, params.githubToken, params.owner);
+
+      return success();
+    } catch (e) {
+      return failure(e);
+    }
   }
 }
