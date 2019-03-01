@@ -6,7 +6,7 @@ import {
     logger,
     Parameter,
 } from "@atomist/automation-client";
-import { createIssue } from "../support/jira/jiraUtils";
+import {createIssue} from "../support/jira/jiraUtils";
 // tslint:disable:no-var-requires
 const config = require("config");
 
@@ -50,11 +50,11 @@ export class CreateJiraIssue implements HandleCommand {
     public async handle(context: HandlerContext): Promise<HandlerResult> {
         logger.debug(`${this.username} is attempting to create a JIRA issue on ${this.host} for `
             + `project=${this.project} with a summery ='${this.summary}' assigned to ${this.assignee}`);
-        return createIssue(this.host, this.username, this.password, this.project, this.summary, this.assignee)
-            .then(response => {
-                const message = `Created a new JIRA issue ${response.key}`;
-                logger.debug(message);
-                return context.messageClient.respond(message);
-            });
+
+        const response =
+            await createIssue(this.host, this.username, this.password, this.project, this.summary, this.assignee);
+        const message = `Created a new JIRA issue ${response.key}`;
+        logger.debug(message);
+        return context.messageClient.respond(message);
     }
 }

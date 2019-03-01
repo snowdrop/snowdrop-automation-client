@@ -39,17 +39,17 @@ export class GenerateLicensesCommand implements HandleCommand {
     @Secret(Secrets.UserToken)
     public readonly gitHubToken: string;
 
-    public handle(context: HandlerContext): Promise<HandlerResult> {
-        return generateLicenses(context, this.owner, this.repository, this.branch, this.gitHubToken)
-            .then(result => result.success ? success() : failure(result.error));
+    public async handle(context: HandlerContext): Promise<HandlerResult> {
+        const editResult =
+            await this.generateLicenses(context, this.owner, this.repository, this.branch, this.gitHubToken);
+        if (editResult.success) {
+            return success();
+        }
+        return failure(editResult.error);
     }
-}
 
-const licensesGeneratorPath = resolve(LICENSES_GENERATOR_PATH);
-
-export const generateLicenses =
-    (context: HandlerContext, owner: string, repository: string,
-     branch: string, gitHubToken: string): Promise<EditResult> => {
+    private generateLicenses(context: HandlerContext, owner: string, repository: string,
+                             branch: string, gitHubToken: string): Promise<EditResult> {
         logger.debug(`Attempting to generate licenses for '${owner}/${repository}' on '${branch}' branch`);
 
         const credentials = { token: gitHubToken } as TokenCredentials;
@@ -58,4 +58,7 @@ export const generateLicenses =
         const repoRef = new GitHubRepoRef(owner, repository, branch);
 
         return editOne(context, credentials, generator, commitInfo, repoRef);
-    };
+    }
+}
+
+const licensesGeneratorPath = resolve(LICENSES_GENERATOR_PATH);
