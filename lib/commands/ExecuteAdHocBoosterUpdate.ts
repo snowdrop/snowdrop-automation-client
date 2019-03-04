@@ -98,15 +98,21 @@ export class ExecuteAdHocBoosterUpdate implements HandleCommand {
       return Promise.reject(`Invalid source code`);
     }
 
-    return editAll(
-        context,
-        {token: params.githubToken},
-        editor,
-        new PullRequest(this.branch, params.commitTitle),
-        undefined,
-        allReposInTeam(),
-        boosterRepos(params.githubToken),
-    ).then(success, failure);
+    try {
+      await editAll(
+          context,
+          {token: params.githubToken},
+          editor,
+          new PullRequest(this.branch, params.commitTitle),
+          undefined,
+          allReposInTeam(),
+          boosterRepos(params.githubToken),
+      );
+    } catch (e) {
+      return failure(e);
+    }
+
+    return success();
   }
 
 }
