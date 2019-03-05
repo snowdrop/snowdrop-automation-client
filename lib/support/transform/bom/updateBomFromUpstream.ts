@@ -15,8 +15,6 @@ const PROPERTIES_THAT_SHOULD_NOT_BE_AUTO_UPDATED = [
     "hibernate-validator.version",
 ];
 
-
-
 /**
  * Updates our BOM with the updated properties of the upstream BOM
  */
@@ -114,7 +112,9 @@ function updateReadme(readme: string, propertiesUpdates: ReadonlyMap<string, str
 
 function determineUpstreamBOMURL(upstreamVersion: string) {
     if (upstreamVersion.startsWith("1.5")) {
+        // tslint:disable-next-line: max-line-length
         return `https://raw.githubusercontent.com/spring-projects/spring-boot/v${upstreamVersion}/spring-boot-dependencies/pom.xml`;
     }
-    return `https://raw.githubusercontent.com/spring-projects/spring-boot/v${upstreamVersion}/spring-boot-project/spring-boot-dependencies/pom.xml`
+    // tslint:disable-next-line: max-line-length
+    return `https://raw.githubusercontent.com/spring-projects/spring-boot/v${upstreamVersion}/spring-boot-project/spring-boot-dependencies/pom.xml`;
 }
