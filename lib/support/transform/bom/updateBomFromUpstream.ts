@@ -15,6 +15,8 @@ const PROPERTIES_THAT_SHOULD_NOT_BE_AUTO_UPDATED = [
     "hibernate-validator.version",
 ];
 
+
+
 /**
  * Updates our BOM with the updated properties of the upstream BOM
  */
@@ -34,7 +36,7 @@ export function updateBomFromUpstream(upstreamVersion: string): SimpleProjectEdi
       const axiosResponse =
           /* tslint:disable */
           await axios
-                  .get(`https://raw.githubusercontent.com/spring-projects/spring-boot/v${upstreamVersion}/spring-boot-dependencies/pom.xml`);
+                  .get(determineUpstreamBOMURL(upstreamVersion));
           /* tslint:enable */
 
       if (axiosResponse.status !== 200) {
@@ -108,4 +110,11 @@ function updateReadme(readme: string, propertiesUpdates: ReadonlyMap<string, str
     });
 
     return result.join("\n");
+}
+
+function determineUpstreamBOMURL(upstreamVersion: string) {
+    if (upstreamVersion.startsWith("1.5")) {
+        return `https://raw.githubusercontent.com/spring-projects/spring-boot/v${upstreamVersion}/spring-boot-dependencies/pom.xml`;
+    }
+    return `https://raw.githubusercontent.com/spring-projects/spring-boot/v${upstreamVersion}/spring-boot-project/spring-boot-dependencies/pom.xml`
 }
