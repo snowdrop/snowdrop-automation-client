@@ -1,7 +1,4 @@
-import { logger } from "@atomist/automation-client";
-import { SimpleProjectEditor } from "@atomist/automation-client/operations/edit/projectEditor";
-import { isLocalProject } from "@atomist/automation-client/project/local/LocalProject";
-import { Project } from "@atomist/automation-client/project/Project";
+import {isLocalProject, logger, Project, SimpleProjectEditor} from "@atomist/automation-client";
 import { spawn } from "child_process";
 
 export default function licensesGenerator(generatorPath: string): SimpleProjectEditor {

@@ -47,7 +47,7 @@ describe("tagBranch", () => {
 });
 
 function deleteTag(): Promise<any> {
-  return githubApi(githubToken()).gitdata.deleteReference({
+  return githubApi(githubToken()).git.deleteRef({
     owner: SNOWDROP_ORG,
     repo,
     ref: `tags/${tagName}`,

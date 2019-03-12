@@ -1,7 +1,7 @@
-import {InMemoryProject} from "@atomist/automation-client/project/mem/InMemoryProject";
-import {AbstractProject} from "@atomist/automation-client/project/support/AbstractProject";
 import * as assert from "power-assert";
 import {updateMavenProperty} from "../../../../lib/support/transform/booster/updateMavenProperty";
+import {AbstractProject} from "@atomist/automation-client/lib/project/support/AbstractProject";
+import {InMemoryProject} from "@atomist/automation-client";
 
 describe("setMavenProperty", () => {
 

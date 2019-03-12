@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import {InMemoryProject} from "@atomist/automation-client/project/mem/InMemoryProject";
 import * as assert from "power-assert";
 
 import * as parser from "xml2json";
 import {updateBomFromUpstream} from "../../../../lib/support/transform/bom/updateBomFromUpstream";
+import {InMemoryProject} from "@atomist/automation-client";
 
 describe("updateBomFromUpstreamTest", () => {
 

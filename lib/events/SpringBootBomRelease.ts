@@ -16,10 +16,8 @@
 
 import {
   EventFired,
-  EventHandler,
   failure,
   GraphQL,
-  HandleEvent,
   HandlerContext,
   HandlerResult,
   logger,
@@ -35,6 +33,8 @@ import * as _ from "lodash";
 import {BOM_REPO, BOM_VERSION_REGEX} from "../constants";
 import {performUpdatesForBomRelease, UpdateParams} from "../shared/BomReleaseUtil";
 import * as graphql from "../typings/types";
+import {EventHandler} from "@atomist/automation-client/lib/decorators";
+import {HandleEvent} from "@atomist/automation-client/lib/HandleEvent";
 
 // see also commands/SpringBootBomRelease
 @EventHandler("update master branch of each booster upon a new BOM release", GraphQL.subscription("tag"))

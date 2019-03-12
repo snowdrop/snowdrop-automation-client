@@ -1,8 +1,4 @@
-import {GitHubRepoRef, HandlerContext, logger} from "@atomist/automation-client";
-import {editOne} from "@atomist/automation-client/operations/edit/editAll";
-import {BranchCommit} from "@atomist/automation-client/operations/edit/editModes";
-import {AnyProjectEditor, EditResult} from "@atomist/automation-client/operations/edit/projectEditor";
-import {Project} from "@atomist/automation-client/project/Project";
+import {GitHubRepoRef, HandlerContext, logger, Project} from "@atomist/automation-client";
 import * as dns from "dns";
 import {resolve} from "path";
 import {promisify} from "util";
@@ -17,6 +13,9 @@ import {
 } from "../support/transform/booster/updateMavenProjectVersion";
 import {updateMavenProperty} from "../support/transform/booster/updateMavenProperty";
 import {getCurrentVersion} from "../support/utils/pomUtils";
+import {AnyProjectEditor, EditResult} from "@atomist/automation-client/lib/operations/edit/projectEditor";
+import {editOne} from "@atomist/automation-client/lib/operations/edit/editAll";
+import {BranchCommit} from "@atomist/automation-client/lib/operations/edit/editModes";
 
 const licensesGeneratorPath = resolve(LICENSES_GENERATOR_PATH);
 const communityBranchName = "temp-community";

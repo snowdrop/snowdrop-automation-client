@@ -1,12 +1,12 @@
 import {
-  CommandHandler,
-  HandleCommand,
   HandlerContext,
   HandlerResult,
   Parameter,
   Success,
 } from "@atomist/automation-client";
 import {sendTestReleaseEmail} from "../support/email/emailUtils";
+import {CommandHandler} from "@atomist/automation-client/lib/decorators";
+import {HandleCommand} from "@atomist/automation-client/lib/HandleCommand";
 
 @CommandHandler("Send Test release email", "send release email")
 export class SendTestReleaseEmail implements HandleCommand {

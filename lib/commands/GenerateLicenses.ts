@@ -1,8 +1,6 @@
 import {
-    CommandHandler,
     failure,
     GitHubRepoRef,
-    HandleCommand,
     HandlerContext,
     HandlerResult,
     logger,
@@ -11,15 +9,16 @@ import {
     Parameter,
     Secret,
     Secrets,
-    success,
+    success, TokenCredentials,
 } from "@atomist/automation-client";
-import { TokenCredentials } from "@atomist/automation-client/operations/common/ProjectOperationCredentials";
-import { editOne } from "@atomist/automation-client/operations/edit/editAll";
-import { BranchCommit } from "@atomist/automation-client/operations/edit/editModes";
-import { EditResult } from "@atomist/automation-client/operations/edit/projectEditor";
 import { resolve } from "path";
 import { LICENSES_GENERATOR_PATH } from "../constants";
 import licensesGenerator from "../support/transform/booster/licensesGenerator";
+import {CommandHandler} from "@atomist/automation-client/lib/decorators";
+import {HandleCommand} from "@atomist/automation-client/lib/HandleCommand";
+import {EditResult} from "@atomist/automation-client/lib/operations/edit/projectEditor";
+import {BranchCommit} from "@atomist/automation-client/lib/operations/edit/editModes";
+import {editOne} from "@atomist/automation-client/lib/operations/edit/editAll";
 
 @CommandHandler("Generate licenses for a repository", "generate licenses")
 export class GenerateLicensesCommand implements HandleCommand {

@@ -1,14 +1,13 @@
-import * as GitHubApi from "@octokit/rest";
+import * as Octokit from "@octokit/rest";
 
-export function githubApi(token?: string): GitHubApi {
-  const github = new GitHubApi();
+export function githubApi(token?: string): Octokit {
+  const options = {
+    previews: ['mercy-preview']
+  } as Octokit.Options;
 
   if (token) {
-    github.authenticate({
-      type: "token",
-      token,
-    });
+    options.auth = `token ${token}`;
   }
 
-  return github;
+  return new Octokit(options);
 }
