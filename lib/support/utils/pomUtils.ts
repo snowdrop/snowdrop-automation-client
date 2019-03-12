@@ -1,5 +1,5 @@
-import * as parser from "xml2json";
 import {Project} from "@atomist/automation-client";
+import * as parser from "xml2json";
 
 export function getPomAsJson(p: Project): Promise<any> {
   return p.getFile("pom.xml")

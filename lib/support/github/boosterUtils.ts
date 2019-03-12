@@ -22,7 +22,7 @@ export class DefaultLatestTagRetriever implements LatestTagRetriever {
     const filter = tagFilter ? tagFilter : () => true;
     const tagsRegex = /refs\/tags\/(.+)/;
 
-    const params = {owner: SNOWDROP_ORG, repo: booster, per_page: 1000, namespace: 'tags/'};
+    const params = {owner: SNOWDROP_ORG, repo: booster, per_page: 1000, namespace: "tags/"};
     const response = await githubApi(token).git.listRefs(params);
     const data = response.data as any[];
     const allTagsSorted =

@@ -1,13 +1,13 @@
 import {GitHubRepoRef, HandlerContext, logger, Project} from "@atomist/automation-client";
-import {BOM_REPO} from "../constants";
-import {boosterRepos} from "../support/repo/boosterRepo";
-import {updateBomVersionForRelease} from "../support/transform/bom/updateBomVersionForRelease";
-import {updateBoosterForBomVersion} from "../support/transform/booster/updateBoosterForBomVersion";
-import {EditResult} from "@atomist/automation-client/lib/operations/edit/projectEditor";
 import {editAll, editOne} from "@atomist/automation-client/lib/operations/edit/editAll";
 import {BranchCommit} from "@atomist/automation-client/lib/operations/edit/editModes";
+import {EditResult} from "@atomist/automation-client/lib/operations/edit/projectEditor";
 import {allReposInTeam} from "@atomist/sdm";
+import {BOM_REPO} from "../constants";
+import {boosterRepos} from "../support/repo/boosterRepo";
 import {FixedBranchDefaultRepoRefResolver} from "../support/repo/FixedBranchDefaultRepoRefResolver";
+import {updateBomVersionForRelease} from "../support/transform/bom/updateBomVersionForRelease";
+import {updateBoosterForBomVersion} from "../support/transform/booster/updateBoosterForBomVersion";
 
 export class UpdateParams {
   public bomVersion: string;

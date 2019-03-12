@@ -9,16 +9,16 @@ import {
   Secrets,
   success,
 } from "@atomist/automation-client";
-import async = require("async");
-import * as os from "os";
-import {determineBoosterBranchToUpdate} from "../shared/BomReleaseUtil";
-import {boosterRepos} from "../support/repo/boosterRepo";
-import {ensureVPNAccess, releaseBooster, ReleaseParams} from "./ReleaseBoosterUtil";
 import {CommandHandler} from "@atomist/automation-client/lib/decorators";
 import {HandleCommand} from "@atomist/automation-client/lib/HandleCommand";
 import {relevantRepos} from "@atomist/automation-client/lib/operations/common/repoUtils";
 import {allReposInTeam} from "@atomist/sdm";
+import async = require("async");
+import * as os from "os";
+import {determineBoosterBranchToUpdate} from "../shared/BomReleaseUtil";
+import {boosterRepos} from "../support/repo/boosterRepo";
 import {FixedBranchDefaultRepoRefResolver} from "../support/repo/FixedBranchDefaultRepoRefResolver";
+import {ensureVPNAccess, releaseBooster, ReleaseParams} from "./ReleaseBoosterUtil";
 
 @CommandHandler("Release (tag) boosters", "release boosters")
 export class ReleaseBoosters implements HandleCommand {
@@ -69,7 +69,10 @@ export class ReleaseBoosters implements HandleCommand {
         );
 
     const boosterRepositories =
-        await relevantRepos(context, allReposInTeam(new FixedBranchDefaultRepoRefResolver(boosterBranchToUse)), boosterRepos(params.githubToken));
+        await relevantRepos(
+            context,
+            allReposInTeam(new FixedBranchDefaultRepoRefResolver(boosterBranchToUse)), boosterRepos(params.githubToken),
+        );
     boosterRepositories.forEach(r => {
       queue.push({
         startingBranch: boosterBranchToUse,

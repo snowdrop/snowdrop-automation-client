@@ -9,10 +9,10 @@ import {
   Secrets,
   success,
 } from "@atomist/automation-client";
-import {determineBoosterBranchToUpdate} from "../shared/BomReleaseUtil";
-import {ensureVPNAccess, releaseBooster} from "./ReleaseBoosterUtil";
 import {CommandHandler} from "@atomist/automation-client/lib/decorators";
 import {HandleCommand} from "@atomist/automation-client/lib/HandleCommand";
+import {determineBoosterBranchToUpdate} from "../shared/BomReleaseUtil";
+import {ensureVPNAccess, releaseBooster} from "./ReleaseBoosterUtil";
 
 @CommandHandler("Release (tag) single boosters", "release single booster")
 export class ReleaseSingleBooster implements HandleCommand {

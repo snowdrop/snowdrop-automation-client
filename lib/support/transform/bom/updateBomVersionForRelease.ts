@@ -1,7 +1,7 @@
+import {logger, Project, SimpleProjectEditor} from "@atomist/automation-client";
 import {BOM_VERSION_REGEX} from "../../../constants";
 import {getCurrentVersionWithoutSnapshot} from "../../utils/pomUtils";
 import {updateMavenProjectVersion} from "../booster/updateMavenProjectVersion";
-import {logger, Project, SimpleProjectEditor} from "@atomist/automation-client";
 
 /**
  * Updates the version of the BOM according to the rules in SB-162

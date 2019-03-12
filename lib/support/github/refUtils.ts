@@ -1,6 +1,6 @@
+import {logger} from "@atomist/automation-client";
 import {SNOWDROP_ORG} from "../../constants";
 import {githubApi} from "./githubApi";
-import {logger} from "@atomist/automation-client";
 
 /**
  * Booster repos are repos that contain the "booster" Github topic

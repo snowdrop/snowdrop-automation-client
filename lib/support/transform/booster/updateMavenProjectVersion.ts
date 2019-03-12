@@ -1,8 +1,8 @@
 import {logger, Project, SimpleProjectEditor} from "@atomist/automation-client";
+import {doWithAllMatches} from "@atomist/automation-client/lib/tree/ast/astUtils";
 import {XmldocFileParser} from "@atomist/sdm-pack-spring/lib/xml/XmldocFileParser";
 import {BOOSTER_VERSION_REGEX} from "../../../constants";
 import {getCurrentVersion, getCurrentVersionWithoutSnapshot} from "../../utils/pomUtils";
-import {doWithAllMatches} from "@atomist/automation-client/lib/tree/ast/astUtils";
 
 /**
  * Update the version of a Maven project to the version specified

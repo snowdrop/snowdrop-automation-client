@@ -1,6 +1,6 @@
 import {RemoteRepoRef} from "@atomist/automation-client";
-import {DefaultRepoRefResolver} from "@atomist/sdm-core";
 import {CoreRepoFieldsAndChannels} from "@atomist/sdm";
+import {DefaultRepoRefResolver} from "@atomist/sdm-core";
 
 export class FixedBranchDefaultRepoRefResolver extends DefaultRepoRefResolver {
 
@@ -11,7 +11,8 @@ export class FixedBranchDefaultRepoRefResolver extends DefaultRepoRefResolver {
         this.branch = branch;
     }
 
-    public toRemoteRepoRef(repo: CoreRepoFieldsAndChannels.Fragment, opts?: { sha?: string; branch?: string }): RemoteRepoRef {
+    public toRemoteRepoRef(repo: CoreRepoFieldsAndChannels.Fragment,
+                           opts?: { sha?: string; branch?: string }): RemoteRepoRef {
         return super.toRemoteRepoRef(repo, {branch: this.branch});
     }
 }

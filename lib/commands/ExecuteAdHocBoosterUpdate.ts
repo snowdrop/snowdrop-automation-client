@@ -10,16 +10,16 @@ import {
   Secrets,
   success,
 } from "@atomist/automation-client";
+import {CommandHandler} from "@atomist/automation-client/lib/decorators";
+import {HandleCommand} from "@atomist/automation-client/lib/HandleCommand";
+import {editAll} from "@atomist/automation-client/lib/operations/edit/editAll";
+import {PullRequest} from "@atomist/automation-client/lib/operations/edit/editModes";
+import {AnyProjectEditor} from "@atomist/automation-client/lib/operations/edit/projectEditor";
+import {allReposInTeam} from "@atomist/sdm";
+import {DefaultRepoRefResolver} from "@atomist/sdm-core";
 import axios from "axios";
 import * as ts from "typescript";
 import {boosterRepos} from "../support/repo/boosterRepo";
-import {CommandHandler} from "@atomist/automation-client/lib/decorators";
-import {HandleCommand} from "@atomist/automation-client/lib/HandleCommand";
-import {AnyProjectEditor} from "@atomist/automation-client/lib/operations/edit/projectEditor";
-import {editAll} from "@atomist/automation-client/lib/operations/edit/editAll";
-import {PullRequest} from "@atomist/automation-client/lib/operations/edit/editModes";
-import {allReposInTeam} from "@atomist/sdm";
-import {DefaultRepoRefResolver} from "@atomist/sdm-core";
 
 /* tslint:disable */
 /*

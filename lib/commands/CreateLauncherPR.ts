@@ -10,14 +10,14 @@ import {
   Secrets,
   success,
 } from "@atomist/automation-client";
+import {CommandHandler} from "@atomist/automation-client/lib/decorators";
+import {HandleCommand} from "@atomist/automation-client/lib/HandleCommand";
 import {editOne} from "@atomist/automation-client/lib/operations/edit/editAll";
+import {BranchCommit} from "@atomist/automation-client/lib/operations/edit/editModes";
 import {BOOSTER_CATALOG_REPO, SNOWDROP_ORG} from "../constants";
 import {DefaultLatestTagRetriever} from "../support/github/boosterUtils";
 import {raisePullRequestToUpstream, syncWithUpstream} from "../support/github/refUtils";
 import {updateLauncherCatalog} from "../support/transform/catalog/updateLauncherCatalog";
-import {CommandHandler} from "@atomist/automation-client/lib/decorators";
-import {HandleCommand} from "@atomist/automation-client/lib/HandleCommand";
-import {BranchCommit} from "@atomist/automation-client/lib/operations/edit/editModes";
 
 const latestTagRetriever = new DefaultLatestTagRetriever();
 

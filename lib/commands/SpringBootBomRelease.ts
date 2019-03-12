@@ -10,10 +10,10 @@ import {
   Secrets,
   success, Tags,
 } from "@atomist/automation-client";
-import {BOM_VERSION_REGEX} from "../constants";
-import {performUpdatesForBomRelease, UpdateParams} from "../shared/BomReleaseUtil";
 import {CommandHandler} from "@atomist/automation-client/lib/decorators";
 import {HandleCommand} from "@atomist/automation-client/lib/HandleCommand";
+import {BOM_VERSION_REGEX} from "../constants";
+import {performUpdatesForBomRelease, UpdateParams} from "../shared/BomReleaseUtil";
 
 // see also events/SpringBootBomRelease
 @CommandHandler(

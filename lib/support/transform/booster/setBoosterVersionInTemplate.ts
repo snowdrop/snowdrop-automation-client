@@ -1,6 +1,6 @@
-import {getCurrentVersion} from "../../utils/pomUtils";
 import {SimpleProjectEditor} from "@atomist/automation-client";
 import {doWithFiles} from "@atomist/automation-client/lib/project/util/projectUtils";
+import {getCurrentVersion} from "../../utils/pomUtils";
 
 /**
  * Set the current booster version in the Openshift template files

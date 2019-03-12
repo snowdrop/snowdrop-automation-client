@@ -2,7 +2,7 @@ import * as Octokit from "@octokit/rest";
 
 export function githubApi(token?: string): Octokit {
   const options = {
-    previews: ['mercy-preview']
+    previews: ["mercy-preview"],
   } as Octokit.Options;
 
   if (token) {
