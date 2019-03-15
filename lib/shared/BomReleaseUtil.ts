@@ -44,7 +44,7 @@ export function performUpdatesForBomRelease(params: UpdateParams): Promise<EditR
           branch: bomBranch,
           message: `Bump BOM version [ci skip]`,
         } as BranchCommit,
-        new GitHubRepoRef(params.owner, BOM_REPO, bomBranch),
+        GitHubRepoRef.from({owner: params.owner, repo: BOM_REPO, branch: bomBranch}),
         undefined,
     );
   });

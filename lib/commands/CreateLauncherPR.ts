@@ -67,7 +67,7 @@ export class CreateLauncherPR implements HandleCommand {
             branch,
             message: commitMessage,
           } as BranchCommit,
-          new GitHubRepoRef(params.owner, BOOSTER_CATALOG_REPO),
+          GitHubRepoRef.from({owner: params.owner, repo: BOOSTER_CATALOG_REPO}),
           undefined,
       );
 

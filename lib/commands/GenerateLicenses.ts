@@ -54,7 +54,7 @@ export class GenerateLicensesCommand implements HandleCommand {
         const credentials = { token: gitHubToken } as TokenCredentials;
         const generator = licensesGenerator(licensesGeneratorPath);
         const commitInfo = { message: "Licenses update", branch } as BranchCommit;
-        const repoRef = new GitHubRepoRef(owner, repository, branch);
+        const repoRef = GitHubRepoRef.from({owner: owner, repo: repository, branch: branch});
 
         return editOne(context, credentials, generator, commitInfo, repoRef);
     }

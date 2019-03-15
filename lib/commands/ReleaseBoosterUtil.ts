@@ -91,7 +91,7 @@ export function releaseBooster(params: ReleaseParams): Promise<EditResult<Projec
                     branch: params.startingBranch,
                     message: "[booster-release][ci skip] Bump version",
                 } as BranchCommit,
-                new GitHubRepoRef(params.owner, params.repository, params.startingBranch),
+                GitHubRepoRef.from({owner: params.owner, repo: params.repository, branch: params.startingBranch}),
             );
           });
 }
@@ -104,7 +104,7 @@ function editBoosterInBranch(params: ReleaseParams, branchName: string, editor: 
         branch: branchName,
         message: "[booster-release][ci skip] Tag booster",
       } as BranchCommit,
-      new GitHubRepoRef(params.owner, params.repository, params.startingBranch),
+      GitHubRepoRef.from({owner: params.owner, repo: params.repository, branch: params.startingBranch}),
   );
 }
 
