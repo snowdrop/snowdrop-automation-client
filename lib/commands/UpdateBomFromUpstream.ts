@@ -51,7 +51,7 @@ export class UpdateBomFromUpstream implements HandleCommand {
           branch,
           message: `Update BOM for upstream ${params.upstreamVersion}`,
         } as BranchCommit,
-        GitHubRepoRef.from({owner: params.owner, repo: BOM_REPO, branch: branch}),
+        GitHubRepoRef.from({owner: params.owner, repo: BOM_REPO, branch}),
         undefined,
     ).then(success, failure);
   }
