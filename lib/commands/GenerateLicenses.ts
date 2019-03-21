@@ -1,8 +1,6 @@
 import {
-    CommandHandler,
     failure,
     GitHubRepoRef,
-    HandleCommand,
     HandlerContext,
     HandlerResult,
     logger,
@@ -11,12 +9,13 @@ import {
     Parameter,
     Secret,
     Secrets,
-    success,
+    success, TokenCredentials,
 } from "@atomist/automation-client";
-import { TokenCredentials } from "@atomist/automation-client/operations/common/ProjectOperationCredentials";
-import { editOne } from "@atomist/automation-client/operations/edit/editAll";
-import { BranchCommit } from "@atomist/automation-client/operations/edit/editModes";
-import { EditResult } from "@atomist/automation-client/operations/edit/projectEditor";
+import {CommandHandler} from "@atomist/automation-client/lib/decorators";
+import {HandleCommand} from "@atomist/automation-client/lib/HandleCommand";
+import {editOne} from "@atomist/automation-client/lib/operations/edit/editAll";
+import {BranchCommit} from "@atomist/automation-client/lib/operations/edit/editModes";
+import {EditResult} from "@atomist/automation-client/lib/operations/edit/projectEditor";
 import { resolve } from "path";
 import { LICENSES_GENERATOR_PATH } from "../constants";
 import licensesGenerator from "../support/transform/booster/licensesGenerator";
@@ -55,7 +54,7 @@ export class GenerateLicensesCommand implements HandleCommand {
         const credentials = { token: gitHubToken } as TokenCredentials;
         const generator = licensesGenerator(licensesGeneratorPath);
         const commitInfo = { message: "Licenses update", branch } as BranchCommit;
-        const repoRef = new GitHubRepoRef(owner, repository, branch);
+        const repoRef = GitHubRepoRef.from({owner, repo: repository, branch});
 
         return editOne(context, credentials, generator, commitInfo, repoRef);
     }

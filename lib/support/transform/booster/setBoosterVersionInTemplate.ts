@@ -1,5 +1,5 @@
-import {SimpleProjectEditor} from "@atomist/automation-client/operations/edit/projectEditor";
-import {doWithFiles} from "@atomist/automation-client/project/util/projectUtils";
+import {SimpleProjectEditor} from "@atomist/automation-client";
+import {doWithFiles} from "@atomist/automation-client/lib/project/util/projectUtils";
 import {getCurrentVersion} from "../../utils/pomUtils";
 
 /**

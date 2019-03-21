@@ -1,7 +1,5 @@
 import {
-  CommandHandler,
   failure,
-  HandleCommand,
   HandlerContext,
   HandlerResult,
   logger,
@@ -12,6 +10,8 @@ import {
   Secrets,
   success, Tags,
 } from "@atomist/automation-client";
+import {CommandHandler} from "@atomist/automation-client/lib/decorators";
+import {HandleCommand} from "@atomist/automation-client/lib/HandleCommand";
 import {BOM_VERSION_REGEX} from "../constants";
 import {performUpdatesForBomRelease, UpdateParams} from "../shared/BomReleaseUtil";
 

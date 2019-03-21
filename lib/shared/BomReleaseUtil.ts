@@ -1,11 +1,11 @@
-import {GitHubRepoRef, HandlerContext, logger} from "@atomist/automation-client";
-import {editAll, editOne} from "@atomist/automation-client/operations/edit/editAll";
-import {BranchCommit} from "@atomist/automation-client/operations/edit/editModes";
-import {EditResult} from "@atomist/automation-client/operations/edit/projectEditor";
-import {Project} from "@atomist/automation-client/project/Project";
+import {GitHubRepoRef, HandlerContext, logger, Project} from "@atomist/automation-client";
+import {editAll, editOne} from "@atomist/automation-client/lib/operations/edit/editAll";
+import {BranchCommit} from "@atomist/automation-client/lib/operations/edit/editModes";
+import {EditResult} from "@atomist/automation-client/lib/operations/edit/projectEditor";
+import {allReposInTeam} from "@atomist/sdm";
 import {BOM_REPO} from "../constants";
-import {allReposInTeam} from "../support/repo/allReposInTeamRepoFinder";
 import {boosterRepos} from "../support/repo/boosterRepo";
+import {FixedBranchDefaultRepoRefResolver} from "../support/repo/FixedBranchDefaultRepoRefResolver";
 import {updateBomVersionForRelease} from "../support/transform/bom/updateBomVersionForRelease";
 import {updateBoosterForBomVersion} from "../support/transform/booster/updateBoosterForBomVersion";
 
@@ -32,7 +32,7 @@ export function performUpdatesForBomRelease(params: UpdateParams): Promise<EditR
           message: `[booster-release] Update BOM to ${releasedBOMVersion}`,
       } as BranchCommit,
       undefined,
-      allReposInTeam(boosterBranch),
+      allReposInTeam(new FixedBranchDefaultRepoRefResolver(boosterBranch)),
       boosterRepos(params.githubToken),
   )
   .then(() => {
@@ -44,7 +44,7 @@ export function performUpdatesForBomRelease(params: UpdateParams): Promise<EditR
           branch: bomBranch,
           message: `Bump BOM version [ci skip]`,
         } as BranchCommit,
-        new GitHubRepoRef(params.owner, BOM_REPO, bomBranch),
+        GitHubRepoRef.from({owner: params.owner, repo: BOM_REPO, branch: bomBranch}),
         undefined,
     );
   });

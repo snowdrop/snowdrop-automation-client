@@ -1,6 +1,4 @@
-import { NodeFsLocalProject } from "@atomist/automation-client/project/local/NodeFsLocalProject";
-import { InMemoryProject } from "@atomist/automation-client/project/mem/InMemoryProject";
-import { Project } from "@atomist/automation-client/project/Project";
+import {InMemoryProject, NodeFsLocalProject, Project} from "@atomist/automation-client";
 import { expect } from "chai";
 import { resolve } from "path";
 import { tempdir } from "shelljs";
@@ -34,7 +32,7 @@ describe("licensesGenerator", () => {
 
 const createInMemoryProject = (): Project => {
     return InMemoryProject.from(
-        { repo: "test-project", owner: "test" },
+        { repo: "test-project", owner: "test", url: "dummy" },
         { path: "pom.xml", content: pomContent },
     );
 };

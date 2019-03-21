@@ -1,7 +1,5 @@
 import {
-  CommandHandler,
-  failure,
-  HandleCommand,
+  failure, GitHubRepoRef,
   HandlerContext,
   HandlerResult,
   logger,
@@ -12,9 +10,10 @@ import {
   Secrets,
   success,
 } from "@atomist/automation-client";
-import {GitHubRepoRef} from "@atomist/automation-client/operations/common/GitHubRepoRef";
-import {editOne} from "@atomist/automation-client/operations/edit/editAll";
-import {BranchCommit} from "@atomist/automation-client/operations/edit/editModes";
+import {CommandHandler} from "@atomist/automation-client/lib/decorators";
+import {HandleCommand} from "@atomist/automation-client/lib/HandleCommand";
+import {editOne} from "@atomist/automation-client/lib/operations/edit/editAll";
+import {BranchCommit} from "@atomist/automation-client/lib/operations/edit/editModes";
 import {BOM_REPO, UPSTREAM_RELEASE_VERSION_REGEX} from "../constants";
 import {determineBoosterBranchToUpdate} from "../shared/BomReleaseUtil";
 import {updateBomFromUpstream} from "../support/transform/bom/updateBomFromUpstream";
@@ -52,7 +51,7 @@ export class UpdateBomFromUpstream implements HandleCommand {
           branch,
           message: `Update BOM for upstream ${params.upstreamVersion}`,
         } as BranchCommit,
-        new GitHubRepoRef(params.owner, BOM_REPO, branch),
+        GitHubRepoRef.from({owner: params.owner, repo: BOM_REPO, branch}),
         undefined,
     ).then(success, failure);
   }

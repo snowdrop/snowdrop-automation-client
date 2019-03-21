@@ -1,8 +1,7 @@
-import {GitHubRepoRef, HandlerContext, logger} from "@atomist/automation-client";
-import {editOne} from "@atomist/automation-client/operations/edit/editAll";
-import {BranchCommit} from "@atomist/automation-client/operations/edit/editModes";
-import {AnyProjectEditor, EditResult} from "@atomist/automation-client/operations/edit/projectEditor";
-import {Project} from "@atomist/automation-client/project/Project";
+import {GitHubRepoRef, HandlerContext, logger, Project} from "@atomist/automation-client";
+import {editOne} from "@atomist/automation-client/lib/operations/edit/editAll";
+import {BranchCommit} from "@atomist/automation-client/lib/operations/edit/editModes";
+import {AnyProjectEditor, EditResult} from "@atomist/automation-client/lib/operations/edit/projectEditor";
 import * as dns from "dns";
 import {resolve} from "path";
 import {promisify} from "util";
@@ -92,7 +91,7 @@ export function releaseBooster(params: ReleaseParams): Promise<EditResult<Projec
                     branch: params.startingBranch,
                     message: "[booster-release][ci skip] Bump version",
                 } as BranchCommit,
-                new GitHubRepoRef(params.owner, params.repository, params.startingBranch),
+                GitHubRepoRef.from({owner: params.owner, repo: params.repository, branch: params.startingBranch}),
             );
           });
 }
@@ -105,7 +104,7 @@ function editBoosterInBranch(params: ReleaseParams, branchName: string, editor: 
         branch: branchName,
         message: "[booster-release][ci skip] Tag booster",
       } as BranchCommit,
-      new GitHubRepoRef(params.owner, params.repository, params.startingBranch),
+      GitHubRepoRef.from({owner: params.owner, repo: params.repository, branch: params.startingBranch}),
   );
 }
 

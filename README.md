@@ -14,6 +14,22 @@ run inside a private network since it uses Websockets to communicate with the At
 
 ### Prerequisites
 
+* Properly configure your environment in order for Atomist to be able to work. See [this](https://docs.atomist.com/developer/prerequisites/)
+
+Of particular importance is the `Minimal Configuration` section which mentions that at the very least, a file named `$HOME/.atomist/client.config.json`
+is needed containing the following information
+
+```
+{
+  "apiKey": "API_KEY",
+  "workspaceIds": [
+    "WORKSPACE_ID"
+  ]
+}
+```
+
+with API_KEY and WORKSPACE_ID replaced with your Atomist API key and workspace ID, respectively. 
+
 * Node 8.x or higher
 
 Install dependencies by executing:
@@ -26,27 +42,7 @@ Before launching the application the following environment variables need to be 
 
 | Name        | Purpose           | Mandatory? |
 | ------------- |:-------------:| -----: |
-| ATOMIST_CONFIG    | See [this](https://docs.atomist.com/developer/prerequisites/#environment-variable) | Yes | 
 | SENDGRIDKEY      | Sendgrid api key needed for sending email | No |
-
-And example of `ATOMIST_CONFIG` would be:
-
-export ATOMIST_CONFIG='{"token":"xxxxxx","workspaceIds":["xxxx"]}'
-
-The token is the Github token of the user
-
-Also note that the above configuration can be put in a file at `~/.atomist/client.config.json`
-which would look like:
-
-```
-{
-  "workspaceIds": [
-    "xxxx"
-  ],
-  "token": "xxxxxx"
-}
-~ 
-```
 
 Launch application by issuing:
 

@@ -1,7 +1,7 @@
-import {InMemoryProject} from "@atomist/automation-client/project/mem/InMemoryProject";
 import * as assert from "power-assert";
 import {updateBoosterForBomVersion} from "../../../../lib/support/transform/booster/updateBoosterForBomVersion";
 
+import {InMemoryProject} from "@atomist/automation-client";
 import * as parser from "xml2json";
 
 describe("updateBoosterForBomVersion", () => {
@@ -62,7 +62,7 @@ describe("updateBoosterForBomVersion", () => {
 
 function createProject() {
   return InMemoryProject.from(
-      {repo: "test-project", owner: "test"},
+      {repo: "test-project", owner: "test", url: "dummy"},
       {path: "pom.xml", content: PomWithParent},
       {path: "child/pom.xml", content: PomOfSubModule},
   );

@@ -1,4 +1,4 @@
-import {logger} from "@atomist/automation-client/internal/util/logger";
+import {logger} from "@atomist/automation-client";
 import {SNOWDROP_ORG} from "../../constants";
 import {githubApi} from "./githubApi";
 
@@ -16,7 +16,7 @@ export async function getShaOfLatestCommit(repo: string, branch: string,
   };
 
   try {
-    const response = await githubApi(token).gitdata.getReference(params);
+    const response = await githubApi(token).git.getRef(params);
     return response.data.object.sha;
   } catch (e) {
     logger.info(`Branch '${branch}' does not exists`);
@@ -34,6 +34,7 @@ export async function tagBranch(repo: string, branch: string, name: string, toke
 
   const sha = await getShaOfLatestCommit(repo, branch, token, owner);
   if (!sha) {
+    logger.error("Unable to find sha of latest commit");
     return false;
   }
 
@@ -45,7 +46,7 @@ export async function tagBranch(repo: string, branch: string, name: string, toke
   };
 
   try {
-    const response = await githubApi(token).gitdata.createReference(params);
+    const response = await githubApi(token).git.createRef(params);
     if (!response.data.ref) {
       logger.error(`Got unknown response from GitHub when trying to create tag '${name}' for '${repo}'`);
       logger.error(`Response data is:\n ${response.data}`);
@@ -76,7 +77,7 @@ export async function deleteBranch(repo: string, branch: string, token?: string,
   };
 
   try {
-    await githubApi(token).gitdata.deleteReference(params);
+    await githubApi(token).git.deleteRef(params);
     logger.info(`Successfully deleted branch '${branch}' of booster '${repo}'`);
     return true;
   } catch (e) {
@@ -110,7 +111,7 @@ export async function syncWithUpstream(repo: string, token?: string,
       force: false,
     };
 
-    await githubApi(token).gitdata.updateReference(updateParams);
+    await githubApi(token).git.updateRef(updateParams);
     /* tslint:disable */
     logger.info(`Successfully synced repo '${owner}/${repo}' to upstream '${upstreamInfo.owner}/${upstreamInfo.name}'`);
     /* tslint:enable */
@@ -173,7 +174,7 @@ export async function raisePullRequestToUpstream(
       title,
     };
 
-    await githubApi(token).pullRequests.create(createParams);
+    await githubApi(token).pulls.create(createParams);
     /* tslint:disable */
     logger.info(`Successfully created pull request to '${upstreamInfo.owner}/${upstreamInfo.name}:${targetBranch}' from '${owner}/${repo}:${sourceBranch}'`);
     /* tslint:enable */

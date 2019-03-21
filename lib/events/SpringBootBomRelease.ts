@@ -16,10 +16,8 @@
 
 import {
   EventFired,
-  EventHandler,
   failure,
-  GraphQL,
-  HandleEvent,
+  // GraphQL,
   HandlerContext,
   HandlerResult,
   logger,
@@ -31,13 +29,16 @@ import {
   Success,
   Tags,
 } from "@atomist/automation-client";
+// import {EventHandler} from "@atomist/automation-client/lib/decorators";
+import {HandleEvent} from "@atomist/automation-client/lib/HandleEvent";
 import * as _ from "lodash";
 import {BOM_REPO, BOM_VERSION_REGEX} from "../constants";
 import {performUpdatesForBomRelease, UpdateParams} from "../shared/BomReleaseUtil";
 import * as graphql from "../typings/types";
 
 // see also commands/SpringBootBomRelease
-@EventHandler("update master branch of each booster upon a new BOM release", GraphQL.subscription("tag"))
+// TODO: Fix Disabled for the time being since it broke application startup
+// @EventHandler("update master branch of each booster upon a new BOM release", GraphQL.subscription("tag"))
 @Tags("bom", "release", "boosters")
 export class UpdateBoostersAndBOMForBOMRelease implements HandleEvent<graphql.TagToPush.Subscription> {
 

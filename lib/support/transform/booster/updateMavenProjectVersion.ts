@@ -1,10 +1,6 @@
-import {logger} from "@atomist/automation-client/internal/util/logger";
-import {SimpleProjectEditor} from "@atomist/automation-client/operations/edit/projectEditor";
-import {File} from "@atomist/automation-client/project/File";
-import {doWithFiles} from "@atomist/automation-client/project/util/projectUtils";
-
-import {Project} from "@atomist/automation-client/project/Project";
-import * as parser from "xml2json";
+import {logger, Project, SimpleProjectEditor} from "@atomist/automation-client";
+import {doWithAllMatches} from "@atomist/automation-client/lib/tree/ast/astUtils";
+import {XmldocFileParser} from "@atomist/sdm-pack-spring/lib/xml/XmldocFileParser";
 import {BOOSTER_VERSION_REGEX} from "../../../constants";
 import {getCurrentVersion, getCurrentVersionWithoutSnapshot} from "../../utils/pomUtils";
 
@@ -12,15 +8,19 @@ import {getCurrentVersion, getCurrentVersionWithoutSnapshot} from "../../utils/p
  * Update the version of a Maven project to the version specified
  *
  */
-export function updateMavenProjectVersion(version: string): SimpleProjectEditor {
-  return p => {
-    return doWithFiles(p, "pom.xml",
-         m => {
-           return doUpdateVersion(m, version, (pomAJsonObj => pomAJsonObj.project.version));
-        }).then(p2 => {
-            return doWithFiles(p2, "*/pom.xml",
-             m => {
-               return doUpdateVersion(m, version, (pomAJsonObj => pomAJsonObj.project.parent.version));
+export function updateMavenProjectVersion(newVersion: string): SimpleProjectEditor {
+  return (p: Project) => {
+    return doWithAllMatches(p, new XmldocFileParser(),
+        "pom.xml",
+        "/project/version",
+        n => {
+          n.$value = `<version>${newVersion}</version>`;
+        }).then((p2: Project) => {
+            return doWithAllMatches(p2, new XmldocFileParser(),
+                "*/pom.xml",
+                "/project/parent/version",
+                n => {
+                  n.$value = `<version>${newVersion}</version>`;
             });
     });
   };
@@ -56,13 +56,4 @@ export function replaceSnapshotFromMavenProjectVersionWithQualifier(qualifier: s
       return updateMavenProjectVersion(`${v}-${qualifier}`)(p);
     });
   };
-}
-
-async function doUpdateVersion(m: File, version: string, versionExtractor: (obj: any) => string) {
-  const initialContent = await m.getContent();
-  const pomAJsonObj = parser.toJson(initialContent, {object: true});
-  const oldVersion = versionExtractor(pomAJsonObj);
-  const regex = new RegExp(`<version>${oldVersion}<\/version>`, "g");
-  const finalContent = initialContent.replace(regex, `<version>${version}</version>`);
-  await m.setContent(finalContent);
 }

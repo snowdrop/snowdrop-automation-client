@@ -1,4 +1,3 @@
-import {InMemoryProject} from "@atomist/automation-client/project/mem/InMemoryProject";
 import * as assert from "power-assert";
 import {
   bumpMavenProjectRevisionVersion,
@@ -7,6 +6,7 @@ import {
   updateMavenProjectVersion,
 } from "../../../../lib/support/transform/booster/updateMavenProjectVersion";
 
+import {InMemoryProject} from "@atomist/automation-client";
 import * as parser from "xml2json";
 
 const newVersion = "1.2.4";

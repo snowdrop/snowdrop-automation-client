@@ -1,4 +1,4 @@
-import {Project} from "@atomist/automation-client/project/Project";
+import {Project} from "@atomist/automation-client";
 import * as parser from "xml2json";
 
 export function getPomAsJson(p: Project): Promise<any> {

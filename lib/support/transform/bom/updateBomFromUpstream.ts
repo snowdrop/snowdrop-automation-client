@@ -1,6 +1,4 @@
-import {logger} from "@atomist/automation-client/internal/util/logger";
-import {SimpleProjectEditor} from "@atomist/automation-client/operations/edit/projectEditor";
-import {Project} from "@atomist/automation-client/project/Project";
+import {logger, Project, SimpleProjectEditor} from "@atomist/automation-client";
 import axios from "axios";
 import {BOOSTER_SB_PROPERTY_NAME, UPSTREAM_RELEASE_VERSION_REGEX} from "../../../constants";
 import {calculateNewPropertyVersions} from "../../utils/bomUtils";

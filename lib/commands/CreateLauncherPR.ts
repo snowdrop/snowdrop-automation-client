@@ -1,7 +1,5 @@
 import {
-  CommandHandler,
-  failure,
-  HandleCommand,
+  failure, GitHubRepoRef,
   HandlerContext,
   HandlerResult,
   logger,
@@ -12,9 +10,10 @@ import {
   Secrets,
   success,
 } from "@atomist/automation-client";
-import {GitHubRepoRef} from "@atomist/automation-client/operations/common/GitHubRepoRef";
-import {editOne} from "@atomist/automation-client/operations/edit/editAll";
-import {BranchCommit} from "@atomist/automation-client/operations/edit/editModes";
+import {CommandHandler} from "@atomist/automation-client/lib/decorators";
+import {HandleCommand} from "@atomist/automation-client/lib/HandleCommand";
+import {editOne} from "@atomist/automation-client/lib/operations/edit/editAll";
+import {BranchCommit} from "@atomist/automation-client/lib/operations/edit/editModes";
 import {BOOSTER_CATALOG_REPO, SNOWDROP_ORG} from "../constants";
 import {DefaultLatestTagRetriever} from "../support/github/boosterUtils";
 import {raisePullRequestToUpstream, syncWithUpstream} from "../support/github/refUtils";
@@ -51,7 +50,7 @@ export class CreateLauncherPR implements HandleCommand {
 
   private async updateCatalogAndCreatePR(context: HandlerContext,
                                          params: this, branch: string): Promise<HandlerResult> {
-    const commitMessage = `DO NOT MERGE: Update Spring Boot to ${params.sbVersion}`;
+    const commitMessage = `WIP - DO NOT MERGE: Update Spring Boot to ${params.sbVersion}`;
 
     try {
       const syncResult = await syncWithUpstream(BOOSTER_CATALOG_REPO, params.githubToken, SNOWDROP_ORG);
@@ -68,7 +67,7 @@ export class CreateLauncherPR implements HandleCommand {
             branch,
             message: commitMessage,
           } as BranchCommit,
-          new GitHubRepoRef(params.owner, BOOSTER_CATALOG_REPO),
+          GitHubRepoRef.from({owner: params.owner, repo: BOOSTER_CATALOG_REPO}),
           undefined,
       );
 
