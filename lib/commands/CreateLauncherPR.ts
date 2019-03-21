@@ -50,7 +50,7 @@ export class CreateLauncherPR implements HandleCommand {
 
   private async updateCatalogAndCreatePR(context: HandlerContext,
                                          params: this, branch: string): Promise<HandlerResult> {
-    const commitMessage = `DO NOT MERGE: Update Spring Boot to ${params.sbVersion}`;
+    const commitMessage = `WIP - DO NOT MERGE: Update Spring Boot to ${params.sbVersion}`;
 
     try {
       const syncResult = await syncWithUpstream(BOOSTER_CATALOG_REPO, params.githubToken, SNOWDROP_ORG);
