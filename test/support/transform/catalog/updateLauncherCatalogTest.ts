@@ -4,7 +4,7 @@ import * as _ from "lodash";
 import * as assert from "power-assert";
 import {BoosterTagTuple, LatestTagRetriever} from "../../../../lib/support/github/boosterUtils";
 import {updateLauncherCatalog} from "../../../../lib/support/transform/catalog/updateLauncherCatalog";
-import {githubToken, SlackTeamId} from "../../../github";
+import {apiToken, githubToken, SlackTeamId} from "../../../tokens";
 
 const sbVersionOfLatestTags = "1.5.25";
 const qualifierOfLatestCommunityTag = "10";
@@ -16,7 +16,7 @@ const currentSbVersionInMetadata = "1.5.14";
 describe("updateLauncherCatalogTest", () => {
 
   const graphClient = new ApolloGraphClient(`https://automation.atomist.com/graphql/team/${SlackTeamId}`,
-      { Authorization: `token ${githubToken()}` });
+      { Authorization: `Bearer ${apiToken()}` });
 
   it("doesn't update files when tags don't match", async () => {
     const project = createProject();

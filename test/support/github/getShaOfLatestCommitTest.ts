@@ -16,7 +16,7 @@
 
 import * as assert from "power-assert";
 import {getShaOfLatestCommit} from "../../../lib/support/github/refUtils";
-import {githubToken} from "../../github";
+import {githubToken} from "../../tokens";
 
 describe("getShaOfLatestCommit", () => {
 

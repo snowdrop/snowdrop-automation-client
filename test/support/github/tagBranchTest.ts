@@ -18,7 +18,7 @@ import * as assert from "power-assert";
 import {SNOWDROP_ORG} from "../../../lib/constants";
 import {githubApi} from "../../../lib/support/github/githubApi";
 import {tagBranch} from "../../../lib/support/github/refUtils";
-import {githubToken} from "../../github";
+import {githubToken} from "../../tokens";
 
 const repo = "jaeger-opentracing";
 const tagName = "dummy";

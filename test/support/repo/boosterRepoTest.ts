@@ -20,7 +20,7 @@ import {doWithAllRepos} from "@atomist/automation-client/lib/operations/common/r
 import * as assert from "power-assert";
 import {SNOWDROP_ORG} from "../../../lib/constants";
 import {boosterRepos, boosterSimpleName} from "../../../lib/support/repo/boosterRepo";
-import {githubToken} from "../../github";
+import {githubToken} from "../../tokens";
 
 describe("boosterRepoFilterTest", () => {
 
