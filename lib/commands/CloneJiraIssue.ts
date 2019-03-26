@@ -1,6 +1,6 @@
-import { HandleCommand } from "@atomist/automation-client/lib/HandleCommand";
-import { CommandHandler, Parameter } from "@atomist/automation-client/lib/decorators";
 import { HandlerContext, HandlerResult, logger } from "@atomist/automation-client";
+import { CommandHandler, Parameter } from "@atomist/automation-client/lib/decorators";
+import { HandleCommand } from "@atomist/automation-client/lib/HandleCommand";
 import { Jira } from "../support/jira/jira";
 // tslint:disable:no-var-requires
 const config = require("config");
@@ -8,7 +8,7 @@ const config = require("config");
 @CommandHandler("Clone JIRA issue", "clone jira issue")
 export class CloneJiraIssue implements HandleCommand {
     @Parameter({
-        description: "JIRA issue to clone"
+        description: "JIRA issue to clone",
     })
     public readonly issueKey: string;
 

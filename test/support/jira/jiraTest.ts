@@ -1,6 +1,6 @@
-import { Jira } from "../../../lib/support/jira/jira";
 import { assert, expect } from "chai";
 import nock = require("nock");
+import { Jira } from "../../../lib/support/jira/jira";
 
 const host = "https://example.com";
 const user = "luke";
@@ -12,7 +12,7 @@ describe("jira api", () => {
         nock(host)
             .matchHeader("accept", "application/json")
             .get("/rest/api/2/issue/testKey")
-            .basicAuth({ user: user, pass: pass })
+            .basicAuth({ user, pass })
             .reply(200, expectedIssue);
 
         const jira = new Jira(host, user, pass);
@@ -26,8 +26,8 @@ describe("jira api", () => {
         const fields = { testField: "testValue" };
         nock(host)
             .matchHeader("accept", "application/json")
-            .post("/rest/api/2/issue", { fields: fields })
-            .basicAuth({ user: user, pass: pass })
+            .post("/rest/api/2/issue", { fields })
+            .basicAuth({ user, pass })
             .reply(201, expectedIssue);
 
         const jira = new Jira(host, user, pass);
@@ -40,7 +40,7 @@ describe("jira api", () => {
         nock(host)
             .matchHeader("accept", "application/json")
             .get("/rest/api/2/issue/createmeta?projectKeys=testKey")
-            .basicAuth({ user: user, pass: pass })
+            .basicAuth({ user, pass })
             .reply(200, { projects: [{ id: "1" }] });
 
         const jira = new Jira(host, user, pass);
@@ -53,7 +53,7 @@ describe("jira api", () => {
         nock(host)
             .matchHeader("accept", "application/json")
             .get("/rest/api/2/issue/createmeta?projectKeys=testKey")
-            .basicAuth({ user: user, pass: pass })
+            .basicAuth({ user, pass })
             .reply(200, { projects: [] });
 
         const jira = new Jira(host, user, pass);
@@ -76,8 +76,8 @@ describe("jira api", () => {
                 assignee: "luke",
                 description: "test task",
                 summary: "test task",
-                subtasks: new Array()
-            }
+                subtasks: new Array(),
+            },
         };
         const expectedRequestBody = {
             fields: {
@@ -86,18 +86,18 @@ describe("jira api", () => {
                 priority: "high",
                 assignee: "luke",
                 description: "test task",
-                summary: "test task"
-            }
-        }
+                summary: "test task",
+            },
+        };
         nock(host)
             .matchHeader("accept", "application/json")
             .get("/rest/api/2/issue/SB-1")
-            .basicAuth({ user: user, pass: pass })
+            .basicAuth({ user, pass })
             .reply(200, originalIssue);
         nock(host)
             .matchHeader("accept", "application/json")
             .post("/rest/api/2/issue", expectedRequestBody)
-            .basicAuth({ user: user, pass: pass })
+            .basicAuth({ user, pass })
             .reply(201, { id: "2" });
 
         const jira = new Jira(host, user, pass);
@@ -116,8 +116,8 @@ describe("jira api", () => {
                 assignee: "luke",
                 description: "test task",
                 summary: "test task",
-                subtasks: new Array()
-            }
+                subtasks: new Array(),
+            },
         };
         const expectedRequestBody = {
             fields: {
@@ -127,18 +127,18 @@ describe("jira api", () => {
                 priority: "high",
                 assignee: "luke",
                 description: "test task",
-                summary: "test task"
-            }
-        }
+                summary: "test task",
+            },
+        };
         nock(host)
             .matchHeader("accept", "application/json")
             .get("/rest/api/2/issue/SB-1")
-            .basicAuth({ user: user, pass: pass })
+            .basicAuth({ user, pass })
             .reply(200, originalIssue);
         nock(host)
             .matchHeader("accept", "application/json")
             .post("/rest/api/2/issue", expectedRequestBody)
-            .basicAuth({ user: user, pass: pass })
+            .basicAuth({ user, pass })
             .reply(201, { id: "2" });
 
         const jira = new Jira(host, user, pass);
