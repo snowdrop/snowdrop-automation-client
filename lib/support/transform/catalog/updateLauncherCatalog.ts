@@ -9,11 +9,8 @@ import {LatestTagRetriever} from "../../github/boosterUtils";
 import {boosterRepos, boosterSimpleName} from "../../repo/boosterRepo";
 
 const projectPath = "spring-boot";
-const communityCatalogPath = `${projectPath}/current-community`;
-const prodCatalogPath = `${projectPath}/current-redhat`;
-const boosterCatalogConfigurationFile = "booster.yaml";
 
-const allCatalogPaths = [communityCatalogPath, prodCatalogPath];
+const boosterCatalogConfigurationFile = "booster.yaml";
 
 /**
  * Editor for updating the launcher-booster-catalog
@@ -23,6 +20,10 @@ export function updateLauncherCatalog(context: HandlerContext,
                                       latestTagRetriever: LatestTagRetriever,
                                       sbVersion: string,
                                       token?: string): SimpleProjectEditor {
+
+  const namePrefix = getAppropriateNamePrefixForSpringBootVersion(sbVersion);
+  const communityCatalogPath = `${projectPath}/${namePrefix}-community`;
+  const prodCatalogPath = `${projectPath}/${namePrefix}-redhat`;
   return async project => {
     const boosterRepoRefs =
         await relevantRepos(context, allReposInTeam(new DefaultRepoRefResolver()), boosterRepos(token));
@@ -32,7 +33,7 @@ export function updateLauncherCatalog(context: HandlerContext,
       const latestTags =
           await latestTagRetriever.getLatestTags(boosterFullName, t => t.startsWith(sbVersion), token);
 
-      for (const path of allCatalogPaths) {
+      for (const path of [communityCatalogPath, prodCatalogPath]) {
         const boosterNameInCatalog = getBoosterNameInCatalog(boosterFullName);
         const matchingConfigFile =
             await project.getFile(`${path}/${boosterNameInCatalog}/${boosterCatalogConfigurationFile}`);
@@ -70,6 +71,10 @@ export function updateLauncherCatalog(context: HandlerContext,
   };
 }
 
+function getAppropriateNamePrefixForSpringBootVersion(sbVersion: string): string {
+  return sbVersion.startsWith("1.5") ? "previous" : "current";
+}
+
 // Maps the full name of the booster as found in the GitHub URL
 // to the name that is used in the booster catalog
 // needed because the names don't always match
@@ -99,10 +104,11 @@ async function updateMetadataFile(project: Project, sbVersion: string) {
     }
 
     const sbVersions = rt.versions as any[];
+    const namePrefix = getAppropriateNamePrefixForSpringBootVersion(sbVersion);
     sbVersions.forEach(v => {
-      if (v.id === "current-community") {
+      if (v.id === `${namePrefix}-community`) {
         v.name = `${sbVersion}.RELEASE (Community)`;
-      } else if (v.id === "current-redhat") {
+      } else if (v.id === `${namePrefix}-redhat`) {
         v.name = `${sbVersion}.RELEASE (RHOAR)`;
       }
     });
