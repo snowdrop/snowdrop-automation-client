@@ -28,23 +28,23 @@ describe("updateLauncherCatalogTest", () => {
     )(project);
 
     const cacheCommunityContent =
-        project.findFileSync("spring-boot/current-community/cache/booster.yaml").getContentSync();
+        project.findFileSync("spring-boot/previous-community/cache/booster.yaml").getContentSync();
     assert(cacheCommunityContent === createBoosterConfiguration("cache", currentCommunityTagInConfig));
 
     const cacheProdContent =
-        project.findFileSync("spring-boot/current-redhat/cache/booster.yaml").getContentSync();
+        project.findFileSync("spring-boot/previous-redhat/cache/booster.yaml").getContentSync();
     assert(cacheProdContent === createBoosterConfiguration("cache", currentProdTagConfig));
 
     const istioCBCommunityContent =
         project
-        .findFileSync("spring-boot/current-community/istio-circuit-breaker/booster.yaml")
+        .findFileSync("spring-boot/previous-community/istio-circuit-breaker/booster.yaml")
         .getContentSync();
     assert(istioCBCommunityContent ===
         createBoosterConfiguration("istio-circuit-breaker", currentCommunityTagInConfig));
 
     const istioCBProdContent =
         project
-        .findFileSync("spring-boot/current-redhat/istio-circuit-breaker/booster.yaml")
+        .findFileSync("spring-boot/previous-redhat/istio-circuit-breaker/booster.yaml")
         .getContentSync();
     assert(istioCBProdContent === createBoosterConfiguration("istio-circuit-breaker", currentProdTagConfig));
   }).timeout(20000);
@@ -59,28 +59,28 @@ describe("updateLauncherCatalogTest", () => {
     )(project);
 
     const cacheCommunityContent =
-        project.findFileSync("spring-boot/current-community/cache/booster.yaml").getContentSync();
+        project.findFileSync("spring-boot/previous-community/cache/booster.yaml").getContentSync();
     assert(cacheCommunityContent === createBoosterConfiguration(
         "cache",
         `${sbVersionOfLatestTags}-${qualifierOfLatestCommunityTag}`,
     ));
 
     const cacheProdContent =
-        project.findFileSync("spring-boot/current-redhat/cache/booster.yaml").getContentSync();
+        project.findFileSync("spring-boot/previous-redhat/cache/booster.yaml").getContentSync();
     assert(cacheProdContent === createBoosterConfiguration(
         "cache",
         `${sbVersionOfLatestTags}-${qualifierOfLatestProdTag}-redhat`,
     ));
 
     const httpCommunityContent =
-        project.findFileSync("spring-boot/current-community/rest-http/booster.yaml").getContentSync();
+        project.findFileSync("spring-boot/previous-community/rest-http/booster.yaml").getContentSync();
     assert(httpCommunityContent === createBoosterConfiguration(
         "http",
         `${sbVersionOfLatestTags}-${qualifierOfLatestCommunityTag}`,
     ));
 
     const httpProdContent =
-        project.findFileSync("spring-boot/current-redhat/rest-http/booster.yaml").getContentSync();
+        project.findFileSync("spring-boot/previous-redhat/rest-http/booster.yaml").getContentSync();
     assert(httpProdContent === createBoosterConfiguration(
         "http",
         `${sbVersionOfLatestTags}-${qualifierOfLatestProdTag}-redhat`,
@@ -88,7 +88,7 @@ describe("updateLauncherCatalogTest", () => {
 
     const istioCBCommunityContent =
         project
-          .findFileSync("spring-boot/current-community/istio-circuit-breaker/booster.yaml")
+          .findFileSync("spring-boot/previous-community/istio-circuit-breaker/booster.yaml")
           .getContentSync();
     assert(istioCBCommunityContent ===
         createBoosterConfiguration(
@@ -98,7 +98,7 @@ describe("updateLauncherCatalogTest", () => {
 
     const istioCBProdContent =
         project
-          .findFileSync("spring-boot/current-redhat/istio-circuit-breaker/booster.yaml")
+          .findFileSync("spring-boot/previous-redhat/istio-circuit-breaker/booster.yaml")
           .getContentSync();
     assert(istioCBProdContent ===
         createBoosterConfiguration(
@@ -119,27 +119,27 @@ describe("updateLauncherCatalogTest", () => {
 function createProject() {
   return InMemoryProject.of(
       {
-        path: "spring-boot/current-community/cache/booster.yaml",
+        path: "spring-boot/previous-community/cache/booster.yaml",
         content: createBoosterConfiguration("cache", currentCommunityTagInConfig),
       },
       {
-        path: "spring-boot/current-redhat/cache/booster.yaml",
+        path: "spring-boot/previous-redhat/cache/booster.yaml",
         content: createBoosterConfiguration("cache", currentProdTagConfig),
       },
       {
-        path: "spring-boot/current-community/rest-http/booster.yaml",
+        path: "spring-boot/previous-community/rest-http/booster.yaml",
         content: createBoosterConfiguration("http", currentCommunityTagInConfig),
       },
       {
-        path: "spring-boot/current-redhat/rest-http/booster.yaml",
+        path: "spring-boot/previous-redhat/rest-http/booster.yaml",
         content: createBoosterConfiguration("http", currentProdTagConfig),
       },
       {
-        path: "spring-boot/current-community/istio-circuit-breaker/booster.yaml",
+        path: "spring-boot/previous-community/istio-circuit-breaker/booster.yaml",
         content: createBoosterConfiguration("istio-circuit-breaker", currentCommunityTagInConfig),
       },
       {
-        path: "spring-boot/current-redhat/istio-circuit-breaker/booster.yaml",
+        path: "spring-boot/previous-redhat/istio-circuit-breaker/booster.yaml",
         content: createBoosterConfiguration("istio-circuit-breaker", currentProdTagConfig),
       },
       {
@@ -209,11 +209,11 @@ runtimes:
   metadata:
     pipelinePlatform: maven
   versions:
-  - id: current-community
+  - id: previous-community
     name: ${sbVersion}.RELEASE (Community)
-  - id: current-redhat
+  - id: previous-redhat
     name: ${sbVersion}.RELEASE (RHOAR)
-  - id: current-osio
+  - id: previous-osio
     name: 1.5.12.RELEASE (OSIO)
 - id: thorntail
   name: Thorntail
