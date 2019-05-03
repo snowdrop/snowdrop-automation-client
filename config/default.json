@@ -6,10 +6,5 @@
         "name": "Libor"
       }
     }
-  },
-  "jira": {
-    "host": "https://issues.jboss.org",
-    "projectKey": "SB",
-    "assignee": "lfuka"
   }
 }
