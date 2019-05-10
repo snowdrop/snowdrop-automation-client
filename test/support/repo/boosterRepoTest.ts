@@ -25,10 +25,10 @@ import {githubToken} from "../../tokens";
 describe("boosterRepoFilterTest", () => {
 
   it("filter should only include boosters with the necessary topic", done => {
-    const firstBoosterRepo = new InMemoryProject(new GitHubRepoRef(SNOWDROP_ORG, "spring-boot-cache-booster"));
+    const firstBoosterRepo = new InMemoryProject(new GitHubRepoRef(SNOWDROP_ORG, "cache-example"));
     const nonBoosterRepo = new InMemoryProject(new GitHubRepoRef(SNOWDROP_ORG, "k8s-supervisor"));
     const secondBoosterRepo =
-        new InMemoryProject(new GitHubRepoRef(SNOWDROP_ORG, "spring-boot-istio-security-booster"));
+        new InMemoryProject(new GitHubRepoRef(SNOWDROP_ORG, "istio-security-example"));
 
     const allRepos = fromListRepoFinder([
       firstBoosterRepo, secondBoosterRepo, nonBoosterRepo,
@@ -58,8 +58,8 @@ describe("boosterRepoFilterTest", () => {
 describe("boosterSimpleName", () => {
 
   it("should return the simple name for correctly formatted booster names", () => {
-    assert(boosterSimpleName("spring-boot-cache-booster") === "cache");
-    assert(boosterSimpleName("spring-boot-istio-distributed-tracing-booster") === "istio-distributed-tracing");
+    assert(boosterSimpleName("cache-example") === "cache");
+    assert(boosterSimpleName("istio-distributed-tracing-example") === "istio-distributed-tracing");
   });
 
   it("should return the full name for incorrectly formatted booster names", () => {
