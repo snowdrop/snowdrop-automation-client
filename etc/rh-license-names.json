@@ -204,6 +204,21 @@
     ]
   },
   {
+    "name": "Eclipse Public License - v 2.0",
+    "url": "http://www.eclipse.org/legal/epl-v20.html",
+    "aliases": [
+      "Eclipse Public License, Version 2.0",
+      "Eclipse Public License 2.0",
+      "Eclipse Public License v2.0",
+      "Eclipse Public License, Version 2.0",
+      "Eclipse Public License (EPL), Version 2.0"
+    ],
+    "urlAliases": [
+      "http://www.eclipse.org/legal/epl-v20.html",
+      "https://www.eclipse.org/legal/epl-2.0/"
+    ]
+  },
+  {
     "name": "Eclipse Distribution License, Version 1.0",
     "url": "http://repository.jboss.org/licenses/edl-1.0.txt",
     "textUrl": "http://repository.jboss.org/licenses/edl-1.0.txt",
