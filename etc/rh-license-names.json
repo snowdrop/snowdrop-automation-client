@@ -215,7 +215,8 @@
     ],
     "urlAliases": [
       "http://www.eclipse.org/legal/epl-v20.html",
-      "https://www.eclipse.org/legal/epl-2.0/"
+      "https://www.eclipse.org/legal/epl-2.0/",
+      "http://www.eclipse.org/legal/epl-2.0"
     ]
   },
   {
