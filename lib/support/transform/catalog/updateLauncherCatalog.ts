@@ -35,6 +35,7 @@ export function updateLauncherCatalog(context: HandlerContext,
 
       for (const path of [communityCatalogPath, prodCatalogPath]) {
         const boosterNameInCatalog = getBoosterNameInCatalog(boosterFullName);
+        logger.debug(`Attempt to match '${boosterNameInCatalog}' in path '${path}'`);
         const matchingConfigFile =
             await project.getFile(`${path}/${boosterNameInCatalog}/${boosterCatalogConfigurationFile}`);
 
@@ -80,13 +81,14 @@ function getAppropriateNamePrefixForSpringBootVersion(sbVersion: string): string
 // needed because the names don't always match
 function getBoosterNameInCatalog(boosterFullName: string) {
   const simpleName =  boosterSimpleName(boosterFullName);
-  if (["http", "http-secured"].includes(simpleName)) {
-    return `rest-${simpleName}`;
+  switch (simpleName) {
+    case "secured":
+      return "rest-http-secured";
+    case "messaging-work-queue":
+      return "messaging";
+    default:
+      return simpleName;
   }
-  if (simpleName.includes("messaging-work-queue")) {
-    return "messaging";
-  }
-  return simpleName;
 }
 
 async function updateMetadataFile(project: Project, sbVersion: string) {
