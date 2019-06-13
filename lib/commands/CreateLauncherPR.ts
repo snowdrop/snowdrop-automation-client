@@ -50,7 +50,8 @@ export class CreateLauncherPR implements HandleCommand {
 
   private async updateCatalogAndCreatePR(context: HandlerContext,
                                          params: this, branch: string): Promise<HandlerResult> {
-    const commitMessage = `WIP - DO NOT MERGE: Update Spring Boot to ${params.sbVersion}`;
+    const prTitlePrefix = "WIP - DO NOT MERGE: ";
+    const commitMessage = `Update Spring Boot to ${params.sbVersion}`;
 
     try {
       const syncResult = await syncWithUpstream(BOOSTER_CATALOG_REPO, params.githubToken, SNOWDROP_ORG);
@@ -73,7 +74,7 @@ export class CreateLauncherPR implements HandleCommand {
 
       logger.debug("Attempting to create PR to upstream catalog");
       await raisePullRequestToUpstream(
-          BOOSTER_CATALOG_REPO, branch, "master", commitMessage, params.githubToken, params.owner);
+          BOOSTER_CATALOG_REPO, branch, "master", `${prTitlePrefix}${commitMessage}`, params.githubToken, params.owner);
 
       return success();
     } catch (e) {
