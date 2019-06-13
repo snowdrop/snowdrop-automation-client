@@ -4,7 +4,7 @@ import {BOOSTER_GITHUB_TOPIC, BOOSTER_NAME_REGEX} from "../../constants";
 import {githubApi} from "../github/githubApi";
 
 /**
- * Booster repos are repos that contain the "booster" Github topic
+ * Booster repos are repos that contain the "example" Github topic
  *
  * TODO introduce some sort of caching
  */

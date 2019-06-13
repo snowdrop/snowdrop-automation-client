@@ -153,7 +153,7 @@ async function getUpstreamInfo(owner: string, repo: string, token?: string): Pro
 }
 
 /**
- * Sync project with it's upstream
+ * Sync project with its upstream
  *
  * @return true if everything goes well, false otherwise
  */
