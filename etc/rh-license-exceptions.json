@@ -102,5 +102,20 @@
         "url": "https://www.mozilla.org/en-US/MPL/2.0/"
       }
     ]
+  },
+  {
+    "groupId": "com.h2database",
+    "artifactId": "h2",
+    "version": "1.4.199",
+    "licenses": [
+      {
+        "name": "Eclipse Public License, Version 1.0",
+        "url": "http://repository.jboss.org/licenses/epl-1.0.txt"
+      },
+      {
+        "name": "Mozilla Public License 2.0",
+        "url": "https://www.mozilla.org/en-US/MPL/2.0/"
+      }
+    ]
   }
 ]
