@@ -27,7 +27,7 @@ export class SpringBootBomRelease implements HandleCommand {
   @Parameter({
     displayName: "bom_version",
     // tslint:disable-next-line: max-line-length
-    description: "The upstream snowdrop release of the BOM for which the update is going to run (something like: 1.5.15.Final)",
+    description: "The upstream snowdrop release of the BOM for which the update is going to run (for example: 1.5.15.Final or 1.5.15.Beta1)",
     pattern: BOM_VERSION_REGEX,
     validInput: "1.5.15.Final",
     minLength: 10,
