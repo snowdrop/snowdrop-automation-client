@@ -13,7 +13,7 @@ export class SendTestReleaseEmail implements HandleCommand {
 
   @Parameter({
     displayName: "release version",
-    description: "The Production Spring Boot release bundle (something like: 1.5.15.ER1)",
+    description: "The Production Spring Boot release bundle, full version string including qualifier (e.g. 1.5.15.ER1)",
     pattern: /^(\d+.\d+.\d+).(ER|CR)\d+/,
     validInput: "1.5.15.ER1",
     minLength: 9,
