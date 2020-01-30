@@ -102,10 +102,13 @@
     "url": "http://repository.jboss.org/licenses/gpl-2.0-ce.txt",
     "aliases": [
       "GNU General Public License, Version 2 with the Classpath Exception",
+      "GNU General Public License, version 2 (GPL2), with the classpath exception",
       "GPL2 w/ CPE"
     ],
     "urlAliases": [
-      "http://repository.jboss.org/licenses/gpl-2.0-ce.txt"
+      "http://repository.jboss.org/licenses/gpl-2.0-ce.txt",
+      "http://www.gnu.org/software/classpath/license.html",
+      "https://www.gnu.org/software/classpath/license.html"
     ]
   },
   {
@@ -160,6 +163,16 @@
     ],
     "urlAliases": [
       "https://javaee.github.io/glassfish/LICENSE"
+    ]
+  },
+  {
+    "name": "Dual license consisting of the CDDL v1.1 and GPL v2",
+    "url": "https://oss.oracle.com/licenses/CDDL+GPL-1.1",
+    "aliases": [
+    ],
+    "urlAliases": [
+      "http://glassfish.java.net/public/CDDL+GPL_1_1.html",
+      "https://glassfish.java.net/public/CDDL+GPL_1_1.html"
     ]
   },
   {
