@@ -8,7 +8,7 @@ import {promisify} from "util";
 import {BOOSTER_BOM_PROPERTY_NAME, LICENSES_GENERATOR_PATH, REDHAT_QUALIFIER} from "../constants";
 import {deleteBranch, tagBranch} from "../support/github/refUtils";
 import licensesGenerator from "../support/transform/booster/licensesGenerator";
-import {setBoosterVersionInTemplate} from "../support/transform/booster/setBoosterVersionInTemplate";
+import {setBoosterTemplateParameters} from "../support/transform/booster/setBoosterTemplateParameters";
 import {
     bumpMavenProjectRevisionVersion,
     removeSnapshotFromMavenProjectVersion,
@@ -51,7 +51,7 @@ export function releaseBooster(params: ReleaseParams): Promise<EditResult<Projec
   const communityEditor = (p: Project) => {
           return removeSnapshotFromMavenProjectVersion()(p)
           .then(p2 => {
-            return setBoosterVersionInTemplate()(p2);
+            return setBoosterTemplateParameters()(p2);
           })
           .then(p3 => {
             return licensesGenerator(licensesGeneratorPath)(p3);
@@ -61,7 +61,7 @@ export function releaseBooster(params: ReleaseParams): Promise<EditResult<Projec
   const prodEditor = (p: Project) => {
     return replaceSnapshotFromMavenProjectVersionWithQualifier(REDHAT_QUALIFIER)(p)
             .then(p2 => {
-              return setBoosterVersionInTemplate()(p2);
+              return setBoosterTemplateParameters()(p2);
             })
             .then(p3 => {
               return updateMavenProperty({

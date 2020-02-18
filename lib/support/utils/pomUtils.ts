@@ -16,3 +16,7 @@ export function getCurrentVersion(p: Project): Promise<string> {
 export function getCurrentVersionWithoutSnapshot(p: Project): Promise<string> {
   return getCurrentVersion(p).then(v => v.replace("-SNAPSHOT", ""));
 }
+
+export function getProperty(project: Project, property: string): Promise<string> {
+  return getPomAsJson(project).then(pom => pom.project.properties[property] ? pom.project.properties[property] : null);
+}
