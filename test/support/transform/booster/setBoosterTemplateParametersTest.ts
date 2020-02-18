@@ -1,13 +1,13 @@
 import {InMemoryProject, Project} from "@atomist/automation-client";
 import * as yaml from "js-yaml";
 import * as assert from "power-assert";
-import {setBoosterVersionInTemplate} from "../../../../lib/support/transform/booster/setBoosterVersionInTemplate";
+import {setBoosterTemplateParameters} from "../../../../lib/support/transform/booster/setBoosterTemplateParameters";
 
-describe("setBoosterVersionInTemplate", () => {
+describe("setBoosterTemplateParameters", () => {
 
   it("updates yaml openshift template files only", done => {
     const p = createProject();
-    setBoosterVersionInTemplate()(p)
+    setBoosterTemplateParameters()(p)
     .then( r => {
       assertTemplate(r, "child1");
       assertTemplate(r, "child2");
@@ -36,6 +36,7 @@ function assertTemplate(p: Project, name: string) {
   const templateContent = getContent(p, name);
   const data = yaml.load(templateContent);
   assert(!templateContent.includes("BOOSTER_VERSION"));
+  assert(!templateContent.includes("SPRING_BOOT_VERSION"));
   assert(data.objects[0].spec.output.to.name === `${name}:1.5.14-2`);
 }
 
@@ -125,6 +126,7 @@ objects:
       app: spring-boot-rest-http
       provider: snowdrop
       version: "BOOSTER_VERSION"
+      runtime-version: "SPRING_BOOT_VERSION"
       group: io.openshift.booster
     name: ${name}
   spec:
@@ -144,6 +146,7 @@ objects:
       app: spring-boot-rest-http
       provider: snowdrop
       version: "BOOSTER_VERSION"
+      runtime-version: "SPRING_BOOT_VERSION"
       group: io.openshift.booster
     name: spring-boot-rest-http
   spec:
