@@ -14,7 +14,7 @@ export function setBoosterTemplateParameters(): SimpleProjectEditor {
       async m => m.getContent()
         .then(content => content.replace(new RegExp("BOOSTER_VERSION", "g"), projectVersion))
         .then(content => content.replace(new RegExp("SPRING_BOOT_VERSION", "g"), springBootVersion))
-        .then(content => m.setContent(content))
+        .then(content => m.setContent(content)),
     );
   };
 }

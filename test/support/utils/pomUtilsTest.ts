@@ -2,7 +2,6 @@ import { InMemoryProject, Project } from "@atomist/automation-client";
 import { expect } from "chai";
 import { getProperty } from "../../../lib/support/utils/pomUtils";
 
-
 describe("pomUtils.getPomProperty", () => {
   it("should get an existing proeprty", async () => {
     const value = await getProperty(createProject(), "spring-boot.version");
@@ -13,12 +12,12 @@ describe("pomUtils.getPomProperty", () => {
     const value = await getProperty(createProject(), "wrong-property");
     return expect(value).to.be.null;
   });
-})
+});
 
 const createProject = (): Project => {
   return InMemoryProject.from(
     { repo: "test-project", owner: "test", url: "dummy" },
-    { path: "pom.xml", content: pomContent }
+    { path: "pom.xml", content: pomContent },
   );
 };
 
