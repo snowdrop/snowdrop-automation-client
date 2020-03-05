@@ -52,4 +52,6 @@ Launch application by issuing:
 
 Run tests: `npm run test` (will need an env var named GITHUB_TOKEN to be present and contain the user's Github token)
 
+Run a single test: `TEST=${TEST_FILE_NAME} npm run test:one`
+
 Lint code (and fix issues automatically): `npm run lint:fix`
