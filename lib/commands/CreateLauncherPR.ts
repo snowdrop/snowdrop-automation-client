@@ -16,8 +16,12 @@ import {editOne} from "@atomist/automation-client/lib/operations/edit/editAll";
 import {BranchCommit} from "@atomist/automation-client/lib/operations/edit/editModes";
 import {BOOSTER_CATALOG_REPO, SNOWDROP_ORG} from "../constants";
 import {DefaultLatestTagRetriever} from "../support/github/boosterUtils";
-import {raisePullRequestToUpstream, syncWithUpstream} from "../support/github/refUtils";
+import {syncWithUpstream} from "../support/github/refUtils";
 import {updateLauncherCatalog} from "../support/transform/catalog/updateLauncherCatalog";
+import { relevantRepos } from "@atomist/automation-client/lib/operations/common/repoUtils";
+import { allReposInTeam } from "@atomist/sdm";
+import { DefaultRepoRefResolver } from "@atomist/sdm-core";
+import { boosterRepos } from "../support/repo/boosterRepo";
 
 const latestTagRetriever = new DefaultLatestTagRetriever();
 
@@ -27,11 +31,11 @@ export class CreateLauncherPR implements HandleCommand {
   @Parameter({
     displayName: "spring boot version",
     // tslint:disable-next-line: max-line-length
-    description: "The (simplified) Spring Boot version (no qualifiers needed  - simply something like: 1.5.15)",
-    pattern: /^\d+.\d+.\d+$/,
-    validInput: "1.5.15",
-    minLength: 5,
-    maxLength: 10,
+    description: "The Spring Boot version",
+    pattern: /^\d+.\d+.\d+.*$/,
+    validInput: "2.1.12.RELEASE",
+    minLength: 13,
+    maxLength: 14,
     required: true,
   })
   public sbVersion: string;
@@ -60,10 +64,12 @@ export class CreateLauncherPR implements HandleCommand {
         return Promise.reject("Could not sync with upstream launcher catalog");
       }
 
+      const exampleRepos = await relevantRepos(context, allReposInTeam(new DefaultRepoRefResolver()), boosterRepos(params.githubToken));
+
       await editOne(
           context,
           {token: params.githubToken},
-          updateLauncherCatalog(context, latestTagRetriever, params.sbVersion, params.githubToken),
+          updateLauncherCatalog(latestTagRetriever, params.sbVersion, exampleRepos, params.githubToken),
           {
             branch,
             message: commitMessage,

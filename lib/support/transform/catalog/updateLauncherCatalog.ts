@@ -1,121 +1,67 @@
-import {HandlerContext, logger, Project, SimpleProjectEditor} from "@atomist/automation-client";
-import {relevantRepos} from "@atomist/automation-client/lib/operations/common/repoUtils";
-import {allReposInTeam} from "@atomist/sdm";
-import {DefaultRepoRefResolver} from "@atomist/sdm-core";
-import {updateYamlKey} from "@atomist/yaml-updater/Yaml";
-import * as yaml from "js-yaml";
-import {REDHAT_QUALIFIER} from "../../../constants";
-import {LatestTagRetriever} from "../../github/boosterUtils";
-import {boosterRepos, boosterSimpleName} from "../../repo/boosterRepo";
+import { SimpleProjectEditor, RepoRef, Project } from "@atomist/automation-client";
+import { LatestTagRetriever } from "../../github/boosterUtils";
 
-const projectPath = "spring-boot";
-
-const boosterCatalogConfigurationFile = "booster.yaml";
-
-/**
- * Editor for updating the launcher-booster-catalog
- * with the latest booster tags
- */
-export function updateLauncherCatalog(context: HandlerContext,
-                                      latestTagRetriever: LatestTagRetriever,
-                                      sbVersion: string,
-                                      token?: string): SimpleProjectEditor {
-
-  const namePrefix = getAppropriateNamePrefixForSpringBootVersion(sbVersion);
-  const communityCatalogPath = `${projectPath}/${namePrefix}-community`;
-  const prodCatalogPath = `${projectPath}/${namePrefix}-redhat`;
+export function updateLauncherCatalog(latestTagRetriever: LatestTagRetriever, springBootVersion: string, exampleRepos: RepoRef[], token?: string): SimpleProjectEditor {
   return async project => {
-    const boosterRepoRefs =
-        await relevantRepos(context, allReposInTeam(new DefaultRepoRefResolver()), boosterRepos(token));
-
-    for (const boosterRepoRef of boosterRepoRefs) {
-      const boosterFullName = boosterRepoRef.repo;
-      const latestTags =
-          await latestTagRetriever.getLatestTags(boosterFullName, t => t.startsWith(sbVersion), token);
-
-      for (const path of [communityCatalogPath, prodCatalogPath]) {
-        const boosterNameInCatalog = getBoosterNameInCatalog(boosterFullName);
-        logger.debug(`Attempt to match '${boosterNameInCatalog}' in path '${path}'`);
-        const matchingConfigFile =
-            await project.getFile(`${path}/${boosterNameInCatalog}/${boosterCatalogConfigurationFile}`);
-
-        if (!matchingConfigFile) {
-          logger.debug(`No configuration file found for booster '${boosterFullName}' in path '${path}'`);
-          continue;
-        }
-
-        const matchingConfigFileContent = await matchingConfigFile.getContent();
-        const latestTag =
-            path.includes(REDHAT_QUALIFIER) ? latestTags.prod : latestTags.community;
-
-        if (!latestTag) {
-          /* tslint:disable */
-          logger.debug(`Booster ${boosterNameInCatalog} does not have any matching tags for Spring Boot version '${sbVersion}'`);
-          /* tslint:enable */
-          break;
-        }
-
-        const newSourceValue = {
-          git: {
-            ref: latestTag,
-          },
-        };
-        logger.info(`Updating booster ${boosterNameInCatalog} in path ${path} with tag ${latestTag}`);
-        const newContent = updateYamlKey("source", newSourceValue, matchingConfigFileContent);
-        await matchingConfigFile.setContent(newContent);
-      }
-    }
-
-    await updateMetadataFile(project, sbVersion);
+    await updateCatalogFile(project, exampleRepos, springBootVersion, latestTagRetriever, token);
+    await updateMetadataFile(project, springBootVersion);
 
     return project;
   };
 }
 
-function getAppropriateNamePrefixForSpringBootVersion(sbVersion: string): string {
-  return sbVersion.startsWith("1.5") ? "previous" : "current";
+async function updateCatalogFile(project: Project, exampleRepos: RepoRef[], springBootVersion: string, latestTagRetriever: LatestTagRetriever, token?: string) {
+  const catalogFile = project.findFileSync("catalog.json");
+  const catalog = JSON.parse(catalogFile.getContentSync());
+  for (const exampleRepo of exampleRepos) {
+    await updateExampleEntries(catalog, exampleRepo, springBootVersion, latestTagRetriever, token);
+  }
+  catalogFile.setContentSync(JSON.stringify(catalog, null, 2));
 }
 
-// Maps the full name of the booster as found in the GitHub URL
-// to the name that is used in the booster catalog
-// needed because the names don't always match
-function getBoosterNameInCatalog(boosterFullName: string) {
-  const simpleName =  boosterSimpleName(boosterFullName);
-  switch (simpleName) {
-    case "secured":
-      return "rest-http-secured";
-    case "messaging-work-queue":
-      return "messaging";
-    default:
-      return simpleName;
+async function updateExampleEntries(catalog: any[], exampleRepo: RepoRef, springBootVersion: string, latestTagRetriever: LatestTagRetriever, token?: string) {
+  const latestTags = await latestTagRetriever.getLatestTags(exampleRepo.repo, getTagFilter(springBootVersion), token);
+
+  const communityEntry = getCatalogEntry(catalog, exampleRepo.url, getMetadataCommunityVersion(springBootVersion));
+  if (latestTags.community && communityEntry) {
+    communityEntry.ref = latestTags.community;
+  }
+
+  const prodEntry = getCatalogEntry(catalog, exampleRepo.url, getMetadataProdVersion(springBootVersion));
+  if (latestTags.prod && prodEntry) {
+    prodEntry.ref = latestTags.prod;
   }
 }
 
-async function updateMetadataFile(project: Project, sbVersion: string) {
-  const file = await project.getFile("metadata.yaml");
-  if (!file) {
-    return;
-  }
+function getCatalogEntry(catalog: any[], repoUrl: string, metadataVersion: string): any {
+  return catalog.find(e => e.repo == repoUrl && e.metadata.runtime == "spring-boot" && e.metadata.version == metadataVersion);
+}
 
-  const contentStr = await file.getContent();
-  const content = yaml.load(contentStr);
-  const runtimes = content.runtimes as any[];
-  runtimes.forEach(rt => {
-    if (rt.id !== "spring-boot") {
-      return;
-    }
+function getTagFilter(stringBootVersion: string): (tag: string) => boolean {
+  const parts = stringBootVersion.match("^\\d+\\.\\d+\\.\\d+");
+  const trimmedVersion = (parts != null && parts.length > 0) ? parts[0] : stringBootVersion;
 
-    const sbVersions = rt.versions as any[];
-    const namePrefix = getAppropriateNamePrefixForSpringBootVersion(sbVersion);
-    sbVersions.forEach(v => {
-      if (v.id === `${namePrefix}-community`) {
-        v.name = `${sbVersion}.RELEASE (Community)`;
-      } else if (v.id === `${namePrefix}-redhat`) {
-        v.name = `${sbVersion}.RELEASE (RHOAR)`;
-      }
-    });
-  });
+  return tag => tag.startsWith(trimmedVersion);
+}
 
-  const newContent = updateYamlKey("runtimes", runtimes, contentStr, {keepArrayIndent: true, updateAll: false});
-  await file.setContent(newContent);
+async function updateMetadataFile(project: Project, springBootVersion: string) {
+  const metadataFile = project.findFileSync("metadata.json");
+  const metadata = JSON.parse(metadataFile.getContentSync());
+  const runtimes: any[] = metadata.runtimes;
+  const springBootVersions: any[] = runtimes.find(e => e.id == "spring-boot").versions;
+
+  springBootVersions.filter(e => e.id == getMetadataCommunityVersion(springBootVersion))
+    .forEach(e => e.name = `${springBootVersion} (Community)`);
+  springBootVersions.filter(e => e.id == getMetadataProdVersion(springBootVersion))
+    .forEach(e => e.name = `${springBootVersion} (RHOAR)`);
+
+  metadataFile.setContent(JSON.stringify(metadata, null, 2));
+}
+
+function getMetadataCommunityVersion(springBootVersion: string): string {
+  return springBootVersion.startsWith("1.5") ? "previous-community" : "current-community";
+}
+
+function getMetadataProdVersion(springBootVersion: string): string {
+  return springBootVersion.startsWith("1.5") ? "previous-redhat" : "current-redhat";
 }
