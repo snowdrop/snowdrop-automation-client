@@ -1,4 +1,4 @@
-import { InMemoryProject, RepoRef, Project } from "@atomist/automation-client";
+import { InMemoryProject, Project, RepoRef } from "@atomist/automation-client";
 import * as _ from "lodash";
 import * as assert from "power-assert";
 import { BoosterTagTuple, LatestTagRetriever } from "../../../../lib/support/github/boosterUtils";
@@ -22,7 +22,7 @@ describe("updateLauncherCatalogTest", () => {
 
     const project = createProject(
       createCatalog(PREVIOUS_COMMUNITY_TAG, PREVIOUS_PROD_TAG, CURRENT_COMMUNITY_TAG, CURRENT_PROD_TAG),
-      createMetadata(PREVIOUS_SPRING_BOOT_VERSION, CURRENT_SPRING_BOOT_VERSION)
+      createMetadata(PREVIOUS_SPRING_BOOT_VERSION, CURRENT_SPRING_BOOT_VERSION),
     );
 
     const tagRetriever = new DummyLatestTagRetriever(updatedCommunityTag, updatedProdTag);
@@ -39,7 +39,7 @@ describe("updateLauncherCatalogTest", () => {
 
     const project = createProject(
       createCatalog(PREVIOUS_COMMUNITY_TAG, PREVIOUS_PROD_TAG, CURRENT_COMMUNITY_TAG, CURRENT_PROD_TAG),
-      createMetadata(PREVIOUS_SPRING_BOOT_VERSION, CURRENT_SPRING_BOOT_VERSION)
+      createMetadata(PREVIOUS_SPRING_BOOT_VERSION, CURRENT_SPRING_BOOT_VERSION),
     );
 
     const tagRetriever = new DummyLatestTagRetriever(updatedCommunityTag, updatedProdTag);
@@ -50,40 +50,43 @@ describe("updateLauncherCatalogTest", () => {
   }).timeout(20000);
 });
 
-function assertCatalog(project: Project, previousCommunityTag: string, previousProdTag: string, currentCommunityTag: string, currentProdTag: string) {
+function assertCatalog(
+  project: Project, previousCommunityTag: string, previousProdTag: string, currentCommunityTag: string,
+  currentProdTag: string) {
+
   const catalog: any[] = JSON.parse(project.findFileSync("catalog.json").getContentSync());
 
-  const previsouCommunity = catalog.find(e => e.metadata.version == 'previous-community');
+  const previsouCommunity = catalog.find(e => e.metadata.version === "previous-community");
   assert(previsouCommunity.ref === previousCommunityTag);
 
-  const previsouProd = catalog.find(e => e.metadata.version == 'previous-redhat');
+  const previsouProd = catalog.find(e => e.metadata.version === "previous-redhat");
   assert(previsouProd.ref === previousProdTag);
 
-  const currentCommunity = catalog.find(e => e.metadata.version == 'current-community');
+  const currentCommunity = catalog.find(e => e.metadata.version === "current-community");
   assert(currentCommunity.ref === currentCommunityTag);
 
-  const currentProd = catalog.find(e => e.metadata.version == 'current-redhat');
+  const currentProd = catalog.find(e => e.metadata.version === "current-redhat");
   assert(currentProd.ref === currentProdTag);
 }
 
 function assertMetadata(project: Project, previousSpringBootVersion: string, currentSpringBootVersion: string) {
   const metadata: any = JSON.parse(project.findFileSync("metadata.json").getContentSync());
   const runtimes: any[] = metadata.runtimes;
-  const springBootVersions: any[] = runtimes.find(e => e.id == "spring-boot").versions;
+  const versions: any[] = runtimes.find(e => e.id === "spring-boot").versions;
 
-  assert(springBootVersions.find(e => e.id == "previous-community").name === `${previousSpringBootVersion} (Community)`);
-  assert(springBootVersions.find(e => e.id == "previous-redhat").name === `${previousSpringBootVersion} (RHOAR)`);
-  assert(springBootVersions.find(e => e.id == "current-community").name === `${currentSpringBootVersion} (Community)`);
-  assert(springBootVersions.find(e => e.id == "current-redhat").name === `${currentSpringBootVersion} (RHOAR)`);
+  assert(versions.find(e => e.id === "previous-community").name === `${previousSpringBootVersion} (Community)`);
+  assert(versions.find(e => e.id === "previous-redhat").name === `${previousSpringBootVersion} (RHOAR)`);
+  assert(versions.find(e => e.id === "current-community").name === `${currentSpringBootVersion} (Community)`);
+  assert(versions.find(e => e.id === "current-redhat").name === `${currentSpringBootVersion} (RHOAR)`);
 }
 
 function getExampleRepos(): RepoRef[] {
   return [
     {
-      "owner": "snowdrop",
-      "repo": "rest-http-example",
-      "url": "https://github.com/snowdrop/rest-http-example"
-    }
+      owner: "snowdrop",
+      repo: "rest-http-example",
+      url: "https://github.com/snowdrop/rest-http-example",
+    },
   ];
 }
 
@@ -100,54 +103,56 @@ function createProject(catalog: string, metadata: string) {
   );
 }
 
-function createCatalog(previousTag: string, previousProdTag: string, currentTag: string, currentProdTag: string): string {
+function createCatalog(
+  previousTag: string, previousProdTag: string, currentTag: string, currentProdTag: string): string {
+
   return JSON.stringify(
     [
       {
-        "name": "Spring Boot - HTTP Example",
-        "description": "Booster to expose a HTTP Greeting endpoint using Spring Boot and Apache Tomcat in embedded mode.",
-        "repo": "https://github.com/snowdrop/rest-http-example",
-        "ref": previousTag,
-        "metadata": {
-          "mission": "rest-http",
-          "runtime": "spring-boot",
-          "version": "previous-community"
-        }
+        name: "Spring Boot - HTTP Example",
+        description: "Booster to expose a HTTP Greeting endpoint using Spring Boot and Apache Tomcat in embedded mode.",
+        repo: "https://github.com/snowdrop/rest-http-example",
+        ref: previousTag,
+        metadata: {
+          mission: "rest-http",
+          runtime: "spring-boot",
+          version: "previous-community",
+        },
       },
       {
-        "name": "Spring Boot - HTTP Example",
-        "description": "Booster to expose a HTTP Greeting endpoint using Spring Boot and Apache Tomcat in embedded mode.",
-        "repo": "https://github.com/snowdrop/rest-http-example",
-        "ref": previousProdTag,
-        "metadata": {
-          "mission": "rest-http",
-          "runtime": "spring-boot",
-          "version": "previous-redhat"
-        }
+        name: "Spring Boot - HTTP Example",
+        description: "Booster to expose a HTTP Greeting endpoint using Spring Boot and Apache Tomcat in embedded mode.",
+        repo: "https://github.com/snowdrop/rest-http-example",
+        ref: previousProdTag,
+        metadata: {
+          mission: "rest-http",
+          runtime: "spring-boot",
+          version: "previous-redhat",
+        },
       },
       {
-        "name": "Spring Boot - HTTP Example",
-        "description": "Booster to expose a HTTP Greeting endpoint using Spring Boot and Apache Tomcat in embedded mode.",
-        "repo": "https://github.com/snowdrop/rest-http-example",
-        "ref": currentTag,
-        "metadata": {
-          "mission": "rest-http",
-          "runtime": "spring-boot",
-          "version": "current-community"
-        }
+        name: "Spring Boot - HTTP Example",
+        description: "Booster to expose a HTTP Greeting endpoint using Spring Boot and Apache Tomcat in embedded mode.",
+        repo: "https://github.com/snowdrop/rest-http-example",
+        ref: currentTag,
+        metadata: {
+          mission: "rest-http",
+          runtime: "spring-boot",
+          version: "current-community",
+        },
       },
       {
-        "name": "Spring Boot - HTTP Example",
-        "description": "Booster to expose a HTTP Greeting endpoint using Spring Boot and Apache Tomcat in embedded mode.",
-        "repo": "https://github.com/snowdrop/rest-http-example",
-        "ref": currentProdTag,
-        "metadata": {
-          "mission": "rest-http",
-          "runtime": "spring-boot",
-          "version": "current-redhat"
-        }
-      }
-    ]
+        name: "Spring Boot - HTTP Example",
+        description: "Booster to expose a HTTP Greeting endpoint using Spring Boot and Apache Tomcat in embedded mode.",
+        repo: "https://github.com/snowdrop/rest-http-example",
+        ref: currentProdTag,
+        metadata: {
+          mission: "rest-http",
+          runtime: "spring-boot",
+          version: "current-redhat",
+        },
+      },
+    ],
   );
 }
 
@@ -210,15 +215,17 @@ function createMetadata(previousSpringBootVersion: string, currentSpringBootVers
 /* tslint:enable */
 
 class DummyLatestTagRetriever implements LatestTagRetriever {
-  communityTag: string;
-  prodTag: string;
+  public communityTag: string;
+  public prodTag: string;
 
   constructor(communityTag: string, prodTag: string) {
     this.communityTag = communityTag;
     this.prodTag = prodTag;
   }
 
-  public async getLatestTags(example: string, tagFilter?: (t: string) => boolean, token?: string): Promise<BoosterTagTuple> {
+  public async getLatestTags(
+    example: string, tagFilter?: (t: string) => boolean, token?: string): Promise<BoosterTagTuple> {
+
     return {
       community: this.valueOrUndefined(this.communityTag, tagFilter),
       prod: this.valueOrUndefined(this.prodTag, tagFilter),

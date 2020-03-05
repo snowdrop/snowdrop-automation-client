@@ -1,7 +1,10 @@
-import { SimpleProjectEditor, RepoRef, Project } from "@atomist/automation-client";
+import { Project, RepoRef, SimpleProjectEditor } from "@atomist/automation-client";
 import { LatestTagRetriever } from "../../github/boosterUtils";
 
-export function updateLauncherCatalog(latestTagRetriever: LatestTagRetriever, springBootVersion: string, exampleRepos: RepoRef[], token?: string): SimpleProjectEditor {
+export function updateLauncherCatalog(
+  latestTagRetriever: LatestTagRetriever, springBootVersion: string, exampleRepos: RepoRef[],
+  token?: string): SimpleProjectEditor {
+
   return async project => {
     await updateCatalogFile(project, exampleRepos, springBootVersion, latestTagRetriever, token);
     await updateMetadataFile(project, springBootVersion);
@@ -10,7 +13,10 @@ export function updateLauncherCatalog(latestTagRetriever: LatestTagRetriever, sp
   };
 }
 
-async function updateCatalogFile(project: Project, exampleRepos: RepoRef[], springBootVersion: string, latestTagRetriever: LatestTagRetriever, token?: string) {
+async function updateCatalogFile(
+  project: Project, exampleRepos: RepoRef[], springBootVersion: string, latestTagRetriever: LatestTagRetriever,
+  token?: string) {
+
   const catalogFile = project.findFileSync("catalog.json");
   const catalog = JSON.parse(catalogFile.getContentSync());
   for (const exampleRepo of exampleRepos) {
@@ -19,7 +25,10 @@ async function updateCatalogFile(project: Project, exampleRepos: RepoRef[], spri
   catalogFile.setContentSync(JSON.stringify(catalog, null, 2));
 }
 
-async function updateExampleEntries(catalog: any[], exampleRepo: RepoRef, springBootVersion: string, latestTagRetriever: LatestTagRetriever, token?: string) {
+async function updateExampleEntries(
+  catalog: any[], exampleRepo: RepoRef, springBootVersion: string, latestTagRetriever: LatestTagRetriever,
+  token?: string) {
+
   const latestTags = await latestTagRetriever.getLatestTags(exampleRepo.repo, getTagFilter(springBootVersion), token);
 
   const communityEntry = getCatalogEntry(catalog, exampleRepo.url, getMetadataCommunityVersion(springBootVersion));
@@ -34,7 +43,8 @@ async function updateExampleEntries(catalog: any[], exampleRepo: RepoRef, spring
 }
 
 function getCatalogEntry(catalog: any[], repoUrl: string, metadataVersion: string): any {
-  return catalog.find(e => e.repo == repoUrl && e.metadata.runtime == "spring-boot" && e.metadata.version == metadataVersion);
+  return catalog
+    .find(e => e.repo === repoUrl && e.metadata.runtime === "spring-boot" && e.metadata.version === metadataVersion);
 }
 
 function getTagFilter(stringBootVersion: string): (tag: string) => boolean {
@@ -48,11 +58,11 @@ async function updateMetadataFile(project: Project, springBootVersion: string) {
   const metadataFile = project.findFileSync("metadata.json");
   const metadata = JSON.parse(metadataFile.getContentSync());
   const runtimes: any[] = metadata.runtimes;
-  const springBootVersions: any[] = runtimes.find(e => e.id == "spring-boot").versions;
+  const springBootVersions: any[] = runtimes.find(e => e.id === "spring-boot").versions;
 
-  springBootVersions.filter(e => e.id == getMetadataCommunityVersion(springBootVersion))
+  springBootVersions.filter(e => e.id === getMetadataCommunityVersion(springBootVersion))
     .forEach(e => e.name = `${springBootVersion} (Community)`);
-  springBootVersions.filter(e => e.id == getMetadataProdVersion(springBootVersion))
+  springBootVersions.filter(e => e.id === getMetadataProdVersion(springBootVersion))
     .forEach(e => e.name = `${springBootVersion} (RHOAR)`);
 
   metadataFile.setContent(JSON.stringify(metadata, null, 2));
