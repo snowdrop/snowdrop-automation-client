@@ -16,7 +16,7 @@ import {editOne} from "@atomist/automation-client/lib/operations/edit/editAll";
 import {BranchCommit} from "@atomist/automation-client/lib/operations/edit/editModes";
 import {BOOSTER_CATALOG_REPO, SNOWDROP_ORG} from "../constants";
 import {DefaultLatestTagRetriever} from "../support/github/boosterUtils";
-import {syncWithUpstream} from "../support/github/refUtils";
+import {syncWithUpstream, raisePullRequestToUpstream} from "../support/github/refUtils";
 import {updateLauncherCatalog} from "../support/transform/catalog/updateLauncherCatalog";
 import { relevantRepos } from "@atomist/automation-client/lib/operations/common/repoUtils";
 import { allReposInTeam } from "@atomist/sdm";
