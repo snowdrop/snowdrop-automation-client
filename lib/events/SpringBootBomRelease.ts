@@ -33,7 +33,7 @@ import {
 import {HandleEvent} from "@atomist/automation-client/lib/HandleEvent";
 import * as _ from "lodash";
 import {BOM_REPO, BOM_VERSION_REGEX} from "../constants";
-import {performUpdatesForBomRelease, UpdateParams} from "../shared/BomReleaseUtil";
+import {updateBomVersionEverywhere, UpdateParams} from "../support/bom/versionUpdate";
 import * as graphql from "../typings/types";
 
 // see also commands/SpringBootBomRelease
@@ -65,7 +65,7 @@ export class UpdateBoostersAndBOMForBOMRelease implements HandleEvent<graphql.Ta
 
     logger.debug(`Attempting to automatically update boosters to new BOM version ${releasedBOMVersion}`);
 
-    return performUpdatesForBomRelease({
+    return updateBomVersionEverywhere({
       bomVersion: releasedBOMVersion,
       owner: this.owner,
       githubToken: this.githubToken,

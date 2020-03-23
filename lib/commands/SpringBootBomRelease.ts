@@ -8,12 +8,13 @@ import {
   Parameter,
   Secret,
   Secrets,
-  success, Tags,
+  success,
+  Tags,
 } from "@atomist/automation-client";
 import {CommandHandler} from "@atomist/automation-client/lib/decorators";
 import {HandleCommand} from "@atomist/automation-client/lib/HandleCommand";
 import {BOM_VERSION_REGEX} from "../constants";
-import {performUpdatesForBomRelease, UpdateParams} from "../shared/BomReleaseUtil";
+import {updateBomVersionEverywhere, UpdateParams} from "../support/bom/versionUpdate";
 
 // see also events/SpringBootBomRelease
 @CommandHandler(
@@ -45,7 +46,7 @@ export class SpringBootBomRelease implements HandleCommand {
   public handle(context: HandlerContext, params: this): Promise<HandlerResult> {
     logger.debug(`Attempting to manually update boosters to new BOM version ${params.bomVersion}`);
 
-    return performUpdatesForBomRelease({
+    return updateBomVersionEverywhere({
       bomVersion: params.bomVersion,
       owner: params.owner,
       githubToken: params.githubToken,

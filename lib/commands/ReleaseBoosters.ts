@@ -15,9 +15,9 @@ import {relevantRepos} from "@atomist/automation-client/lib/operations/common/re
 import {allReposInTeam} from "@atomist/sdm";
 import async = require("async");
 import * as os from "os";
-import {determineBoosterBranchToUpdate} from "../shared/BomReleaseUtil";
 import {boosterRepos} from "../support/repo/boosterRepo";
 import {FixedBranchDefaultRepoRefResolver} from "../support/repo/FixedBranchDefaultRepoRefResolver";
+import {versionToExampleBranch} from "../support/utils/versions";
 import {ensureVPNAccess, releaseBooster, ReleaseParams} from "./ReleaseBoosterUtil";
 
 @CommandHandler("Release (tag) boosters", "release boosters")
@@ -48,7 +48,7 @@ export class ReleaseBoosters implements HandleCommand {
       return failure(error);
     }
 
-    const boosterBranchToUse = determineBoosterBranchToUpdate(this.prodBomVersion);
+    const boosterBranchToUse = versionToExampleBranch(this.prodBomVersion);
 
     /**
      * We need to limit the concurrency of the booster release, because it uses the resource
