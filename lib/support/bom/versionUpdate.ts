@@ -6,8 +6,7 @@ import {allReposInTeam} from "@atomist/sdm";
 import {BOM_REPO, BOM_VERSION_REGEX, BOOSTER_VERSION_REGEX} from "../../constants";
 import {boosterRepos} from "../repo/boosterRepo";
 import {FixedBranchDefaultRepoRefResolver} from "../repo/FixedBranchDefaultRepoRefResolver";
-import {updateMavenProjectVersion} from "../transform/booster/updateMavenProjectVersion";
-import {getCurrentVersion, getCurrentVersionWithoutSnapshot, setParentVersion} from "../utils/pomUtils";
+import {getCurrentVersion, getCurrentVersionWithoutSnapshot, setParentVersion, setProjectVersion} from "../utils/pom";
 import {versionToBranch, versionToExampleBranch} from "../utils/versions";
 
 export class UpdateParams {
@@ -69,7 +68,7 @@ export function updateExampleParentVersion(parentVersion: string): SimpleProject
     logger.info(
         `Current version of '${project.name}' is ${currentVersion}. Will update to ${newVersion}`);
 
-    return updateMavenProjectVersion(newVersion)(project)
+    return setProjectVersion(project, newVersion)
         .then(p => setParentVersion(p, parentVersion));
   };
 }
@@ -111,8 +110,7 @@ export function updateBomVersion(version: string): SimpleProjectEditor {
 
   return async p => {
     const currentVersion = await getCurrentVersionWithoutSnapshot(p);
-    return updateMavenProjectVersion(
-        `${currentVersion}${getNewQualifier(qualifier)}-SNAPSHOT`)(p);
+    return setProjectVersion(p, `${currentVersion}${getNewQualifier(qualifier)}-SNAPSHOT`);
   };
 }
 

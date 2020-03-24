@@ -2,7 +2,7 @@ import * as parser from "xml2json";
 
 import {InMemoryProject} from "@atomist/automation-client";
 import {expect} from "chai";
-import {alignBomWithUpstream} from "../../../../lib/support/transform/bom/alignBomWithUpstream";
+import {alignBomWithUpstream} from "../../../lib/support/bom/alignBomWithUpstream";
 
 describe("alignBomWithUpstream", () => {
 
