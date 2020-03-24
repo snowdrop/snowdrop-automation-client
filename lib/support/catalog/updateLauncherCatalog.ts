@@ -1,5 +1,5 @@
 import { Project, RepoRef, SimpleProjectEditor } from "@atomist/automation-client";
-import { LatestTagRetriever } from "../../github/boosterUtils";
+import { LatestTagRetriever } from "../github/boosterUtils";
 
 export function updateLauncherCatalog(
   latestTagRetriever: LatestTagRetriever, springBootVersion: string, exampleRepos: RepoRef[],

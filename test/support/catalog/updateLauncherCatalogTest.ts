@@ -1,9 +1,9 @@
 import { InMemoryProject, Project, RepoRef } from "@atomist/automation-client";
 import * as _ from "lodash";
 import * as assert from "power-assert";
-import { BoosterTagTuple, LatestTagRetriever } from "../../../../lib/support/github/boosterUtils";
-import { updateLauncherCatalog } from "../../../../lib/support/transform/catalog/updateLauncherCatalog";
-import { githubToken } from "../../../tokens";
+import { updateLauncherCatalog } from "../../../lib/support/catalog/updateLauncherCatalog";
+import { BoosterTagTuple, LatestTagRetriever } from "../../../lib/support/github/boosterUtils";
+import { githubToken } from "../../tokens";
 
 describe("updateLauncherCatalogTest", () => {
 
