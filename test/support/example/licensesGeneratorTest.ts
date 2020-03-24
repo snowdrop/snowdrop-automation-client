@@ -2,8 +2,8 @@ import {InMemoryProject, NodeFsLocalProject, Project} from "@atomist/automation-
 import { expect } from "chai";
 import { resolve } from "path";
 import { tempdir } from "shelljs";
-import { LICENSES_GENERATOR_PATH } from "../../../../lib/constants";
-import licensesGenerator from "../../../../lib/support/transform/booster/licensesGenerator";
+import { LICENSES_GENERATOR_PATH } from "../../../lib/constants";
+import licensesGenerator from "../../../lib/support/example/licensesGenerator";
 
 describe("licensesGenerator", () => {
     it("genereate licenses", () => {

@@ -16,7 +16,7 @@ import {HandleCommand} from "@atomist/automation-client/lib/HandleCommand";
 import {editOne} from "@atomist/automation-client/lib/operations/edit/editAll";
 import {BranchCommit} from "@atomist/automation-client/lib/operations/edit/editModes";
 import {BOM_REPO, SPRING_BOOT_VERSION_REGEX} from "../constants";
-import {alignBomWithUpstream} from "../support/transform/bom/alignBomWithUpstream";
+import {alignBomWithUpstream} from "../support/bom/alignBomWithUpstream";
 
 const FIRST_TWO_VERSION_NUMBERS_REGEX = /^\d+.\d+/;
 

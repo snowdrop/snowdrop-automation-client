@@ -5,8 +5,8 @@ import axios from "axios";
 import {logger, Project, SimpleProjectEditor} from "@atomist/automation-client";
 
 import {config} from "@atomist/automation-client/lib/internal/util/config";
-import {SPRING_BOOT_VERSION_PROPERTY_NAME, SPRING_BOOT_VERSION_REGEX} from "../../../constants";
-import {setParentVersion, setProperty, setVersion} from "../../utils/pomUtils";
+import {SPRING_BOOT_VERSION_PROPERTY_NAME, SPRING_BOOT_VERSION_REGEX} from "../../constants";
+import {setParentVersion, setProjectVersion, setProperty} from "../utils/pom";
 
 const IGNORED_PROPERTIES = config("bom.alignment.ignoredProperties") as string[];
 
@@ -17,7 +17,7 @@ export function alignBomWithUpstream(springBootVersion: string): SimpleProjectEd
     const updatedProperties = new Map<string, string>();
     const pom: any = await getProjectPom(project);
 
-    await setVersion(project, springBootVersionToBomVersion(springBootVersion));
+    await setProjectVersion(project, springBootVersionToBomVersion(springBootVersion));
     await setParentVersion(project, springBootVersion);
     await setProperty(project, SPRING_BOOT_VERSION_PROPERTY_NAME, springBootVersion);
     updatedProperties.set(SPRING_BOOT_VERSION_PROPERTY_NAME, springBootVersion);

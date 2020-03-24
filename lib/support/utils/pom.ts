@@ -19,22 +19,20 @@ export function getCurrentVersionWithoutSnapshot(p: Project): Promise<string> {
   return getCurrentVersion(p).then(v => v.replace("-SNAPSHOT", ""));
 }
 
-export function getProperty(project: Project, property: string): Promise<string> {
-  return getPomAsJson(project).then(pom => pom.project.properties[property] ? pom.project.properties[property] : null);
-}
-
-export async function setParentVersion(project: Project, version: string): Promise<Project> {
+export function setParentVersion(project: Project, version: string): Promise<Project> {
   logger.info(`Setting pom parent version to ${version}`);
-  return await doWithAllMatches(project, new XmldocFileParser(), "pom.xml", "/project/parent/version", match => {
-    match.$value = match.$value.replace(new RegExp("<version>[\\s\\S]*?<\/version>"), `<version>${version}</version>`);
-  });
+  return setVersion(project, "pom.xml", "/project/parent/version", version);
 }
 
-export function setVersion(project: Project, version: string): Promise<Project> {
+export function setProjectVersion(project: Project, version: string): Promise<Project> {
   logger.info(`Setting pom version to ${version}`);
-  return doWithAllMatches(project, new XmldocFileParser(), "pom.xml", "/project/version", match => {
-    match.$value = match.$value.replace(new RegExp("<version>[\\s\\S]*?<\/version>"), `<version>${version}</version>`);
-  });
+  return setVersion(project, "pom.xml", "/project/version", version)
+      .then(p => setVersion(p, "*/pom.xml", "/project/parent/version", version));
+}
+
+function setVersion(project: Project, filePattern: string, attributePath: string, version: string): Promise<Project> {
+  return doWithAllMatches(project, new XmldocFileParser(), filePattern, attributePath,
+      match => match.$value = `<version>${version}</version>`);
 }
 
 export function setProperty(project: Project, key: string, value: string): Promise<Project> {

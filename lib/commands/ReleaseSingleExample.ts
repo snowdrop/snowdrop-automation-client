@@ -11,11 +11,24 @@ import {
 } from "@atomist/automation-client";
 import {CommandHandler} from "@atomist/automation-client/lib/decorators";
 import {HandleCommand} from "@atomist/automation-client/lib/HandleCommand";
+import {SPRING_BOOT_VERSION_REGEX} from "../constants";
+import {releaseExample} from "../support/example/release";
 import {versionToExampleBranch} from "../support/utils/versions";
-import {ensureVPNAccess, releaseBooster} from "./ReleaseBoosterUtil";
+import {isOnVpn} from "../support/utils/vpn";
 
-@CommandHandler("Release (tag) single boosters", "release single booster")
-export class ReleaseSingleBooster implements HandleCommand {
+@CommandHandler("Release (tag) single example", "release single example")
+export class ReleaseSingleExample implements HandleCommand {
+
+  @Parameter({
+    displayName: "spring boot version",
+    description: "Upstream Spring Boot version (e.g. 2.2.5.RELEASE)",
+    pattern: SPRING_BOOT_VERSION_REGEX,
+    validInput: "2.2.5.RELEASE",
+    minLength: 10,
+    maxLength: 50,
+    required: true,
+  })
+  public springBootVersion: string;
 
   @Parameter({
     displayName: "prod_bom_version",
@@ -39,24 +52,16 @@ export class ReleaseSingleBooster implements HandleCommand {
   public githubToken: string;
 
   public async handle(context: HandlerContext, params: this): Promise<HandlerResult> {
-
-    const error = await ensureVPNAccess();
-    if (error != null) {
-      return failure(error);
+    if (!await isOnVpn()) {
+      return failure(new Error("You must be on the RH VPN to release the example"));
     }
 
-    const boosterBranchToUse = versionToExampleBranch(this.prodBomVersion);
-
-    return releaseBooster(
+    return releaseExample(
         {
-          startingBranch: boosterBranchToUse,
-          prodBomVersion: params.prodBomVersion,
-          owner: params.owner,
-          repository: params.repository,
-          githubToken: params.githubToken,
           context,
+          startingBranch: versionToExampleBranch(this.prodBomVersion),
+          ...params,
         })
         .then(success, failure);
   }
-
 }

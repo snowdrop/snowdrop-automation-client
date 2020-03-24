@@ -53,10 +53,10 @@ export async function tagBranch(repo: string, branch: string, name: string, toke
       return false;
     }
 
-    logger.info(`Successfully created tag '${name}' for booster '${repo}'`);
+    logger.info(`Successfully created tag '${name}' for '${repo}'`);
     return true;
   } catch (e) {
-    logger.error(`Unable to create tag '${name}' for branch '${branch}' of booster '${repo}'`);
+    logger.error(`Unable to create tag '${name}' for branch '${branch}' of '${repo}'`);
     logger.error(`Error is:\n ${e}`);
     return false;
   }
@@ -78,10 +78,10 @@ export async function deleteBranch(repo: string, branch: string, token?: string,
 
   try {
     await githubApi(token).git.deleteRef(params);
-    logger.info(`Successfully deleted branch '${branch}' of booster '${repo}'`);
+    logger.info(`Successfully deleted branch '${branch}' of '${repo}'`);
     return true;
   } catch (e) {
-    logger.error(`Unable to delete branch '${branch}' of booster '${repo}'`);
+    logger.error(`Unable to delete branch '${branch}' of '${repo}'`);
     logger.error(`Error is:\n ${e}`);
     return false;
   }
