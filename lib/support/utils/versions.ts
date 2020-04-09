@@ -1,5 +1,5 @@
 import {logger} from "@atomist/automation-client";
-import {BOOSTER_VERSION_REGEX} from "../../constants";
+import {BOM_VERSION_REGEX, BOOSTER_VERSION_REGEX} from "../../constants";
 
 export function versionToBranch(version: string): string {
   const versionRegex = /^\d+.\d+/;
@@ -26,4 +26,13 @@ export function getNextExampleVersion(currentVersion: string): string {
   const newRevision = Number(currentRevision) + 1;
   const qualifier = matches[3] ? matches[3] : "";
   return `${matches[1]}-${newRevision}${qualifier}`;
+}
+
+export function bomVersionToSpringBootVersion(bomVersion: string): string {
+  if (!BOM_VERSION_REGEX.test(bomVersion)) {
+    logger.warn(`Unsupported version format '${bomVersion}'`);
+    throw new Error(`Unsupported version format '${bomVersion}'`);
+  }
+  const matches = bomVersion.match(BOM_VERSION_REGEX);
+  return `${matches[1]}.RELEASE`;
 }
