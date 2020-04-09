@@ -1,49 +1,55 @@
-import {InMemoryProject, Project} from "@atomist/automation-client";
-import {expect} from "chai";
+import { InMemoryProject, Project } from "@atomist/automation-client";
+import { expect } from "chai";
 import * as parser from "xml2json";
-import {updateBomVersion, updateExampleParentVersion} from "../../../lib/support/bom/versionUpdate";
+import { SPRING_BOOT_VERSION_PROPERTY_NAME } from "../../../lib/constants";
+import { updateBomVersion, updateExampleParentVersion } from "../../../lib/support/bom/versionUpdate";
 
 describe("updateExampleParentVersion", () => {
   const ORIGINAL_PROJECT_VERSION = "2.2.5-1-SNAPSHOT";
   const ORIGINAL_SNOWDROP_DEPENDENCIES_VERSION = "2.2.5.Final";
+  const ORIGINAL_SPRING_BOOT_VERSION = "2.2.5.RELEASE";
 
   it("ignore wrong snowdrop-dependencies version", done => {
     const project = createProject();
     updateExampleParentVersion("1")(project)
-        .then(r => assertProject(project, ORIGINAL_PROJECT_VERSION, ORIGINAL_SNOWDROP_DEPENDENCIES_VERSION))
-        .then(done, done);
+      .then(r => assertProject(project, ORIGINAL_PROJECT_VERSION, ORIGINAL_SNOWDROP_DEPENDENCIES_VERSION,
+        ORIGINAL_SPRING_BOOT_VERSION))
+      .then(done, done);
   });
 
   it("update booster with a new snowdrop-dependencies version", done => {
     const project = createProject();
     updateExampleParentVersion("2.2.6.Final")(project)
-        .then(r => assertProject(project, "2.2.6-1-SNAPSHOT", "2.2.6.Final"))
-        .then(done, done);
+      .then(r => assertProject(project, "2.2.6-1-SNAPSHOT", "2.2.6.Final", "2.2.6.RELEASE"))
+      .then(done, done);
   });
 
   it("update booster to a revision of a snowdrop-dependencies version", done => {
     const project = createProject();
     updateExampleParentVersion("2.2.5.SR1")(project)
-        .then(r => assertProject(project, ORIGINAL_PROJECT_VERSION, "2.2.5.SR1"))
-        .then(done, done);
+      .then(r => assertProject(project, ORIGINAL_PROJECT_VERSION, "2.2.5.SR1", "2.2.5.RELEASE"))
+      .then(done, done);
   });
 
-  function assertProject(project: Project, projectVersion: string, snowdropDependenciesVersion: string) {
+  function assertProject(project: Project, projectVersion: string, snowdropDependenciesVersion: string,
+                         springBootVersion: string) {
+
     const parentPomContent = project.findFileSync("pom.xml").getContentSync();
-    const parentPom = parser.toJson(parentPomContent, {object: true}) as any;
+    const parentPom = parser.toJson(parentPomContent, { object: true }) as any;
     expect(parentPom.project.parent.version).to.be.equal(snowdropDependenciesVersion);
     expect(parentPom.project.version).to.be.equal(projectVersion);
+    expect(parentPom.project.properties[SPRING_BOOT_VERSION_PROPERTY_NAME]).to.be.equal(springBootVersion);
 
     const childPomContent = project.findFileSync("child/pom.xml").getContentSync();
-    const childPom = parser.toJson(childPomContent, {object: true}) as any;
+    const childPom = parser.toJson(childPomContent, { object: true }) as any;
     expect(childPom.project.parent.version).to.be.equal(projectVersion);
   }
 
   function createProject() {
     return InMemoryProject.from(
-        {repo: "test-project", owner: "test", url: "dummy"},
-        {path: "pom.xml", content: PomWithParent},
-        {path: "child/pom.xml", content: PomOfSubModule},
+      { repo: "test-project", owner: "test", url: "dummy" },
+      { path: "pom.xml", content: PomWithParent },
+      { path: "child/pom.xml", content: PomOfSubModule },
     );
   }
 
@@ -58,6 +64,9 @@ describe("updateExampleParentVersion", () => {
   <artifactId>parent</artifactId>
   <version>${ORIGINAL_PROJECT_VERSION}</version>
   <packaging>pom</packaging>
+  <properties>
+    <${SPRING_BOOT_VERSION_PROPERTY_NAME}>${ORIGINAL_SPRING_BOOT_VERSION}</${SPRING_BOOT_VERSION_PROPERTY_NAME}>
+  </properties>
 	<modules>
 	  <module>child</module>
 	</modules>
@@ -95,10 +104,10 @@ describe("updateBomVersion", () => {
 
   async function testWithReleasedVersion(releasedVersion: string, expectedNewVersion: string) {
     const project = InMemoryProject.of(
-        {path: "pom.xml", content: POM},
+      { path: "pom.xml", content: POM },
     );
     await updateBomVersion(releasedVersion)(project);
-    const pomJson = parser.toJson(project.findFileSync("pom.xml").getContentSync(), {object: true}) as any;
+    const pomJson = parser.toJson(project.findFileSync("pom.xml").getContentSync(), { object: true }) as any;
     expect(pomJson.project.version).to.be.equal(expectedNewVersion);
   }
 
