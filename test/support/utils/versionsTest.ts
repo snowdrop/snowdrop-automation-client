@@ -1,5 +1,7 @@
-import {expect} from "chai";
-import {getNextExampleVersion, versionToBranch, versionToExampleBranch} from "../../../lib/support/utils/versions";
+import { expect } from "chai";
+import {
+  bomVersionToSpringBootVersion, getNextExampleVersion, versionToBranch, versionToExampleBranch,
+} from "../../../lib/support/utils/versions";
 
 describe("versionToBranch", () => {
   it("should get branch for 2.2.5.RELEASE", () => {
@@ -51,6 +53,21 @@ describe("getNextExampleVersion", () => {
   it("should fail with wrong version", () => {
     try {
       versionToExampleBranch("wrong-version");
+      expect.fail("expected exception");
+    } catch (e) {
+      expect(e.message).to.equal("Unsupported version format 'wrong-version'");
+    }
+  });
+});
+
+describe("bomVersionToSpringBootVersion", () => {
+  it("should get spring boot version", () => {
+    expect(bomVersionToSpringBootVersion("2.2.6.Final")).to.be.equal("2.2.6.RELEASE");
+  });
+
+  it("should fail with wrong version", () => {
+    try {
+      bomVersionToSpringBootVersion("wrong-version");
       expect.fail("expected exception");
     } catch (e) {
       expect(e.message).to.equal("Unsupported version format 'wrong-version'");

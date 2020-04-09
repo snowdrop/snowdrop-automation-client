@@ -1,13 +1,17 @@
-import {GitHubRepoRef, HandlerContext, logger, Project, SimpleProjectEditor} from "@atomist/automation-client";
-import {editAll, editOne} from "@atomist/automation-client/lib/operations/edit/editAll";
-import {BranchCommit} from "@atomist/automation-client/lib/operations/edit/editModes";
-import {EditResult} from "@atomist/automation-client/lib/operations/edit/projectEditor";
-import {allReposInTeam} from "@atomist/sdm";
-import {BOM_REPO, BOM_VERSION_REGEX, BOOSTER_VERSION_REGEX} from "../../constants";
-import {boosterRepos} from "../repo/boosterRepo";
-import {FixedBranchDefaultRepoRefResolver} from "../repo/FixedBranchDefaultRepoRefResolver";
-import {getCurrentVersion, getCurrentVersionWithoutSnapshot, setParentVersion, setProjectVersion} from "../utils/pom";
-import {versionToBranch, versionToExampleBranch} from "../utils/versions";
+import { GitHubRepoRef, HandlerContext, logger, Project, SimpleProjectEditor } from "@atomist/automation-client";
+import { editAll, editOne } from "@atomist/automation-client/lib/operations/edit/editAll";
+import { BranchCommit } from "@atomist/automation-client/lib/operations/edit/editModes";
+import { EditResult } from "@atomist/automation-client/lib/operations/edit/projectEditor";
+import { allReposInTeam } from "@atomist/sdm";
+import {
+  BOM_REPO, BOM_VERSION_REGEX, BOOSTER_VERSION_REGEX, SPRING_BOOT_VERSION_PROPERTY_NAME,
+} from "../../constants";
+import { boosterRepos } from "../repo/boosterRepo";
+import { FixedBranchDefaultRepoRefResolver } from "../repo/FixedBranchDefaultRepoRefResolver";
+import {
+  getCurrentVersion, getCurrentVersionWithoutSnapshot, setParentVersion, setProjectVersion, setProperty,
+} from "../utils/pom";
+import { bomVersionToSpringBootVersion, versionToBranch, versionToExampleBranch } from "../utils/versions";
 
 export class UpdateParams {
   public bomVersion: string;
@@ -26,26 +30,26 @@ export function updateBomVersionEverywhere(params: UpdateParams): Promise<EditRe
   logger.debug(`Will attempt to update branch ${bomBranch} of BOM and branch ${exampleBranch} of examples`);
 
   return editAll(params.context,
-      {token: params.githubToken},
-      updateExampleParentVersion(params.bomVersion),
-      {
-        branch: exampleBranch,
-        message: `[booster-release] Update BOM to ${params.bomVersion}`,
-      } as BranchCommit,
-      undefined,
-      allReposInTeam(new FixedBranchDefaultRepoRefResolver(exampleBranch)),
-      boosterRepos(params.githubToken),
+    { token: params.githubToken },
+    updateExampleParentVersion(params.bomVersion),
+    {
+      branch: exampleBranch,
+      message: `[booster-release] Update BOM to ${params.bomVersion}`,
+    } as BranchCommit,
+    undefined,
+    allReposInTeam(new FixedBranchDefaultRepoRefResolver(exampleBranch)),
+    boosterRepos(params.githubToken),
   ).then(() => {
     return editOne(
-        params.context,
-        {token: params.githubToken},
-        updateBomVersion(params.bomVersion),
-        {
-          branch: bomBranch,
-          message: `Bump BOM version [ci skip]`,
-        } as BranchCommit,
-        GitHubRepoRef.from({owner: params.owner, repo: BOM_REPO, branch: bomBranch}),
-        undefined,
+      params.context,
+      { token: params.githubToken },
+      updateBomVersion(params.bomVersion),
+      {
+        branch: bomBranch,
+        message: `Bump BOM version [ci skip]`,
+      } as BranchCommit,
+      GitHubRepoRef.from({ owner: params.owner, repo: BOM_REPO, branch: bomBranch }),
+      undefined,
     );
   });
 }
@@ -66,10 +70,11 @@ export function updateExampleParentVersion(parentVersion: string): SimpleProject
     const currentVersion = await getCurrentVersion(project);
     const newVersion = getNewExampleVersion(parentVersion, currentVersion);
     logger.info(
-        `Current version of '${project.name}' is ${currentVersion}. Will update to ${newVersion}`);
+      `Current version of '${project.name}' is ${currentVersion}. Will update to ${newVersion}`);
 
     return setProjectVersion(project, newVersion)
-        .then(p => setParentVersion(p, parentVersion));
+      .then(p => setParentVersion(p, parentVersion))
+      .then(p => setProperty(p, SPRING_BOOT_VERSION_PROPERTY_NAME, bomVersionToSpringBootVersion(parentVersion)));
   };
 }
 
