@@ -1,5 +1,14 @@
 # snowdrop-automation-client
 
+## Table of contents
+   * [snowdrop-automation-client](#snowdrop-automation-client)
+      * [Basics](#basics)
+      * [Running](#running)
+         * [Prerequisites](#prerequisites)
+         * [Launch application](#launch-application)
+      * [Install specific vnm version](#install-specific-vnm-version)
+      * [Miscellaneous](#miscellaneous)
+
 Contains automation used by the snowdrop team
 
 ## Basics
@@ -47,6 +56,25 @@ Before launching the application the following environment variables need to be 
 Launch application by issuing:
 
 `npm run clean && npm run compile && npm start`
+
+## Install specific vnm version
+
+To manage specific node versions, as the application requires Node 8.x, install `nvm` (Node Version Manager), instructions [here](https://github.com/nvm-sh/nvm).
+
+With `nvm` installed, use it install the latest 8.x node version.
+
+```bash
+$ nvm install 8
+```
+
+To use that specific version execute the following.
+
+```bash
+$ nvm use 8
+```
+
+
+
 
 ## Miscellaneous
 
