@@ -19,7 +19,7 @@ export async function getShaOfLatestCommit(repo: string, branch: string,
     const response = await githubApi(token).git.getRef(params);
     return response.data.object.sha;
   } catch (e) {
-    logger.info(`Branch '${branch}' does not exists`);
+    logger.error(`Failed to get the last commit. ${e}`);
     return undefined;
   }
 }
@@ -100,8 +100,8 @@ export async function syncWithUpstream(repo: string, token?: string,
       return false;
     }
 
-    const latestShaOfUpstream =
-        await getShaOfLatestCommit(upstreamInfo.name, "master", token, upstreamInfo.owner);
+    // We cannot access other org repo with our token, so using null here
+    const latestShaOfUpstream = await getShaOfLatestCommit(upstreamInfo.name, "master", null, upstreamInfo.owner);
 
     const updateParams = {
       owner,
