@@ -21,7 +21,7 @@ import {DefaultRepoRefResolver} from "@atomist/sdm-core";
 import {BOOSTER_CATALOG_REPO, SNOWDROP_ORG} from "../constants";
 import {updateLauncherCatalog} from "../support/catalog/updateLauncherCatalog";
 import {DefaultLatestTagRetriever} from "../support/github/boosterUtils";
-import {raisePullRequestToUpstream, syncWithUpstream} from "../support/github/refUtils";
+import {syncWithUpstream} from "../support/github/refUtils";
 import {boosterRepos} from "../support/repo/boosterRepo";
 
 const latestTagRetriever = new DefaultLatestTagRetriever();
@@ -55,7 +55,6 @@ export class CreateLauncherPR implements HandleCommand {
 
   private async updateCatalogAndCreatePR(context: HandlerContext, params: this, branch: string):
       Promise<HandlerResult> {
-    const prTitlePrefix = "WIP - DO NOT MERGE: ";
     const commitMessage = `Update Spring Boot to ${params.sbVersion}`;
 
     try {
@@ -79,9 +78,14 @@ export class CreateLauncherPR implements HandleCommand {
           undefined,
       );
 
-      logger.debug("Attempting to create PR to upstream catalog");
-      await raisePullRequestToUpstream(
-          BOOSTER_CATALOG_REPO, branch, "master", `${prTitlePrefix}${commitMessage}`, params.githubToken, params.owner);
+      logger.info(
+        `Created an update branch ${branch} on ${params.owner}/${BOOSTER_CATALOG_REPO}. Please raise a PR manually`);
+
+      // Cannot perform this last step any more because our token cannot access other org repo
+      // logger.debug("Attempting to create PR to upstream catalog");
+      // const prTitlePrefix = "WIP - DO NOT MERGE: ";
+      // await raisePullRequestToUpstream(
+      // BOOSTER_CATALOG_REPO, branch, "master", `${prTitlePrefix}${commitMessage}`, params.githubToken, params.owner);
 
       return success();
     } catch (e) {
