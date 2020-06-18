@@ -195,7 +195,7 @@ function createMetadata(previousSpringBootVersion: string, currentSpringBootVers
             },
             {
               "id": "current-redhat",
-              "name": `${currentSpringBootVersion} (RHOAR)`
+              "name": `${currentSpringBootVersion} (Red Hat Runtimes)`
             },
             {
               "id": "previous-community",
@@ -203,7 +203,7 @@ function createMetadata(previousSpringBootVersion: string, currentSpringBootVers
             },
             {
               "id": "previous-redhat",
-              "name": `${previousSpringBootVersion} (RHOAR)`
+              "name": `${previousSpringBootVersion} (Red Hat Runtimes)`
             }
           ]
         }
