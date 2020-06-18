@@ -63,7 +63,7 @@ async function updateMetadataFile(project: Project, springBootVersion: string) {
   springBootVersions.filter(e => e.id === getMetadataCommunityVersion(springBootVersion))
     .forEach(e => e.name = `${springBootVersion} (Community)`);
   springBootVersions.filter(e => e.id === getMetadataProdVersion(springBootVersion))
-    .forEach(e => e.name = `${springBootVersion} (RHOAR)`);
+    .forEach(e => e.name = `${springBootVersion} (Red Hat Runtimes)`);
 
   metadataFile.setContent(JSON.stringify(metadata, null, 2));
 }
