@@ -75,9 +75,9 @@ function assertMetadata(project: Project, previousSpringBootVersion: string, cur
   const versions: any[] = runtimes.find(e => e.id === "spring-boot").versions;
 
   assert(versions.find(e => e.id === "previous-community").name === `${previousSpringBootVersion} (Community)`);
-  assert(versions.find(e => e.id === "previous-redhat").name === `${previousSpringBootVersion} (RHOAR)`);
+  assert(versions.find(e => e.id === "previous-redhat").name === `${previousSpringBootVersion} (Red Hat Runtimes)`);
   assert(versions.find(e => e.id === "current-community").name === `${currentSpringBootVersion} (Community)`);
-  assert(versions.find(e => e.id === "current-redhat").name === `${currentSpringBootVersion} (RHOAR)`);
+  assert(versions.find(e => e.id === "current-redhat").name === `${currentSpringBootVersion} (Red Hat Runtimes)`);
 }
 
 function getExampleRepos(): RepoRef[] {
