@@ -57,7 +57,7 @@ Launch application by issuing:
 
 `npm run clean && npm run compile && npm start`
 
-## Install specific vnm version
+## Install specific nvm version
 
 To manage specific node versions, as the application requires Node 8.x, install `nvm` (Node Version Manager), instructions [here](https://github.com/nvm-sh/nvm).
 
