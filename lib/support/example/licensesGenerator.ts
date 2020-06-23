@@ -4,7 +4,8 @@ import { spawn } from "child_process";
 export default function licensesGenerator(generatorPath: string): SimpleProjectEditor {
     return async project => {
         if (!isLocalProject(project)) {
-            throw new Error("Can only generate licenses for local project");
+            logger.warn("Cannot generate licenses for non-local project");
+            return project;
         }
 
         const propertiesPath =

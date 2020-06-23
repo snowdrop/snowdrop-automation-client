@@ -18,7 +18,7 @@ import {BranchCommit} from "@atomist/automation-client/lib/operations/edit/editM
 import {EditResult} from "@atomist/automation-client/lib/operations/edit/projectEditor";
 import { resolve } from "path";
 import { LICENSES_GENERATOR_PATH } from "../constants";
-import licensesGenerator from "../support/transform/booster/licensesGenerator";
+import licensesGenerator from "../support/example/licensesGenerator";
 
 @CommandHandler("Generate licenses for a repository", "generate licenses")
 export class GenerateLicensesCommand implements HandleCommand {

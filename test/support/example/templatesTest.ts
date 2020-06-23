@@ -1,13 +1,13 @@
 import {InMemoryProject, Project} from "@atomist/automation-client";
 import * as yaml from "js-yaml";
 import * as assert from "power-assert";
-import {setBoosterTemplateParameters} from "../../../../lib/support/transform/booster/setBoosterTemplateParameters";
+import {setTemplateVariables} from "../../../lib/support/example/templates";
 
-describe("setBoosterTemplateParameters", () => {
+describe("setTemplateVariables", () => {
 
   it("updates yaml openshift template files only", done => {
     const p = createProject();
-    setBoosterTemplateParameters()(p)
+    setTemplateVariables("1.5.14.RELEASE")(p)
     .then( r => {
       assertTemplate(r, "child1");
       assertTemplate(r, "child2");
@@ -67,7 +67,6 @@ const PomWithParent = `<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:
 	<properties>
     <openjdk18-openshift.version>1.3</openjdk18-openshift.version>
     <spring-boot-bom.version>1.5.14.Final</spring-boot-bom.version>
-    <spring-boot.version>1.5.14.RELEASE</spring-boot.version>	
 	</properties>
 	
 	<modules>

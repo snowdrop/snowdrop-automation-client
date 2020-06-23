@@ -15,20 +15,33 @@ import {relevantRepos} from "@atomist/automation-client/lib/operations/common/re
 import {allReposInTeam} from "@atomist/sdm";
 import async = require("async");
 import * as os from "os";
-import {determineBoosterBranchToUpdate} from "../shared/BomReleaseUtil";
+import {SPRING_BOOT_VERSION_REGEX} from "../constants";
+import {releaseExample, ReleaseParams} from "../support/example/release";
 import {boosterRepos} from "../support/repo/boosterRepo";
 import {FixedBranchDefaultRepoRefResolver} from "../support/repo/FixedBranchDefaultRepoRefResolver";
-import {ensureVPNAccess, releaseBooster, ReleaseParams} from "./ReleaseBoosterUtil";
+import {versionToExampleBranch} from "../support/utils/versions";
+import {isOnVpn} from "../support/utils/vpn";
 
-@CommandHandler("Release (tag) boosters", "release boosters")
-export class ReleaseBoosters implements HandleCommand {
+@CommandHandler("Release (tag) examples", "release examples")
+export class ReleaseExamples implements HandleCommand {
 
   @Parameter({
-    displayName: "prod_bom_version",
+    displayName: "spring boot version",
+    description: "Upstream Spring Boot version (e.g. 2.2.5.RELEASE)",
+    pattern: SPRING_BOOT_VERSION_REGEX,
+    validInput: "2.2.5.RELEASE",
+    minLength: 10,
+    maxLength: 50,
+    required: true,
+  })
+  public springBootVersion: string;
+
+  @Parameter({
+    displayName: "prod BOM version",
     // tslint:disable-next-line: max-line-length
-    description: "The BOM version produced by the prod run (found in extras/repository-artifact-list.txt - something like: 1.5.15.Beta1-redhat-00007)",
+    description: "The BOM version produced by the prod run (found in extras/repository-artifact-list.txt - something like: 2.2.5.Beta1-redhat-00007)",
     pattern: /^(\d+.\d+.\d+).(\w+)-redhat-\d+$/,
-    validInput: "1.5.15.Beta1-redhat-00007",
+    validInput: "2.2.5.Beta1-redhat-00007",
     minLength: 16,
     maxLength: 50,
     required: true,
@@ -42,13 +55,11 @@ export class ReleaseBoosters implements HandleCommand {
   public githubToken: string;
 
   public async handle(context: HandlerContext, params: this): Promise<HandlerResult> {
-
-    const error = await ensureVPNAccess();
-    if (error != null) {
-      return failure(error);
+    if (!await isOnVpn()) {
+      return failure(new Error("You must be on the RH VPN to release the example"));
     }
 
-    const boosterBranchToUse = determineBoosterBranchToUpdate(this.prodBomVersion);
+    const branch = versionToExampleBranch(this.prodBomVersion);
 
     /**
      * We need to limit the concurrency of the booster release, because it uses the resource
@@ -58,24 +69,22 @@ export class ReleaseBoosters implements HandleCommand {
      * We add all the necessary jobs into that queue but we tie the amount of concurrency
      * to the number of cpus available to the machine
      */
-
     const queue =
         async.queue(
             (releaseParams: ReleaseParams, callback) => {
-              releaseBooster(releaseParams).then(callback);
+              releaseExample(releaseParams)
+                  .then(() => callback());
             },
             // use at least 1 cpu, but when there are multiple cpus, don't use them all
             Math.max(os.cpus().length - 1, 1),
         );
 
-    const boosterRepositories =
-        await relevantRepos(
-            context,
-            allReposInTeam(new FixedBranchDefaultRepoRefResolver(boosterBranchToUse)), boosterRepos(params.githubToken),
-        );
-    boosterRepositories.forEach(r => {
+    const repositories = await relevantRepos(context, allReposInTeam(new FixedBranchDefaultRepoRefResolver(branch)),
+        boosterRepos(params.githubToken));
+    repositories.forEach(r => {
       queue.push({
-        startingBranch: boosterBranchToUse,
+        startingBranch: branch,
+        springBootVersion: params.springBootVersion,
         prodBomVersion: params.prodBomVersion,
         owner: r.owner,
         repository: r.repo,
@@ -84,7 +93,7 @@ export class ReleaseBoosters implements HandleCommand {
       });
     });
 
-    // make sure we call let Atomist know that everything finished successfully
+    // make sure we let Atomist know that everything finished successfully
     queue.drain = () => success();
     return await queue.drain();
   }

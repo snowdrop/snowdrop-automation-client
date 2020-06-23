@@ -17,7 +17,7 @@ import {PullRequest} from "@atomist/automation-client/lib/operations/edit/editMo
 import {allReposInTeam} from "@atomist/sdm";
 import {boosterRepos} from "../support/repo/boosterRepo";
 import {FixedBranchDefaultRepoRefResolver} from "../support/repo/FixedBranchDefaultRepoRefResolver";
-import {updateMavenProperty} from "../support/transform/booster/updateMavenProperty";
+import {setProperty} from "../support/utils/pom";
 
 @CommandHandler("Update a Maven property of the boosters", "update boosters maven property")
 export class ExecuteAdHocBoosterUpdate implements HandleCommand {
@@ -60,10 +60,7 @@ export class ExecuteAdHocBoosterUpdate implements HandleCommand {
       await editAll(
           context,
           {token: params.githubToken},
-          updateMavenProperty({
-            name: this.propertyName,
-            value: this.newValue,
-          }),
+          project => setProperty(project, this.propertyName, this.newValue),
           new PullRequest(`property-update-${this.propertyName}`, `Update value of ${this.propertyName}`),
           undefined,
           allReposInTeam(new FixedBranchDefaultRepoRefResolver(this.referenceBranch)),
