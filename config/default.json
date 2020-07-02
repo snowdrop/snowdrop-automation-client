@@ -6,5 +6,19 @@
         "name": "Libor"
       }
     }
+  },
+  "launcher": {
+    "catalog": {
+      "versions": {
+        "community": {
+          "id": "current-community",
+          "nameFormat": "${version} (Community)"
+        },
+        "prod": {
+          "id": "current-redhat",
+          "nameFormat": "${version} (Red Hat Runtimes)"
+        }
+      }
+    }
   }
 }

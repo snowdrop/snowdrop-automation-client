@@ -7,31 +7,32 @@ import {
   MappedParameter,
   MappedParameters,
   Parameter,
+  Project,
+  RepoRef,
   Secret,
   Secrets,
+  SimpleProjectEditor,
   success,
 } from "@atomist/automation-client";
-import {CommandHandler} from "@atomist/automation-client/lib/decorators";
-import {HandleCommand} from "@atomist/automation-client/lib/HandleCommand";
-import {relevantRepos} from "@atomist/automation-client/lib/operations/common/repoUtils";
-import {editOne} from "@atomist/automation-client/lib/operations/edit/editAll";
-import {BranchCommit} from "@atomist/automation-client/lib/operations/edit/editModes";
-import {allReposInTeam} from "@atomist/sdm";
-import {DefaultRepoRefResolver} from "@atomist/sdm-core";
-import {BOOSTER_CATALOG_REPO, SNOWDROP_ORG} from "../constants";
-import {updateLauncherCatalog} from "../support/catalog/updateLauncherCatalog";
-import {DefaultLatestTagRetriever} from "../support/github/boosterUtils";
-import {syncWithUpstream} from "../support/github/refUtils";
-import {boosterRepos} from "../support/repo/boosterRepo";
-
-const latestTagRetriever = new DefaultLatestTagRetriever();
+import { CommandHandler } from "@atomist/automation-client/lib/decorators";
+import { HandleCommand } from "@atomist/automation-client/lib/HandleCommand";
+import { relevantRepos } from "@atomist/automation-client/lib/operations/common/repoUtils";
+import { editOne } from "@atomist/automation-client/lib/operations/edit/editAll";
+import { BranchCommit } from "@atomist/automation-client/lib/operations/edit/editModes";
+import { File } from "@atomist/automation-client/lib/project/File";
+import { allReposInTeam } from "@atomist/sdm";
+import { DefaultRepoRefResolver } from "@atomist/sdm-core";
+import { BOOSTER_CATALOG_REPO } from "../constants";
+import { LauncherCatalogUpdater } from "../support/catalog/LauncherCatalogUpdater";
+import GitHub from "../support/github/GitHub";
+import OctokitGitHub from "../support/github/OctokitGitHub";
+import { boosterRepos } from "../support/repo/boosterRepo";
 
 @CommandHandler("Create launcher PR", "create launcher pr")
 export class CreateLauncherPR implements HandleCommand {
 
   @Parameter({
     displayName: "spring boot version",
-    // tslint:disable-next-line: max-line-length
     description: "The Spring Boot version - something like: 2.1.12.RELEASE",
     pattern: /^\d+.\d+.\d+.*$/,
     validInput: "2.1.12.RELEASE",
@@ -39,7 +40,7 @@ export class CreateLauncherPR implements HandleCommand {
     maxLength: 14,
     required: true,
   })
-  public sbVersion: string;
+  public springBootVersion: string;
 
   @MappedParameter(MappedParameters.GitHubOwner)
   public owner: string;
@@ -47,49 +48,68 @@ export class CreateLauncherPR implements HandleCommand {
   @Secret(Secrets.UserToken)
   public githubToken: string;
 
-  public handle(context: HandlerContext, params: this): Promise<HandlerResult> {
+  public async handle(context: HandlerContext, params: this): Promise<HandlerResult> {
     logger.debug("Attempting to create a Pull Request to the launcher catalog with the latest booster releases");
-
-    return this.updateCatalogAndCreatePR(context, params, `update-to-spring-boot-${params.sbVersion}`);
-  }
-
-  private async updateCatalogAndCreatePR(context: HandlerContext, params: this, branch: string):
-      Promise<HandlerResult> {
-    const commitMessage = `Update Spring Boot to ${params.sbVersion}`;
-
+    const github: GitHub = new OctokitGitHub(this.owner, params.githubToken);
     try {
-      const syncResult = await syncWithUpstream(BOOSTER_CATALOG_REPO, params.githubToken, SNOWDROP_ORG);
-      if (!syncResult) {
-        return Promise.reject("Could not sync with upstream launcher catalog");
-      }
-
-      const exampleRepos = await relevantRepos(context, allReposInTeam(new DefaultRepoRefResolver()),
-          boosterRepos(params.githubToken));
-
-      await editOne(
-          context,
-          {token: params.githubToken},
-          updateLauncherCatalog(latestTagRetriever, params.sbVersion, exampleRepos, params.githubToken),
-          {
-            branch,
-            message: commitMessage,
-          } as BranchCommit,
-          GitHubRepoRef.from({owner: params.owner, repo: BOOSTER_CATALOG_REPO}),
-          undefined,
-      );
-
-      logger.info(
-        `Created an update branch ${branch} on ${params.owner}/${BOOSTER_CATALOG_REPO}. Please raise a PR manually`);
-
-      // Cannot perform this last step any more because our token cannot access other org repo
-      // logger.debug("Attempting to create PR to upstream catalog");
-      // const prTitlePrefix = "WIP - DO NOT MERGE: ";
-      // await raisePullRequestToUpstream(
-      // BOOSTER_CATALOG_REPO, branch, "master", `${prTitlePrefix}${commitMessage}`, params.githubToken, params.owner);
-
-      return success();
+      await github.rebase(BOOSTER_CATALOG_REPO, "master", "master");
+      await this.edit(context, github);
+      // TODO raise a PR
     } catch (e) {
+      logger.warn(`Launcher catalog update failed`, e);
       return failure(e);
     }
+    return success();
+  }
+
+  private async edit(context: HandlerContext, github: GitHub): Promise<void> {
+    const commit: BranchCommit = {
+      branch: `update-to-spring-boot-${this.springBootVersion}`,
+      message: `Update Spring Boot to ${this.springBootVersion}`,
+    };
+    await editOne(
+      context,
+      { token: this.githubToken },
+      this.getEditor(context, github, this.springBootVersion),
+      commit,
+      GitHubRepoRef.from({ owner: this.owner, repo: BOOSTER_CATALOG_REPO }),
+      undefined,
+    );
+  }
+
+  private getEditor(context: HandlerContext, github: GitHub, springBootVersion: string): SimpleProjectEditor {
+    return async (project): Promise<Project> => {
+      const catalogUpdater: LauncherCatalogUpdater = new LauncherCatalogUpdater(github);
+      const examples: RepoRef[] = await this.getExamples(context);
+      await this.editCatalog(project, catalogUpdater, examples, springBootVersion);
+      await this.editMetadata(project, catalogUpdater, springBootVersion);
+      return project;
+    };
+  }
+
+  private async getExamples(context: HandlerContext): Promise<RepoRef[]> {
+    return await relevantRepos(
+      context,
+      allReposInTeam(new DefaultRepoRefResolver()),
+      boosterRepos(this.githubToken),
+    );
+  }
+
+  private async editCatalog(
+    project: Project, catalogUpdater: LauncherCatalogUpdater, examples: RepoRef[],
+    springBootVersion: string): Promise<void> {
+
+    const catalog: File = project.findFileSync("catalog.json");
+    const content: string =
+      await catalogUpdater.updateCatalog(catalog.getContentSync(), examples, springBootVersion);
+    catalog.setContentSync(content);
+  }
+
+  private async editMetadata(
+    project: Project, catalogUpdater: LauncherCatalogUpdater, springBootVersion: string): Promise<void> {
+
+    const metadata: File = project.findFileSync("metadata.json");
+    const content: string = await catalogUpdater.updateMetadata(metadata.getContentSync(), springBootVersion);
+    metadata.setContentSync(content);
   }
 }
