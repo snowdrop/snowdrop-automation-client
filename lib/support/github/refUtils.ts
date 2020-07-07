@@ -87,42 +87,6 @@ export async function deleteBranch(repo: string, branch: string, token?: string,
   }
 }
 
-/**
- * Sync project with it's upstream
- *
- * @return true if everything goes well, false otherwise
- */
-export async function syncWithUpstream(repo: string, token?: string,
-                                       owner = SNOWDROP_ORG): Promise<boolean> {
-  try {
-    const upstreamInfo = await getUpstreamInfo(owner, repo, token);
-    if (!upstreamInfo) {
-      return false;
-    }
-
-    // We cannot access other org repo with our token, so using null here
-    const latestShaOfUpstream = await getShaOfLatestCommit(upstreamInfo.name, "master", null, upstreamInfo.owner);
-
-    const updateParams = {
-      owner,
-      repo,
-      ref: "heads/master",
-      sha: latestShaOfUpstream,
-      force: false,
-    };
-
-    await githubApi(token).git.updateRef(updateParams);
-    /* tslint:disable */
-    logger.info(`Successfully synced repo '${owner}/${repo}' to upstream '${upstreamInfo.owner}/${upstreamInfo.name}'`);
-    /* tslint:enable */
-    return true;
-  } catch (e) {
-    logger.error(`Unable to sync repo: '${repo}'`);
-    logger.error(`Error is:\n ${e}`);
-    return false;
-  }
-}
-
 interface UpstreamInfo {
   owner: string;
   name: string;
