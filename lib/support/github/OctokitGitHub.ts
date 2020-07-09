@@ -31,7 +31,7 @@ export default class OctokitGitHub implements GitHub {
   }
 
   public async rebase(repo: string, originBranch: string, upstreamBranch: string): Promise<void> {
-    logger.debug(`Rebasing '${this.owner}/${repo}/${originBranch}' to upstream ${upstreamBranch}`);
+    logger.info(`Rebasing '${this.owner}/${repo}' ${originBranch} to upstream ${upstreamBranch}`);
 
     const upstream: Octokit.ReposGetResponseParent = await this.getUpstreamRepo(repo);
     if (!upstream) {
@@ -49,13 +49,25 @@ export default class OctokitGitHub implements GitHub {
       sha: latestUpstreamCommit,
     };
     await this.octokit.git.updateRef(params);
-
-    logger.info(`Rebased '${this.owner}/${repo}/${originBranch}' to `
-      + `'${upstream.owner.login}/${upstream.name}/${upstreamBranch}'`);
   }
 
-  public async raisePullRequest(repo: string, originBranch: string, upstreamBranch: string): Promise<void> {
-    return Promise.resolve();
+  public async raisePullRequest(
+    repo: string, originBranch: string, upstreamBranch: string, title: string): Promise<void> {
+
+    logger.info(`Raising pull request from '${this.owner}/${repo}' ${originBranch} to upstream ${upstreamBranch}`);
+
+    const upstream: Octokit.ReposGetResponseParent = await this.getUpstreamRepo(repo);
+    if (!upstream) {
+      throw new Error("Could not get upstream repo");
+    }
+    const params = {
+      owner: upstream.owner.login,
+      repo: upstream.name,
+      head: `${this.owner}:${originBranch}`,
+      base: upstreamBranch,
+      title,
+    };
+    await this.octokit.pulls.create(params);
   }
 
   private async getUpstreamRepo(repo: string): Promise<Octokit.ReposGetResponseParent> {

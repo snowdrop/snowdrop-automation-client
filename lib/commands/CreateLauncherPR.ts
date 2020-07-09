@@ -50,28 +50,27 @@ export class CreateLauncherPR implements HandleCommand {
 
   public async handle(context: HandlerContext, params: this): Promise<HandlerResult> {
     logger.debug("Attempting to create a Pull Request to the launcher catalog with the latest booster releases");
-    const github: GitHub = new OctokitGitHub(this.owner, params.githubToken);
+    const github = new OctokitGitHub(this.owner, params.githubToken);
+    const branch = `update-to-spring-boot-${this.springBootVersion}`;
+    const message = `Update Spring Boot to ${this.springBootVersion}`;
     try {
       await github.rebase(BOOSTER_CATALOG_REPO, "master", "master");
-      await this.edit(context, github);
-      // TODO raise a PR
+      await this.edit(context, github, branch, message);
+      await github.raisePullRequest(BOOSTER_CATALOG_REPO, branch, "master", message);
     } catch (e) {
-      logger.warn(`Launcher catalog update failed`, e);
+      logger.warn(JSON.stringify(e));
+      context.messageClient.respond("Failed to update the launcher catalog: " + e.message);
       return failure(e);
     }
     return success();
   }
 
-  private async edit(context: HandlerContext, github: GitHub): Promise<void> {
-    const commit: BranchCommit = {
-      branch: `update-to-spring-boot-${this.springBootVersion}`,
-      message: `Update Spring Boot to ${this.springBootVersion}`,
-    };
+  private async edit(context: HandlerContext, github: GitHub, branch: string, message: string): Promise<void> {
     await editOne(
       context,
       { token: this.githubToken },
       this.getEditor(context, github, this.springBootVersion),
-      commit,
+      { branch, message } as BranchCommit,
       GitHubRepoRef.from({ owner: this.owner, repo: BOOSTER_CATALOG_REPO }),
       undefined,
     );
