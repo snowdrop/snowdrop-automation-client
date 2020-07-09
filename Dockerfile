@@ -3,7 +3,7 @@ from centos:8
 LABEL name="snowdrop-automation-client"
 LABEL version="latest"
 
-ENV NVM_VERSION 8.17.0
+ENV NVM_VERSION 12.18.0
 ENV NVM_INSTALL_SCRIPT_VERSION 0.35.3
 ENV HOME /home/nvm
 ENV NVM_DIR $HOME/.nvm
@@ -13,7 +13,7 @@ RUN yum install -y --allowerasing curl coreutils \
         gcc gcc-c++ kernel-devel \
         java-1.8.0-openjdk-devel \
         git                     \
-        python3                 \ 
+        python3                 \
     && yum clean all && rm -rf /var/cache/yum
 
 RUN useradd -ms /bin/bash nvm

@@ -3,18 +3,18 @@ jobs:
   build:
     working_directory: ~/snowdrop-automation-client # directory where steps will run
     docker:
-    - image: circleci/node:8
+    - image: circleci/node:12
     steps:
     - checkout
     - run:
         name: update-npm
         command: 'sudo npm install -g npm@latest'
-    - run:
-        name: install dependencies
-        command: npm install
     - restore_cache:
         key: dependency-cache-{{ checksum "package.json" }}
-    - save_cache: # special step to save the dependency cache
+    - run:
+        name: install dependencies
+        command: npm ci
+    - save_cache:
         key: dependency-cache-{{ checksum "package.json" }}
         paths:
         - ./node_modules
@@ -23,7 +23,7 @@ jobs:
         command: |
           curl -s "https://get.sdkman.io" | bash
           source "$HOME/.sdkman/bin/sdkman-init.sh"
-          sdk install java 11.0.8.hs-adpt 
+          sdk install java 11.0.8.hs-adpt
     - run:
         name: build
         command: |

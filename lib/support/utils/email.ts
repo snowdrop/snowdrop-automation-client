@@ -1,21 +1,19 @@
-import {Failure, Success} from "@atomist/automation-client";
-import Email = require("email-templates");
-// tslint:disable:no-var-requires
-const nodemailer = require("nodemailer");
-const nodemailerSendgrid = require("nodemailer-sendgrid");
-const config = require("config");
+import * as config from "config";
+import * as EmailTemplate from "email-templates";
+import { createTransport } from "nodemailer";
+import * as nodemailerSendgrid from "nodemailer-sendgrid";
 
-const transport = nodemailer.createTransport(
-    nodemailerSendgrid({
-      apiKey: config.get("email.sendgridkey"),
-    }),
+const transport = createTransport(
+  nodemailerSendgrid({
+    apiKey: config.get("email.sendgridkey"),
+  }),
 );
 
-const receiverEmail = config.get("email.test.release.email");
-const receiverName = config.get("email.test.release.name");
+const receiverEmail: string = config.get("email.test.release.email");
+const receiverName: string = config.get("email.test.release.name");
 
-export function sendTestReleaseEmail(releaseVersion: string) {
-  const email = new Email({
+export async function sendTestReleaseEmail(releaseVersion: string) {
+  const email = new EmailTemplate({
     message: {
       from: "rh-spring-engineering@redhat.com",
     },
@@ -23,9 +21,7 @@ export function sendTestReleaseEmail(releaseVersion: string) {
     preview: false,
     transport,
   });
-
-  email
-  .send({
+  await email.send({
     template: "test-release",
     message: {
       to: receiverEmail,
@@ -34,5 +30,5 @@ export function sendTestReleaseEmail(releaseVersion: string) {
       name: receiverName,
       release: releaseVersion,
     },
-  }).then(Success, Failure);
+  });
 }
