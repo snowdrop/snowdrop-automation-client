@@ -17,8 +17,7 @@
 This project implements automation commands used by the Snowdrop team.
 The commands are executed with Slack messages and integrate with Atomist SDM.
 
-This application can run in any environment that can run a Node.js application.
-Including a server in a private network.
+This application can run in any environment that can run a Node.js application including a server in a private network.
 
 
 ## Available commands
