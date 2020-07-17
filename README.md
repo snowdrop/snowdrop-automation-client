@@ -77,7 +77,7 @@ You will need to provide a Spring Boot version to which this release is tied (e.
 
 ### Release single example
 
-This command is identical to the [Release examples](#release-examples) except it released only a single example.
+This command is identical to the [Release examples](#release-examples) except it simply releases a single example.
 
 Send the following Slack message to Atomist:
 ```
