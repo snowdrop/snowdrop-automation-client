@@ -113,7 +113,7 @@ You will need to provide an upstream version of the release (e.g. 2.3.0.Final).
 
 ### Licenses generator
 
-This client uses [Licenses Generator](https://github.com/snowdrop/licenses-generator) java application to generate the licenses. The jar file of the generator and its different configuration files are located in an `etc` directory.
+This client uses [Licenses Generator](https://github.com/snowdrop/licenses-generator) java application to generate the licenses. The jar file of the generator and its different configuration files are located in the `etc` directory.
 
 ### Launcher catalog
 
