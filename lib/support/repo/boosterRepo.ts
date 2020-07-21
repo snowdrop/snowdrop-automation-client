@@ -1,7 +1,7 @@
-import {logger, RepoFilter, RepoId} from "@atomist/automation-client";
-import * as _ from "lodash";
-import {BOOSTER_GITHUB_TOPIC, BOOSTER_NAME_REGEX} from "../../constants";
-import {githubApi} from "../github/githubApi";
+import { logger, RepoFilter, RepoId } from "@atomist/automation-client";
+import { includes } from "lodash";
+import { BOOSTER_GITHUB_TOPIC, BOOSTER_NAME_REGEX } from "../../constants";
+import { githubApi } from "../github/githubApi";
 
 /**
  * Booster repos are repos that contain the "example" Github topic
@@ -9,10 +9,9 @@ import {githubApi} from "../github/githubApi";
  * TODO introduce some sort of caching
  */
 export function boosterRepos(token?: string): RepoFilter {
-  return (r: RepoId) => {
-    return githubApi(token).repos.listTopics({owner: r.owner, repo: r.repo}).then(res => {
-      return _.includes(res.data.names, BOOSTER_GITHUB_TOPIC);
-    });
+  return async (r: RepoId) => {
+    const res = await githubApi(token).repos.listTopics({ owner: r.owner, repo: r.repo });
+    return includes(res.data.names, BOOSTER_GITHUB_TOPIC);
   };
 }
 

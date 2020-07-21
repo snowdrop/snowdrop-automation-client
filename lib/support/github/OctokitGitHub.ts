@@ -1,5 +1,5 @@
 import { logger } from "@atomist/automation-client";
-import * as Octokit from "@octokit/rest";
+import { Octokit } from "@octokit/rest";
 import GitHub from "./GitHub";
 
 export default class OctokitGitHub implements GitHub {

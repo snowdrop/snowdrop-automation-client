@@ -1,7 +1,7 @@
-import {HandlerContext, HandlerResult, Parameter, Success} from "@atomist/automation-client";
-import {CommandHandler} from "@atomist/automation-client/lib/decorators";
-import {HandleCommand} from "@atomist/automation-client/lib/HandleCommand";
-import {sendTestReleaseEmail} from "../support/utils/email";
+import { failure, HandlerContext, HandlerResult, logger, Parameter, success } from "@atomist/automation-client";
+import { CommandHandler } from "@atomist/automation-client/lib/decorators";
+import { HandleCommand } from "@atomist/automation-client/lib/HandleCommand";
+import { sendTestReleaseEmail } from "../support/utils/email";
 
 @CommandHandler("Send Test release email", "send release email")
 export class SendTestReleaseEmail implements HandleCommand {
@@ -17,8 +17,13 @@ export class SendTestReleaseEmail implements HandleCommand {
   })
   public releaseVersion: string;
 
-  public handle(context: HandlerContext, params: this): Promise<HandlerResult> {
-    sendTestReleaseEmail(params.releaseVersion);
-    return Promise.resolve(Success);
+  public async handle(context: HandlerContext, params: this): Promise<HandlerResult> {
+    try {
+      await sendTestReleaseEmail(params.releaseVersion);
+    } catch (e) {
+      logger.warn(JSON.stringify(e));
+      return failure(e);
+    }
+    return success();
   }
 }

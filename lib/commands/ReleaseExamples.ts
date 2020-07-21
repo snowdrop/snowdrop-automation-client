@@ -2,6 +2,7 @@ import {
   failure,
   HandlerContext,
   HandlerResult,
+  logger,
   MappedParameter,
   MappedParameters,
   Parameter,
@@ -9,18 +10,18 @@ import {
   Secrets,
   success,
 } from "@atomist/automation-client";
-import {CommandHandler} from "@atomist/automation-client/lib/decorators";
-import {HandleCommand} from "@atomist/automation-client/lib/HandleCommand";
-import {relevantRepos} from "@atomist/automation-client/lib/operations/common/repoUtils";
-import {allReposInTeam} from "@atomist/sdm";
-import async = require("async");
+import { CommandHandler } from "@atomist/automation-client/lib/decorators";
+import { HandleCommand } from "@atomist/automation-client/lib/HandleCommand";
+import { relevantRepos } from "@atomist/automation-client/lib/operations/common/repoUtils";
+import { allReposInTeam } from "@atomist/sdm";
 import * as os from "os";
-import {SPRING_BOOT_VERSION_REGEX} from "../constants";
-import {releaseExample, ReleaseParams} from "../support/example/release";
-import {boosterRepos} from "../support/repo/boosterRepo";
-import {FixedBranchDefaultRepoRefResolver} from "../support/repo/FixedBranchDefaultRepoRefResolver";
-import {versionToExampleBranch} from "../support/utils/versions";
-import {isOnVpn} from "../support/utils/vpn";
+import { SPRING_BOOT_VERSION_REGEX } from "../constants";
+import { releaseExample, ReleaseParams } from "../support/example/release";
+import { boosterRepos } from "../support/repo/boosterRepo";
+import { FixedBranchDefaultRepoRefResolver } from "../support/repo/FixedBranchDefaultRepoRefResolver";
+import { versionToExampleBranch } from "../support/utils/versions";
+import { isOnVpn } from "../support/utils/vpn";
+import async = require("async");
 
 @CommandHandler("Release (tag) examples", "release examples")
 export class ReleaseExamples implements HandleCommand {
@@ -70,17 +71,17 @@ export class ReleaseExamples implements HandleCommand {
      * to the number of cpus available to the machine
      */
     const queue =
-        async.queue(
-            (releaseParams: ReleaseParams, callback) => {
-              releaseExample(releaseParams)
-                  .then(() => callback());
-            },
-            // use at least 1 cpu, but when there are multiple cpus, don't use them all
-            Math.max(os.cpus().length - 1, 1),
-        );
+      async.queue(
+        (releaseParams: ReleaseParams, callback) => {
+          releaseExample(releaseParams)
+            .then(() => callback());
+        },
+        // use at least 1 cpu, but when there are multiple cpus, don't use them all
+        Math.max(os.cpus().length - 1, 1),
+      );
 
     const repositories = await relevantRepos(context, allReposInTeam(new FixedBranchDefaultRepoRefResolver(branch)),
-        boosterRepos(params.githubToken));
+      boosterRepos(params.githubToken));
     repositories.forEach(r => {
       queue.push({
         startingBranch: branch,
@@ -94,7 +95,12 @@ export class ReleaseExamples implements HandleCommand {
     });
 
     // make sure we let Atomist know that everything finished successfully
-    queue.drain = () => success();
-    return await queue.drain();
+    try {
+      await queue.drain();
+    } catch (e) {
+      logger.warn(JSON.stringify(e));
+      return failure(e);
+    }
+    return success();
   }
 }
