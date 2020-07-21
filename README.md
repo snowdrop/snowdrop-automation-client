@@ -158,7 +158,7 @@ We need to compile the Typescript files and then start the application:
 $ npm run compile && npm start
 ```
 
-> Note. If you will use an email sending command, make sure a valid `SENDGRIDKEY` environment variable is available before starting the client.
+> Note. If you intend to use an email sending command, you will need to register with sendgrid.com, get an API key from them and provide it as a `SENDGRIDKEY` environment variable before starting the client.
 
 ## Running the client in a container
 
