@@ -13,7 +13,7 @@ class TestGitHub implements GitHub {
     return Promise.resolve();
   }
 
-  public raisePullRequest(repo: string, originBranch: string, upstreamBranch: string): Promise<void> {
+  public raisePullRequest(repo: string, originBranch: string, upstreamBranch: string, title: string): Promise<void> {
     return Promise.resolve();
   }
 }

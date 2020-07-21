@@ -2,10 +2,9 @@ import { expect } from "chai";
 import { SNOWDROP_ORG } from "../../../lib/constants";
 import GitHub from "../../../lib/support/github/GitHub";
 import OctokitGitHub from "../../../lib/support/github/OctokitGitHub";
-import { githubToken } from "../../tokens";
 
 describe("OctokitGitHub", () => {
-  const github: GitHub = new OctokitGitHub(SNOWDROP_ORG, githubToken());
+  const github: GitHub = new OctokitGitHub(SNOWDROP_ORG);
 
   it("should get http example tags", async () => {
     const tags: string[] = await github.getTags("rest-http-example");

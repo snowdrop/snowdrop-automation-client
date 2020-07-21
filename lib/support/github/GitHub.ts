@@ -16,5 +16,13 @@ export default interface GitHub {
    */
   rebase(repo: string, originBranch: string, upstreamBranch: string): Promise<void>;
 
-  raisePullRequest(repo: string, originBranch: string, upstreamBranch: string): Promise<void>;
+  /**
+   * Raise a pull request from an origin branch to the upstream branch.
+   *
+   * @param repo
+   * @param originBranch
+   * @param upstreamBranch
+   * @param title
+   */
+  raisePullRequest(repo: string, originBranch: string, upstreamBranch: string, title: string): Promise<void>;
 }
