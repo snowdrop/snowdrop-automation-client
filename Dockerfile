@@ -9,11 +9,11 @@ ENV HOME /home/nvm
 ENV NVM_DIR $HOME/.nvm
 
 RUN yum install -y --allowerasing curl coreutils \
-        make \
+        make                     \
         gcc gcc-c++ kernel-devel \
-        java-1.8.0-openjdk-devel \
-        git                     \
-        python3                 \
+        java-11-openjdk-devel    \
+        git                      \
+        python3                  \
     && yum clean all && rm -rf /var/cache/yum
 
 RUN useradd -ms /bin/bash nvm

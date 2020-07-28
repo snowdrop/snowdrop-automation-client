@@ -168,15 +168,15 @@ To build the container a [`Dockerfile`](Dockerfile) has been prepared.
 
 ### buildah/podman
 
-#### Building the container
+#### Building the container with buildah
 
 Remove the existing container.
 
 ```bash
-$ podman image rm localhost/snowdrop-automation-client
+$ buildah rmi localhost/snowdrop-automation-client
 ```
 
-Build the new container using the `Dockerfile`.
+Build the new container using the `Dockerfile` file.
 
 ```bash
 $ buildah build-using-dockerfile --tag snowdrop-automation-client
@@ -184,7 +184,7 @@ $ buildah build-using-dockerfile --tag snowdrop-automation-client
 
 #### Running the container
 
-The information described in the [prerequisites](#prerequisites) is not built inside the contaienr and needs to be passed as environment variables. This can be easily done using a file with environement variables.
+The information described in the [prerequisites](#prerequisites) is not built inside the container and needs to be passed as environment variables. This can be easily done using a file with environement variables.
 
 > NOTE: This file should be out of the git repository folder.
 
