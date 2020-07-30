@@ -20,7 +20,7 @@ import {FixedBranchDefaultRepoRefResolver} from "../support/repo/FixedBranchDefa
 import {setProperty} from "../support/utils/pom";
 
 @CommandHandler("Update a Maven property of the boosters", "update boosters maven property")
-export class ExecuteAdHocBoosterUpdate implements HandleCommand {
+export class BoosterPropertyUpdate implements HandleCommand {
 
   @Parameter({
     displayName: "Maven property name",
