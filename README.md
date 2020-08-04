@@ -22,6 +22,19 @@ This application can run in any environment that can run a Node.js application i
 
 ## Available commands
 
+### Align BOM with upstream
+
+This command aligns BOM parent, properties and readme to the provided upstream Spring Boot version.
+BOM's parent will be set to the provided version and all matching properties will be set to the values from the Spring Boot dependencies pom of the given version.
+
+Send the following Slack message to Atomist:
+```
+align bom with upstream
+```
+
+You will need to provide a Spring Boot version with which to align, e.g. 2.2.5.RELEASE.
+
+
 ### Update an example property
 
 This command will update a `pom.xml` property of all of the Snowdrop example applications.
