@@ -100,10 +100,5 @@ function springBootVersionToBomVersion(springBootVersion: string): string {
 }
 
 function getUpstreamBomUrl(springBootVersion: string): string {
-  if (springBootVersion.startsWith("1.5")) {
-    // tslint:disable-next-line: max-line-length
-    return `https://raw.githubusercontent.com/spring-projects/spring-boot/v${springBootVersion}/spring-boot-dependencies/pom.xml`;
-  }
-  // tslint:disable-next-line: max-line-length
-  return `https://raw.githubusercontent.com/spring-projects/spring-boot/v${springBootVersion}/spring-boot-project/spring-boot-dependencies/pom.xml`;
+  return `https://repo1.maven.org/maven2/org/springframework/boot/spring-boot-dependencies/${springBootVersion}/spring-boot-dependencies-${springBootVersion}.pom`;
 }
