@@ -20,5 +20,13 @@
         }
       }
     }
+  },
+  "bom": {
+    "alignment": {
+      "ignoredProperties": [
+        "hibernate.version",
+        "hibernate-validator.version"
+      ]
+    }
   }
 }
