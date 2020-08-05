@@ -85,8 +85,8 @@
     "lint": "tslint --format verbose --project . --exclude \"{build,node_modules}/**\" --exclude \"**/*.d.ts\" \"**/*.ts\"",
     "lint:fix": "npm run lint -- --fix",
     "start": "atm-start",
-    "test": "mocha --timeout 10000 --require espower-typescript/guess \"test/**/*Test.ts\"",
-    "test:one": "mocha --timeout 10000 --require espower-typescript/guess \"test/**/${TEST:-*Test.ts}\"",
+    "test": "NODE_ENV=test mocha --timeout 10000 --require espower-typescript/guess \"test/**/*Test.ts\"",
+    "test:one": "NODE_ENV=test mocha --timeout 10000 --require espower-typescript/guess \"test/**/${TEST:-*Test.ts}\"",
     "typedoc": "npm run doc"
   },
   "engines": {

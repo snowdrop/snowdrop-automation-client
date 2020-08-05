@@ -1,18 +1,17 @@
+import * as config from "config";
 import * as parser from "xml2json";
 
 import axios from "axios";
 
 import {logger, Project, SimpleProjectEditor} from "@atomist/automation-client";
 
-import {config} from "@atomist/automation-client/lib/internal/util/config";
 import {SPRING_BOOT_VERSION_PROPERTY_NAME, SPRING_BOOT_VERSION_REGEX} from "../../constants";
 import {setParentVersion, setProjectVersion, setProperty} from "../utils/pom";
-
-const IGNORED_PROPERTIES = config("bom.alignment.ignoredProperties") as string[];
 
 export function alignBomWithUpstream(springBootVersion: string): SimpleProjectEditor {
   validateSpringBootVersion(springBootVersion);
   return async project => {
+    const ignoredProperties = config.get("bom.alignment.ignoredProperties") as string[];
     const upstreamProperties: Map<string, string> = await getUpstreamProperties(springBootVersion);
     const updatedProperties = new Map<string, string>();
     const pom: any = await getProjectPom(project);
@@ -23,7 +22,7 @@ export function alignBomWithUpstream(springBootVersion: string): SimpleProjectEd
     updatedProperties.set(SPRING_BOOT_VERSION_PROPERTY_NAME, springBootVersion);
 
     for (const key of Object.keys(pom.project.properties)) {
-      if (!IGNORED_PROPERTIES.includes(key) && upstreamProperties.has(key)
+      if (!ignoredProperties.includes(key) && upstreamProperties.has(key)
           && upstreamProperties.get(key) !== pom.project.properties[key]) {
         await setProperty(project, key, upstreamProperties.get(key));
         updatedProperties.set(key, upstreamProperties.get(key));
