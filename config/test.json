@@ -1,0 +1,9 @@
+{
+  "bom": {
+    "alignment": {
+      "ignoredProperties": [
+        "hibernate.version"
+      ]
+    }
+  }
+}
