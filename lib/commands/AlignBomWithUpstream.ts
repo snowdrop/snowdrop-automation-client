@@ -28,7 +28,7 @@ export class AlignBomWithUpstream implements HandleCommand {
     description: "Spring Boot version for which we want to run the update (e.g. 2.2.5.RELEASE)",
     pattern: SPRING_BOOT_VERSION_REGEX,
     validInput: "2.2.5.RELEASE",
-    minLength: 10,
+    minLength: 5,
     maxLength: 50,
     required: true,
   })

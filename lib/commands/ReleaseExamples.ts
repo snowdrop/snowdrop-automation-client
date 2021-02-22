@@ -31,7 +31,7 @@ export class ReleaseExamples implements HandleCommand {
     description: "Upstream Spring Boot version (e.g. 2.2.5.RELEASE)",
     pattern: SPRING_BOOT_VERSION_REGEX,
     validInput: "2.2.5.RELEASE",
-    minLength: 10,
+    minLength: 5,
     maxLength: 50,
     required: true,
   })
