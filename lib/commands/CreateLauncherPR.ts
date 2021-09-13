@@ -36,7 +36,7 @@ export class CreateLauncherPR implements HandleCommand {
     description: "The Spring Boot version - something like: 2.1.12.RELEASE",
     pattern: /^\d+.\d+.\d+.*$/,
     validInput: "2.1.12.RELEASE",
-    minLength: 13,
+    minLength: 5,
     maxLength: 14,
     required: true,
   })
