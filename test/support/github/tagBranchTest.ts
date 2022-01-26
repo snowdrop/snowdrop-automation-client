@@ -31,11 +31,17 @@ describe("tagBranch", () => {
    */
 
   it("tag should be created correctly", done => {
+    const gitHubToken = githubToken()
+    if (!gitHubToken || gitHubToken.length === 0) {
+      done();
+      return;
+    }
+
     // delete the tag that might exist before the test starts
     deleteTag()
       .catch(() => { return; }) // ignore error if the tag did not exist
       .then(() => {
-        return tagBranch(repo, "master", tagName, githubToken());
+        return tagBranch(repo, "master", tagName, gitHubToken);
       })
       .then(res => {
         assert(res, "Tag should have been created");

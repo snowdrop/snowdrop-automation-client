@@ -1,0 +1,30 @@
+name: "Pull Request Build"
+on:
+  workflow_dispatch:
+  pull_request:
+jobs:
+  linux-build:
+    name: PR - Linux
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        java: [ 11 ]
+        node: [ 12 ]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2.3.4
+      - uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Setup Java
+        uses: actions/setup-java@v2.3.1
+        with:
+          java-version: ${{ matrix.java }}
+          distribution: 'adopt'
+      - name: update-npm
+        run: sudo npm install -g npm@latest
+      - name: install dependencies
+        run: npm ci
+      - name: build
+        run: |
+          npm run build
