@@ -8,10 +8,10 @@ describe("alignBomWithUpstream", () => {
 
   it("should not allow wrong Spring Boot version", async () => {
     try {
-      alignBomWithUpstream("2.2.5");
+      alignBomWithUpstream("2.2.");
       expect.fail("Error was expected");
     } catch (error) {
-      expect(error.message).to.be.equal("Invalid Spring Boot version: '2.2.5'");
+      expect(error.message).to.be.equal("Invalid Spring Boot version: '2.2.'");
     }
   });
 
