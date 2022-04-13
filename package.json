@@ -24,7 +24,7 @@
     "@atomist/sdm-pack-spring": "^2.0.1",
     "@atomist/slack-messages": "^1.1.1",
     "app-root-path": "^3.0.0",
-    "async": "^3.2.0",
+    "async": "^3.2.2",
     "axios": "^0.19.2",
     "compare-versions": "^3.6.0",
     "config": "^3.3.1",
